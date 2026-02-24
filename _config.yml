@@ -1,0 +1,23 @@
+# GitHub Pages Configuration for SIH Documentation
+
+# Theme
+theme: jekyll-theme-cayman
+title: SIH - Supervisao Industrial Halal
+description: Sistema de Supervisao Industrial Halal - Documentacao Oficial
+
+# Repository Info
+# repository: Ecohalal/sih-docs
+# url: https://ecohalal.github.io
+# baseurl: /sih-docs
+
+# Markdown settings
+markdown: kramdown
+kramdown:
+  input: GFM
+  syntax_highlighter: rouge
+
+# Plugins
+plugins:
+  - jekyll-optional-front-matter
+  - jekyll-readme-index
+  - jekyll-relative-links
