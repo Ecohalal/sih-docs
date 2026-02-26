@@ -22,7 +22,7 @@ O SIH substitui os formularios em papel (PDFs) utilizados pelos supervisores muc
 
 - **Backend**: NestJS 11 + Prisma 7 + PostgreSQL 16
 - **Frontend**: React 19 + Vite 7 + Tailwind CSS + shadcn/ui
-- **Auth**: Compartilhada via Gestao de Certificacoes (JWT RS256)
+- **Auth**: Self-contained (bcrypt + JWT HS256)
 - **Plataforma**: PWA responsivo (tablet-first)
 
 ---

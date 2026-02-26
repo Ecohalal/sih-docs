@@ -56,7 +56,7 @@ Digitaliza os relatorios de acompanhamento de abate Halal. Cobre aves e bovinos 
 - Contagem: total, aprovados, rejeitados + sequencial de rejeicao
 - Camaras de resfriamento, subprodutos
 - Numero serial automatico (SIF/ANO/SEQ)
-- Workflow: rascunho → enviado → revisado → aprovado/rejeitado
+- Workflow: rascunho → assinado (final). Sem etapa de aprovacao
 
 **User Stories**: 7 | **Story Points**: 47
 
@@ -138,7 +138,7 @@ Gestao da escala de trabalho dos supervisores nas plantas industriais. Permite a
 
 **Prioridade**: Should Have (P1)
 
-Dashboard em tempo real com indicadores operacionais e de conformidade. Visualizacoes diferentes por persona (supervisor basico, coordenador completo, gestor executivo).
+Dashboard em tempo real com indicadores operacionais e de conformidade. Visualizacoes diferentes por role (supervisor/operador basico, coordenador/admin completo).
 
 **Componentes-chave**:
 - Contadores: relatorios do dia/semana/mes por tipo e status
@@ -171,7 +171,7 @@ Modulo de inventario baseado no conceito de **conta corrente** (saldo = entrada 
 ## 4.4 Dependencias entre Epicos
 
 ```
-[Auth Compartilhada] ← Prerequisito para todos
+[Auth Self-Contained] ← Prerequisito para todos
        │
        ├── Epic 01: Abate ──────┐
        ├── Epic 02: Producao ───┤──→ Epic 04: NCs (vinculo a relatorios)

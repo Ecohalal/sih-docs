@@ -14,7 +14,7 @@ title: SIH - Supervisao Industrial Halal
 
 ## Sobre
 
-O SIH digitaliza os formularios FM da FAMBRAS Halal utilizados por supervisores muculmanos em plantas industriais. O sistema e otimizado para uso em tablets em campo e se integra ao Gestao de Certificacoes (HalalSphere) para autenticacao.
+O SIH digitaliza os formularios FM da FAMBRAS Halal utilizados por supervisores muculmanos em plantas industriais. O sistema e otimizado para uso em tablets em campo e opera com autenticacao propria (self-contained). Faz parte do ecossistema FAMBRAS junto com HalalSphere (certificacoes) e SysHalal (emissao de certificados).
 
 ---
 
@@ -26,7 +26,7 @@ O SIH digitaliza os formularios FM da FAMBRAS Halal utilizados por supervisores 
 |-----------|-----------|
 | [Visao Geral](./01-prd/01-overview.md) | Problema, solucao e catalogo de formularios FM |
 | [Objetivos e KPIs](./01-prd/02-objectives.md) | Metricas de sucesso do projeto |
-| [Personas](./01-prd/03-personas.md) | Supervisor, coordenador, gestor |
+| [Personas](./01-prd/03-personas.md) | Supervisor, operador, coordenador, admin |
 | [Arquitetura de Features](./01-prd/04-architecture.md) | Epicos e priorizacao |
 | [User Stories](./01-prd/05-user-stories/) | 7 epicos com user stories detalhadas |
 | [Roadmap](./01-prd/06-roadmap.md) | Fases de desenvolvimento |

@@ -32,9 +32,9 @@
    - Metricas operacionais
 
 3. **[Personas e Jornadas](./03-personas.md)**
-   - Supervisor Muculmano (usuario principal)
-   - Coordenador de Supervisores
-   - Gestor de Certificacao
+   - Supervisor Muculmano (preenche e assina relatorios)
+   - Operador (preenche relatorios, nao assina)
+   - Coordenador de Supervisores (gestao de equipe, read-only em relatorios)
 
 4. **[Arquitetura de Features](./04-architecture.md)**
    - 7 Epicos organizados

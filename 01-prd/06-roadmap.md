@@ -14,8 +14,10 @@ Fase 4: Frontend Core ──────→ Layout, auth, componentes base      
 Fase 5: Frontend Pages ─────→ Paginas + API hooks + design system [COMPLETA]
 Fase 6: Finalizacao ────────→ Seed, Docker, builds                [COMPLETA]
 ─────────────────────────────────────────────────────
-Futuro: Offline Completo ───→ IndexedDB, Background Sync
-Futuro: Inventario ─────────→ FM 7.1.5.x, FM 7.1.3.6
+Futuro: Colaboradores ─────→ Cadastro, foto, equipe por relatorio
+Futuro: Offline Completo ──→ IndexedDB, Background Sync
+Futuro: Inventario ────────→ FM 7.1.5.x, FM 7.1.3.6
+Futuro: Integracao ────────→ HalalSphere ↔ SIH ↔ SysHalal
 ```
 
 ---
@@ -45,7 +47,7 @@ Futuro: Inventario ─────────→ FM 7.1.5.x, FM 7.1.3.6
 |---|--------|-----------|
 | 5 | Config module | `config.module.ts` + `aws-config.service.ts` |
 | 6 | Prisma module | `prisma.module.ts` + `prisma.service.ts` + schema completo |
-| 7 | Auth module | JWT validation (RS256/HS256), guards, decorators, strategy |
+| 7 | Auth module | Auth self-contained (bcrypt + JWT HS256), guards, decorators, strategy |
 | 8 | Health + Common | Health check, exception filter, logging interceptor, serial number util |
 
 **Verificacao**: `npm run start:dev` funciona, `GET /health` retorna OK, Swagger acessivel em `/api/docs`.
@@ -77,13 +79,13 @@ Futuro: Inventario ─────────→ FM 7.1.5.x, FM 7.1.3.6
 
 | # | Tarefa | Entregavel |
 |---|--------|-----------|
-| 17 | Axios instances | `api.ts` (SIH backend) + `auth-api.ts` (Gestao auth) + `utils.ts` |
+| 17 | Axios instances | `api.ts` (SIH backend) + `auth-api.ts` (SIH auth) + `utils.ts` |
 | 18 | shadcn/ui components | 16 componentes base (Button, Card, Input, etc.) |
 | 19 | Layout | AppLayout, Header, Sidebar |
 | 20 | Auth flow | Login page, useAuth hook, route guards, JWT cache |
 | 21 | Shared components | VerificationChecklist, ProductTable, ReportHeader |
 
-**Verificacao**: Login funciona (com Gestao de Certificacoes rodando), layout renderiza, navegacao funcional.
+**Verificacao**: Login funciona (auth self-contained no SIH), layout renderiza, navegacao funcional.
 
 ---
 
@@ -122,7 +124,21 @@ Futuro: Inventario ─────────→ FM 7.1.5.x, FM 7.1.3.6
 
 ## 6.3 Fases Futuras
 
-### Fase Futura A: Offline Completo
+### Fase Futura A: Colaboradores (Collaborator + ReportStaff)
+
+**Prerequisito**: v1.0 em producao.
+
+| Componente | Descricao |
+|-----------|-----------|
+| Cadastro de colaboradores | CRUD de degoladores, sheiks, auxiliares, veterinarios (nao-usuarios) |
+| Foto do colaborador | Upload de foto (JPEG/PNG, max 2MB) via multipart/form-data |
+| Vinculacao N:N com plantas | `CollaboratorPlant` — plantas onde o colaborador atua |
+| Equipe por relatorio | `ReportStaff` — vinculacao N:N entre colaboradores e relatorios |
+| Tela "Equipe do dia" | Selecao multipla de colaboradores ao preencher relatorio |
+| PDF com equipe | Relatorio impresso lista a equipe envolvida |
+| Campo `externalId` | Preparado para integracao futura com HalalSphere |
+
+### Fase Futura B: Offline Completo
 
 **Prerequisito**: v1.0 em producao, PWA base ja instalada.
 
@@ -134,7 +150,7 @@ Futuro: Inventario ─────────→ FM 7.1.5.x, FM 7.1.3.6
 | Indicador visual | Badge online/offline + qtd pendente de sincronizacao |
 | Resolucao de conflitos | Timestamp-based (ultimo ganha) ou merge manual para NCs |
 
-### Fase Futura B: Inventario
+### Fase Futura C: Inventario
 
 **Prerequisito**: v1.0 em producao, relatorios gerando dados.
 
@@ -146,13 +162,25 @@ Futuro: Inventario ─────────→ FM 7.1.5.x, FM 7.1.3.6
 | Dashboard de inventario | - | Visao consolidada de estoques |
 | Migracao de dados | - | Importacao de planilhas Excel historicas |
 
+### Fase Futura D: Integracao entre Sistemas
+
+**Prerequisito**: HalalSphere e SysHalal em producao.
+
+| Componente | Direcao | Descricao |
+|-----------|---------|-----------|
+| Cadastros compartilhados | HalalSphere → SIH | Plantas/empresas sincronizadas via API REST |
+| Dados de supervisao | SIH → SysHalal | Relatorios assinados alimentam emissao de certificados |
+| Notificacoes | SIH → HalalSphere | Webhooks para NCs criticas e resumos |
+| SSO | HalalSphere → SIH | Autenticacao centralizada (substituindo self-contained) |
+
 ---
 
 ## 6.4 Dependencias Externas
 
 | Dependencia | Descricao | Status |
 |-------------|-----------|--------|
-| Gestao de Certificacoes (HalalSphere) | API de autenticacao (JWT RS256) | Em producao |
-| AWS (S3, ECS, CloudFront) | Infraestrutura de deploy | Disponivel |
-| PostgreSQL 16 | Banco de dados | Disponivel |
-| Redis 7 | Cache | Disponivel |
+| PostgreSQL 16 | Banco de dados (porta 5433) | Disponivel |
+| Redis 7 | Cache (porta 6380) | Disponivel |
+| HalalSphere | Integracao futura — cadastros e SSO | Em producao (independente na v1.0) |
+| SysHalal | Integracao futura — dados de supervisao | Em producao (independente na v1.0) |
+| AWS (S3, ECS) | Infraestrutura de deploy (futuro) | Disponivel |

@@ -41,7 +41,7 @@ O **SIH (Supervisao Industrial Halal)** e um sistema web responsivo (PWA) que di
 - **Rastreabilidade completa**: Cada relatorio vinculado a planta, supervisor, data e turno
 - **Workflow de nao-conformidades**: Registro, acompanhamento e verificacao com prazos automaticos de 7 dias
 - **Dashboard em tempo real**: Visao consolidada para gestores e coordenadores
-- **Autenticacao compartilhada**: Mesmo login do Gestao de Certificacoes (JWT RS256)
+- **Autenticacao propria**: Login self-contained com bcrypt + JWT HS256 (independente do HalalSphere)
 - **PWA preparado para offline**: Estrutura pronta para funcionar sem internet no futuro
 
 ---
@@ -143,23 +143,35 @@ A analise detalhada dos formularios FM preenchidos e das planilhas de inventario
 
 ---
 
-## 1.6 Integracao com Gestao de Certificacoes
+## 1.6 Ecossistema FAMBRAS e Autenticacao
 
-O SIH e um sistema **independente** que se integra ao Gestao de Certificacoes (HalalSphere) em dois pontos:
+O SIH faz parte de um ecossistema de 3 sistemas que cobrem a cadeia Halal da FAMBRAS:
 
-### Autenticacao Compartilhada
-- Usuarios fazem login via API do Gestao de Certificacoes
-- SIH valida JWT localmente (RS256 public key - sem chamada remota)
-- JWT com validade estendida (7 dias) para uso em campo
-- Ao primeiro acesso, cria perfil local (`SupervisorProfile`) automaticamente
+| Sistema | Funcao | Stack |
+|---------|--------|-------|
+| **HalalSphere** | Gestao de Certificacoes (upstream) — certifica empresas, auditorias, propostas | NestJS 11 + React 19, porta 3333 |
+| **SIH** | Supervisao Industrial Halal (operacional) — relatorios de abate, producao, embarque | NestJS 11 + React 19, porta 3334 |
+| **SysHalal** | Emissao de Certificados de Exportacao (downstream) — PDFs, QR Code, cartas de correcao | NestJS 10 + Next.js 14 |
+
+### Autenticacao Propria (v1.0)
+
+Na v1.0, o SIH opera com **autenticacao self-contained** — NAO depende do HalalSphere para autenticar:
+
+- Backend SIH possui endpoint `POST /auth/login` proprio
+- Senhas armazenadas com **bcrypt** (salt rounds 10)
+- JWT emitido pelo proprio backend SIH com **HS256** + `JWT_SECRET`
+- JWT contem: `sub` (userId), `email`, `name`, `role`
+- Token valido por 7 dias (`JWT_EXPIRES_IN`)
 
 ### Dados Compartilhados (Futuro)
-- Plantas industriais: `Plant.externalCompanyId` → Company do Gestao
-- Certificados Halal: referencia nos relatorios de producao e inventario
-- Usuarios: `SupervisorProfile.externalUserId` → User do Gestao
+
+- Plantas industriais: `Plant.externalCompanyId` → Company do HalalSphere
+- Colaboradores: `Collaborator.externalId` → futuro cadastro no HalalSphere
+- Usuarios: `SupervisorProfile.externalUserId` → User do HalalSphere
 
 ### Independencia
+
 - Banco de dados proprio (PostgreSQL separado, porta 5433)
-- Backend proprio (NestJS, porta 3334)
-- Frontend proprio (React, porta 5174)
-- Deploy independente (AWS separado)
+- Backend proprio (NestJS 11, porta 3334)
+- Frontend proprio (React 19, porta 5174)
+- Deploy independente

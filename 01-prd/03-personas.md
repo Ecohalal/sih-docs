@@ -4,7 +4,9 @@
 
 ## 3.1 Personas do Sistema
 
-O SIH atende 3 personas principais, mapeadas a partir dos papeis definidos no **PR 7.1 Rev 22, Secao 10.10**.
+O SIH atende 4 personas principais, mapeadas a partir dos papeis definidos no **PR 7.1 Rev 22, Secao 10.10**.
+
+> **Nota**: O role `gestor` existia no enum original mas foi **removido na v1.0**. Gestores utilizam o HalalSphere para visao executiva. O SIH foca nos papeis operacionais.
 
 ---
 
@@ -64,18 +66,20 @@ O SIH atende 3 personas principais, mapeadas a partir dos papeis definidos no **
 #### Responsabilidades
 
 - Distribuir supervisores entre as plantas (escala)
-- Revisar e aprovar/rejeitar relatorios enviados
-- Monitorar nao-conformidades e prazos
+- Criar, editar e desativar supervisores e operadores
+- Visualizar todos os relatorios das plantas sob sua coordenacao (somente leitura)
+- Cancelar relatorios quando necessario
+- Gerenciar nao-conformidades (verificar, encerrar)
 - Garantir cobertura de todas as plantas
-- Reportar indicadores a gestao
+- **NAO assina relatorios** — a assinatura e exclusiva do supervisor
 
 #### Necessidades
 
-- Visao consolidada de todos os relatorios pendentes de revisao
+- Visao consolidada de todos os relatorios (somente leitura)
 - Gestao de escala com visualizacao por calendario
+- CRUD de usuarios (supervisores e operadores)
 - Alertas de NCs proximas do vencimento (7 dias)
 - Filtros e busca rapida por planta, supervisor, periodo
-- Aprovacao/rejeicao rapida com feedback ao supervisor
 
 #### Dores Atuais
 
@@ -86,58 +90,55 @@ O SIH atende 3 personas principais, mapeadas a partir dos papeis definidos no **
 
 ---
 
-### Persona 3: Gestor de Certificacao
+### Persona 3: Operador
 
-**Role no sistema**: `gestor`
+**Role no sistema**: `operador`
 
 | Atributo | Descricao |
 |----------|-----------|
-| **Quem e** | Responsavel pela area de certificacao Halal na FAMBRAS, toma decisoes estrategicas |
-| **Onde trabalha** | Escritorio |
-| **Dispositivo** | Desktop |
-| **Conectividade** | Estavel |
-| **Frequencia de uso** | Semanal/sob demanda |
+| **Quem e** | Profissional de apoio que preenche relatorios sob orientacao de um supervisor, mas nao tem autoridade para assinar |
+| **Onde trabalha** | Em campo - plantas de abate, producao industrial e embarque |
+| **Dispositivo** | Tablet (uso principal) ou celular |
+| **Conectividade** | Variavel |
+| **Frequencia de uso** | Diario |
+| **Volume** | 3-10 relatorios por dia |
 
 #### Responsabilidades
 
-- Supervisionar o programa de supervisao industrial
-- Analisar indicadores de conformidade
-- Tomar decisoes sobre NCs criticas
-- Reportar ao comite de certificacao
-- Planejar auditorias baseado nos dados de campo
+- Preencher relatorios de abate, producao e embarque
+- Registrar dados operacionais com precisao
+- Registrar nao-conformidades
+- **NAO pode assinar relatorios** — salvam como rascunho para assinatura do supervisor
 
 #### Necessidades
 
-- Dashboard executivo com indicadores-chave
-- Relatorios de NCs por severidade e planta
-- Historico e tendencias de conformidade
-- Exportacao de dados para apresentacoes
-- Visao de cobertura de supervisao (escalas cumpridas)
+- Interface rapida e intuitiva (igual ao supervisor)
+- Acesso a historico de relatorios para referencia
+- Possibilidade de salvar rascunho
 
 #### Dores Atuais
 
-- Dados chegam atrasados e fragmentados
-- Sem indicadores consolidados para decisao
-- Dificuldade de identificar plantas problematicas
-- Informacoes dependem de relatos verbais
+- Mesmas dores do supervisor quanto ao preenchimento em papel
 
 ---
 
 ## 3.2 Matriz de Permissoes por Persona
 
-| Funcionalidade | Supervisor | Coordenador | Gestor | Admin |
-|----------------|:----------:|:-----------:|:------:|:-----:|
+| Funcionalidade | Supervisor | Operador | Coordenador | Admin |
+|----------------|:----------:|:--------:|:-----------:|:-----:|
 | Criar relatorios | Sim | Sim | - | Sim |
-| Editar relatorios (rascunho) | Proprios | Todos | - | Todos |
-| Enviar relatorios | Proprios | Todos | - | Todos |
-| Revisar/Aprovar relatorios | - | Sim | Sim | Sim |
-| Registrar NCs | Sim | Sim | - | Sim |
+| Editar relatorios (rascunho) | Proprios | Proprios | - | Todos |
+| **Assinar relatorios** | **Proprios** | **NAO** | **NAO** | **NAO** |
+| Cancelar relatorios | - | - | Sim | Sim |
+| Visualizar relatorios | Proprios | Proprios | Todos (read-only) | Todos |
+| Registrar NCs | Sim | Sim | Sim | Sim |
 | Resolver NCs | Sim | Sim | Sim | Sim |
-| Verificar NCs | - | Sim | Sim | Sim |
-| Ver dashboard | Basico | Completo | Executivo | Completo |
-| Gerenciar escala | - | Sim | Sim | Sim |
-| Gerenciar plantas | - | - | Sim | Sim |
-| Gerenciar usuarios | - | - | - | Sim |
+| Verificar/Encerrar NCs | - | - | Sim | Sim |
+| Ver dashboard | Basico | Basico | Completo | Completo |
+| Gerenciar escala | Ver propria | Ver propria | Sim | Sim |
+| Gerenciar plantas | - | - | - | Sim |
+| Gerenciar usuarios | - | - | Sim (sup+oper) | Sim (todos) |
+| Gerar PDF relatorio | Sim | Sim | Sim | Sim |
 
 ---
 
@@ -181,14 +182,14 @@ O SIH atende 3 personas principais, mapeadas a partir dos papeis definidos no **
 14:30 - Envia relatorio de embarque
 ```
 
-### Jornada do Coordenador - Revisao Diaria
+### Jornada do Coordenador - Gestao Diaria
 
 ```
-08:00 - Abre dashboard, ve relatorios pendentes de revisao
-08:10 - Filtra por "enviados hoje" → 15 relatorios
-08:15 - Revisa relatorio de abate: dados completos, aprova
-08:20 - Revisa relatorio de producao: falta CSN → rejeita com comentario
-08:30 - Ve 3 NCs proximas do prazo de 7 dias → notifica supervisores
+08:00 - Abre dashboard, ve resumo geral dos relatorios
+08:10 - Filtra relatorios assinados do dia anterior → revisa visualmente
+08:15 - Identifica relatorio com NC pendente → abre NC para verificacao
+08:30 - Ve 3 NCs proximas do prazo de 7 dias → contacta supervisores
 09:00 - Monta escala da proxima semana no calendario
-09:30 - Exporta indicadores semanais para reuniao com gestao
+09:30 - Cadastra novo operador que iniciara na planta
+10:00 - Gera PDFs de relatorios assinados para arquivo da auditoria
 ```

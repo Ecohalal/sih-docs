@@ -24,13 +24,13 @@
 
 ## 7.2 Seguranca
 
-### Autenticacao
+### Autenticacao (v1.0 — Self-Contained)
 
 | Requisito | Implementacao |
 |-----------|---------------|
-| Algoritmo JWT | RS256 (preferencial) + HS256 (fallback) |
+| Algoritmo JWT | HS256 (self-contained — SIH emite e valida tokens) |
+| Hash de senha | bcrypt (salt rounds 10) |
 | Validade do token | 7 dias (estendida para uso em campo) |
-| Validacao | Local (public key RS256, sem chamada remota) |
 | Armazenamento do token | localStorage (v1.0), IndexedDB (futuro offline) |
 | CORS | Configurado por ambiente (localhost:5174 / dominio prod) |
 
@@ -38,10 +38,10 @@
 
 | Role | Permissoes |
 |------|-----------|
-| `supervisor` | CRUD proprio de relatorios, registrar NCs, ver escala propria |
-| `coordenador` | Tudo do supervisor + revisar relatorios, gerenciar escalas, dashboard completo |
-| `gestor` | Tudo do coordenador + dashboard executivo, encerrar NCs, gerenciar plantas |
-| `admin` | Tudo + gerenciar usuarios |
+| `supervisor` | Cria/edita/assina relatorios (proprios), registra NCs, ve escala propria |
+| `operador` | Cria/edita relatorios (proprios), registra NCs — NAO pode assinar |
+| `coordenador` | Visualiza relatorios (read-only), cancela relatorios, gerencia escalas/usuarios/NCs — NAO assina |
+| `admin` | Acesso total: CRUD completo, gerenciamento de usuarios e plantas |
 
 ### Protecoes
 
