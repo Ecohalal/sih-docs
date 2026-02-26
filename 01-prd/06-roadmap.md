@@ -10,7 +10,7 @@ nav_order: 6
 
 ## 6.1 Visão Geral
 
-O SIH será implementado em **6 fases sequenciais** para a v1.0, mais **2 fases futuras** (offline completo e inventário).
+O SIH foi implementado em **7 fases** para a v1.0, mais **4 fases futuras**.
 
 ```
 Fase 1: Scaffolding ────────→ Repos, configs, workspace           [COMPLETA]
@@ -19,6 +19,7 @@ Fase 3: Backend Dominio ────→ Modulos de negocio (8 modulos)      [COM
 Fase 4: Frontend Core ──────→ Layout, auth, componentes base      [COMPLETA]
 Fase 5: Frontend Pages ─────→ Paginas + API hooks + design system [COMPLETA]
 Fase 6: Finalizacao ────────→ Seed, Docker, builds                [COMPLETA]
+Fase 7: Revisao Abrangente ─→ Fidelidade FM FAMBRAS, roles, PDF   [COMPLETA]
 ─────────────────────────────────────────────────────
 Futuro: Colaboradores ─────→ Cadastro, foto, equipe por relatorio
 Futuro: Offline Completo ──→ IndexedDB, Background Sync
@@ -125,6 +126,26 @@ Futuro: Integracao ────────→ HalalSphere ↔ SIH ↔ SysHalal
 | 32 | Build test | `npm install` + `npm run build` sem erros em ambos repos |
 
 **Verificação**: Sistema completo funcionando end-to-end com dados de teste.
+
+---
+
+### Fase 7: Revisão Abrangente (Fidelidade FM FAMBRAS)
+
+**Objetivo**: Alinhar formulários ao modelo real dos FMs FAMBRAS, ativar papel coordenador, melhorar navegação e adicionar funcionalidades administrativas.
+
+| # | Tarefa | Entregavel |
+|---|--------|-----------|
+| 33 | Papel coordenador | Reativado com permissões corretas (read-only em relatórios, gerência de escalas/usuários/NCs, cancelamento) |
+| 34 | Sidebar agrupada | Menu In Natura / Industrializados / Gestão com visibilidade por role |
+| 35 | CRUD de usuários | Tela de gestão de usuários (admin cria todos, coordenador cria supervisor/operador) |
+| 36 | NC dropdown | Seleção de relatório por dropdown (serial + data + tipo) em vez de UUID |
+| 37 | Abate por espécie | Aves (FM 7.1.4.1): amperagem, voltagem, frequência, tempo cuba, velocidade. Bovino (FM 7.1.4.2): pressão, vitalidade, lesões. Verificações diferenciadas por espécie |
+| 38 | Embarque enriquecido | Campos vendedor/cliente/endereço (venda interna), nº série Halal, tabela expandida com datas, pesos, temperatura |
+| 39 | Produção enriquecida | Tabela matérias-primas com 8 colunas (proteína, frigorífico, SIF, data abate, CSN, cert. Halal, qtd, unid.) |
+| 40 | Vinculação planta-FM | Tipo de planta filtra formulários disponíveis, espécie da planta filtra dropdown de espécie |
+| 41 | PDF FAMBRAS | Geração PDF (PDFKit) com logo FAMBRAS, layout bilíngue, hash de assinatura no rodapé |
+
+**Verificação**: Coordenador vê relatórios read-only, sidebar agrupada por tipo, abate aves com 5 parâmetros ×2 horários, PDF fiel ao modelo FAMBRAS.
 
 ---
 
