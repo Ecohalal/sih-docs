@@ -99,8 +99,8 @@ Detalhe completo em [DECISOES-LINA-2026-05-09.md](DECISOES-LINA-2026-05-09.md). 
 
 | # | Entregável | Dependências | Status |
 |---|---|---|---|
-| 1 | `MarketScope` 1:N com `Certification` (multi-select de destinos) + `Country` enum estendido | — | ✅ confirmed |
-| 2 | `CategoryAccreditationMatrix` — categoria × acreditador (UAE.S GSO A-K + OIC/SMIIC A-L) | — | ✅ confirmed |
+| 1 | `MarketScope` 1:N com `Certification` (multi-select de destinos) + `Country` enum estendido | — | ✅ **DELIVERED 2026-05-09** PR-A `CountryConfig` + PR-B `MarketScope` (release `cefb2d2d`) |
+| 2 | `CategoryAccreditationMatrix` — categoria × acreditador (UAE.S GSO A-K + OIC/SMIIC A-L) | — | ⏭️ **PULADO** — `IndustrialGroup`/`IndustrialCategory` já cobrem (`gsoCode`, `smiicCode`, `applicableGso`, `applicableSmiic`); reusar em vez de criar tabela paralela |
 | 3 | `RequestReviewReport` (FM 7.1.9) com cálculo paramétrico GSO+SMIIC+IAF MD 5; novo estado `REQUEST_REVIEW` no Workflow | (1), (2) | ✅ confirmed |
 | 4 | Reforma `CertificationRequest` + `CertificationScope`: `hasAPPCC`, `appccPlanRef`, `numAPPCCStudies`, `numShifts`, `numEmployees`, `consultancyReceived` (FM 7.2.1.1) | — | ✅ confirmed |
 | 5 | `Subcontractor` + `ProductSubcontracting` (atividades subcontratadas FM 7.2.1.1) | (4) | ✅ confirmed |
@@ -109,7 +109,7 @@ Detalhe completo em [DECISOES-LINA-2026-05-09.md](DECISOES-LINA-2026-05-09.md). 
 | 8 | `ScopeAmendment` (6 tipos: HOMOLOG_MP, NEW_PRODUCT_NEW_LINE, NEW_PRODUCT_EXISTING_LINE, ADD_CLIENT_BRAND, CHANGE_LEGAL_NAME, CHANGE_CNPJ) + `requiresNewLine: Boolean` + `ScopeAmendmentDelta` polimórfico | — | ✅ confirmed |
 | 9 | `ContractAmendment { contractId, scopeAmendmentId, type, annualFeeDelta, newAnnualFee, signatureDocumentId, pricingSnapshotJson }` — valor manual, sem fórmula | (8) | ✅ confirmed |
 | 10 | Hook `ScopeAmendment.onApprove() → CertificateService.reissue()` para 5 dos 6 tipos | (8) | ✅ confirmed |
-| 11 | `HomologationProfile { categoryCode, requiredDocumentTypes[], questionnaireTemplateIds[], skipRulesJson }` + `CriticalRawMaterial { categoryCode, materialName, certificationRequired }` | — | ✅ confirmed |
+| 11 | `HomologationProfile { categoryCode, requiredDocumentTypes[], questionnaireTemplateIds[], skipRulesJson }` + `CriticalRawMaterial { categoryCode, materialName, certificationRequired }` | — | ✅ **DELIVERED 2026-05-09** PR-C `HomologationProfile` (release `f282d69b`) + PR-D `CriticalRawMaterial` + restrições por país (release `474dde16`) |
 | 12 | `QuestionnaireTemplate { code, version, applicableContexts[], schemaJson }` + `QuestionnaireResponse` (renderizado com react-hook-form + zod) | — | ✅ confirmed |
 | 13 | `QualityDocument` versionado + `QualityDocumentVersion` + `ClientDocumentDelivery { sentAt, sentVia, emailId, acknowledgedAt }` (IT 7.12) | — | ✅ confirmed |
 | 14 | 4 modelos de `Certificate`: `UNIQUE`, `HABILITATION`, `BATCH_EXPORT`, `BATCH_INTERNAL` + preço por contrato (sem fórmula global) | — | ✅ confirmed |
