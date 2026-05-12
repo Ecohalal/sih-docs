@@ -991,25 +991,57 @@ Repita o fluxo do M5.1 nos 3 subtipos abaixo:
 
 ---
 
-## 13. Anexo A — Como reportar bugs (resumo)
+## 13. Anexo A — Como reportar bugs
 
-Para cada bug encontrado, preencher uma linha em planilha (Excel ou Google
-Sheets) com:
+### A.1 Use o template CSV pronto
+
+Junto deste guia tem o arquivo **`BUG-REPORT-TEMPLATE.csv`**. Ele já tem
+todas as colunas configuradas e 2 linhas de exemplo mostrando o formato.
+
+**Como usar (Excel):**
+1. Dê duplo clique no `BUG-REPORT-TEMPLATE.csv` → abre no Excel
+2. Renomeie como `BUG-REPORT-NILZA-AAAA-MM-DD.xlsx` ao salvar (Arquivo →
+   Salvar Como → Excel Workbook)
+3. Apague as 2 linhas de exemplo
+4. Vá preenchendo uma linha por bug encontrado
+
+**Como usar (Google Sheets):**
+1. No Google Drive, clique em "+ Novo" → "Upload de arquivo" → suba o
+   `BUG-REPORT-TEMPLATE.csv`
+2. Abra o arquivo → "Abrir com Google Sheets"
+3. Apague as 2 linhas de exemplo
+4. Vá preenchendo
+
+**Importante:** o arquivo usa **`;` (ponto e vírgula)** como separador,
+não vírgula. Isso é o padrão brasileiro do Excel. Se abrir e ver tudo
+em uma coluna só, use Dados → "Texto para Colunas" → escolha `;` como
+separador.
+
+### A.2 Colunas do template (referência rápida)
 
 | Coluna | O que colocar |
 |---|---|
-| Data | data do teste |
-| Módulo + cenário | ex.: M3.5 |
-| Severidade | 🔴 Bloqueante / 🟠 Alta / 🟡 Média / 🟢 Baixa |
-| Descrição | uma linha curta |
-| Passos para reproduzir | numerados, claros |
+| Data | data do teste (AAAA-MM-DD) |
+| Módulo/Cenário | ex.: M3.5 |
+| Severidade | Bloqueante / Alta / Média / Baixa (ver anexo B) |
+| Descrição curta | uma linha resumindo o problema |
+| Passos para reproduzir | numerados, claros, em uma célula só (use Alt+Enter pra quebrar linha no Excel) |
 | Resultado esperado | o que deveria ter acontecido |
-| Resultado obtido | o que aconteceu |
+| Resultado obtido | o que aconteceu de fato |
 | URL | URL completa onde quebrou |
-| Status HTTP | (do DevTools Network) |
-| Mensagem de erro | da UI e do console |
-| Screenshot | nome do arquivo ou link |
-| Email do usuário usado | qual perfil estava logado |
+| Status HTTP | do DevTools → Network (ex.: 200, 404, 500) — `-` se não aplicável |
+| Mensagem erro (UI) | exatamente o que apareceu na tela |
+| Mensagem erro (Console) | erro vermelho no DevTools → Console |
+| Screenshot | nome do arquivo de print (salve numerado: bug-001.png) |
+| Usuário logado | ex.: nilza-sup-IN |
+| Navegador | ex.: Chrome 120 |
+| Observações | qualquer detalhe extra (reproduzível, intermitente, etc.) |
+
+### A.3 Dica para screenshots
+
+Use **Win + Shift + S** (Windows) para recortar a tela. O recorte vai pra
+área de transferência — cole no Paint (Ctrl+V) e salve como PNG. Nome
+sugerido: `bug-001.png`, `bug-002.png`, etc. — mesma numeração da planilha.
 
 ## 14. Anexo B — Severidades sugeridas
 

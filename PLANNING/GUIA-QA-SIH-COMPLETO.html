@@ -50,8 +50,6 @@ th, td { border: 1px solid var(--border); padding: 0.55rem 0.8rem; text-align: l
 th { background: var(--bg-alt); font-weight: 600; color: #111827; }
 tr:nth-child(even) td { background: #fafafa; }
 hr { border: none; border-top: 2px solid var(--border); margin: 2.5rem 0; }
-.toc { background: var(--bg-alt); border: 1px solid var(--border); border-radius: 8px; padding: 1rem 1.5rem; margin: 1.5rem 0 2rem; }
-.toc h2 { margin-top: 0; font-size: 1.1rem; border: none; padding: 0; }
 @media print {
   body { max-width: none; padding: 1.5cm; font-size: 11pt; }
   h1, h2 { page-break-after: avoid; }
@@ -1163,9 +1161,31 @@ validade, número, etc.</li>
 não trava</li>
 </ul>
 <hr>
-<h2>13. Anexo A — Como reportar bugs (resumo)</h2>
-<p>Para cada bug encontrado, preencher uma linha em planilha (Excel ou Google
-Sheets) com:</p>
+<h2>13. Anexo A — Como reportar bugs</h2>
+<h3>A.1 Use o template CSV pronto</h3>
+<p>Junto deste guia tem o arquivo <strong><code>BUG-REPORT-TEMPLATE.csv</code></strong>. Ele já tem
+todas as colunas configuradas e 2 linhas de exemplo mostrando o formato.</p>
+<p><strong>Como usar (Excel):</strong></p>
+<ol>
+<li>Dê duplo clique no <code>BUG-REPORT-TEMPLATE.csv</code> → abre no Excel</li>
+<li>Renomeie como <code>BUG-REPORT-NILZA-AAAA-MM-DD.xlsx</code> ao salvar (Arquivo →
+Salvar Como → Excel Workbook)</li>
+<li>Apague as 2 linhas de exemplo</li>
+<li>Vá preenchendo uma linha por bug encontrado</li>
+</ol>
+<p><strong>Como usar (Google Sheets):</strong></p>
+<ol>
+<li>No Google Drive, clique em &quot;+ Novo&quot; → &quot;Upload de arquivo&quot; → suba o
+<code>BUG-REPORT-TEMPLATE.csv</code></li>
+<li>Abra o arquivo → &quot;Abrir com Google Sheets&quot;</li>
+<li>Apague as 2 linhas de exemplo</li>
+<li>Vá preenchendo</li>
+</ol>
+<p><strong>Importante:</strong> o arquivo usa <strong><code>;</code> (ponto e vírgula)</strong> como separador,
+não vírgula. Isso é o padrão brasileiro do Excel. Se abrir e ver tudo
+em uma coluna só, use Dados → &quot;Texto para Colunas&quot; → escolha <code>;</code> como
+separador.</p>
+<h3>A.2 Colunas do template (referência rápida)</h3>
 <table>
 <thead>
 <tr>
@@ -1175,23 +1195,23 @@ Sheets) com:</p>
 </thead>
 <tbody><tr>
 <td>Data</td>
-<td>data do teste</td>
+<td>data do teste (AAAA-MM-DD)</td>
 </tr>
 <tr>
-<td>Módulo + cenário</td>
+<td>Módulo/Cenário</td>
 <td>ex.: M3.5</td>
 </tr>
 <tr>
 <td>Severidade</td>
-<td>🔴 Bloqueante / 🟠 Alta / 🟡 Média / 🟢 Baixa</td>
+<td>Bloqueante / Alta / Média / Baixa (ver anexo B)</td>
 </tr>
 <tr>
-<td>Descrição</td>
-<td>uma linha curta</td>
+<td>Descrição curta</td>
+<td>uma linha resumindo o problema</td>
 </tr>
 <tr>
 <td>Passos para reproduzir</td>
-<td>numerados, claros</td>
+<td>numerados, claros, em uma célula só (use Alt+Enter pra quebrar linha no Excel)</td>
 </tr>
 <tr>
 <td>Resultado esperado</td>
@@ -1199,7 +1219,7 @@ Sheets) com:</p>
 </tr>
 <tr>
 <td>Resultado obtido</td>
-<td>o que aconteceu</td>
+<td>o que aconteceu de fato</td>
 </tr>
 <tr>
 <td>URL</td>
@@ -1207,21 +1227,37 @@ Sheets) com:</p>
 </tr>
 <tr>
 <td>Status HTTP</td>
-<td>(do DevTools Network)</td>
+<td>do DevTools → Network (ex.: 200, 404, 500) — <code>-</code> se não aplicável</td>
 </tr>
 <tr>
-<td>Mensagem de erro</td>
-<td>da UI e do console</td>
+<td>Mensagem erro (UI)</td>
+<td>exatamente o que apareceu na tela</td>
+</tr>
+<tr>
+<td>Mensagem erro (Console)</td>
+<td>erro vermelho no DevTools → Console</td>
 </tr>
 <tr>
 <td>Screenshot</td>
-<td>nome do arquivo ou link</td>
+<td>nome do arquivo de print (salve numerado: bug-001.png)</td>
 </tr>
 <tr>
-<td>Email do usuário usado</td>
-<td>qual perfil estava logado</td>
+<td>Usuário logado</td>
+<td>ex.: nilza-sup-IN</td>
+</tr>
+<tr>
+<td>Navegador</td>
+<td>ex.: Chrome 120</td>
+</tr>
+<tr>
+<td>Observações</td>
+<td>qualquer detalhe extra (reproduzível, intermitente, etc.)</td>
 </tr>
 </tbody></table>
+<h3>A.3 Dica para screenshots</h3>
+<p>Use <strong>Win + Shift + S</strong> (Windows) para recortar a tela. O recorte vai pra
+área de transferência — cole no Paint (Ctrl+V) e salve como PNG. Nome
+sugerido: <code>bug-001.png</code>, <code>bug-002.png</code>, etc. — mesma numeração da planilha.</p>
 <h2>14. Anexo B — Severidades sugeridas</h2>
 <ul>
 <li>🔴 <strong>Bloqueante:</strong> impede uso do sistema (erro 500 ao logar, ao salvar
