@@ -102,28 +102,29 @@ END $$;
 -- =======================================================================
 -- PASSO 2: Renomear admin atual para admin@sih.com
 -- (mantem a senha que ja funciona — voce troca depois pela UI se quiser)
+-- UPDATE + check juntos no mesmo DO $$ pra GET DIAGNOSTICS pegar o ROW_COUNT
+-- do UPDATE (so funciona se rodar no mesmo bloco PL/pgSQL).
 -- =======================================================================
-UPDATE system_users
-SET
-  email             = 'admin@sih.com',
-  name              = 'Admin',
-  role              = 'admin',
-  "isActive"        = true,
-  "companyGroup"    = NULL,
-  "extraPlantAccess"= NULL,
-  "isManager"       = false,
-  registration      = NULL,
-  qualifications    = NULL,
-  preferences       = NULL,
-  phone             = NULL,
-  "updated_at"      = NOW()
-WHERE email = 'r.rbeiro@ecotrace.info';
-
--- Confirma que afetou exatamente 1 linha
 DO $$
 DECLARE
   updated int;
 BEGIN
+  UPDATE system_users
+  SET
+    email             = 'admin@sih.com',
+    name              = 'Admin',
+    role              = 'admin',
+    "isActive"        = true,
+    "companyGroup"    = NULL,
+    "extraPlantAccess"= NULL,
+    "isManager"       = false,
+    registration      = NULL,
+    qualifications    = NULL,
+    preferences       = NULL,
+    phone             = NULL,
+    "updated_at"      = NOW()
+  WHERE email = 'r.rbeiro@ecotrace.info';
+
   GET DIAGNOSTICS updated = ROW_COUNT;
   IF updated <> 1 THEN
     RAISE EXCEPTION 'ABORT: UPDATE do admin afetou % linhas (esperado 1)', updated;
