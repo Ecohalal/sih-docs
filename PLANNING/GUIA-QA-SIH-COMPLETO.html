@@ -1,0 +1,1247 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guia de Testes — SIH (Supervisão Industrial Halal)</title>
+<style>
+:root {
+  --text: #1f2937;
+  --muted: #6b7280;
+  --border: #e5e7eb;
+  --bg: #ffffff;
+  --bg-alt: #f9fafb;
+  --accent: #0a6847;
+  --accent-soft: #d1fae5;
+  --warn: #d97706;
+  --danger: #dc2626;
+  --code-bg: #f3f4f6;
+}
+* { box-sizing: border-box; }
+html { font-size: 16px; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+  color: var(--text);
+  background: var(--bg);
+  line-height: 1.65;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2.5rem 3rem 4rem;
+  -webkit-font-smoothing: antialiased;
+}
+h1 { font-size: 2.2rem; line-height: 1.2; margin: 0 0 1rem; color: var(--accent); border-bottom: 3px solid var(--accent); padding-bottom: 0.5rem; }
+h2 { font-size: 1.55rem; margin: 2.5rem 0 1rem; padding-bottom: 0.35rem; border-bottom: 1px solid var(--border); color: var(--accent); }
+h3 { font-size: 1.2rem; margin: 1.75rem 0 0.6rem; color: var(--text); }
+h4 { font-size: 1.05rem; margin: 1.25rem 0 0.5rem; color: var(--text); }
+p { margin: 0.5rem 0 0.9rem; }
+a { color: var(--accent); text-decoration: none; border-bottom: 1px dotted var(--accent); }
+a:hover { border-bottom-style: solid; }
+strong { color: #111827; }
+code { font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace; font-size: 0.9em; background: var(--code-bg); padding: 0.12em 0.4em; border-radius: 4px; color: #b91c1c; }
+pre { background: var(--code-bg); padding: 1rem; border-radius: 6px; overflow-x: auto; font-size: 0.88em; }
+pre code { background: transparent; padding: 0; color: var(--text); }
+blockquote { border-left: 4px solid var(--accent); background: var(--accent-soft); margin: 1rem 0; padding: 0.6rem 1.2rem; color: #064e3b; }
+blockquote p { margin: 0.25rem 0; }
+ul, ol { padding-left: 1.6rem; margin: 0.5rem 0 1rem; }
+li { margin: 0.25rem 0; }
+li > input[type='checkbox'] { margin-right: 0.55rem; transform: scale(1.1); accent-color: var(--accent); cursor: pointer; vertical-align: middle; }
+table { border-collapse: collapse; width: 100%; margin: 1rem 0 1.5rem; font-size: 0.94rem; }
+th, td { border: 1px solid var(--border); padding: 0.55rem 0.8rem; text-align: left; vertical-align: top; }
+th { background: var(--bg-alt); font-weight: 600; color: #111827; }
+tr:nth-child(even) td { background: #fafafa; }
+hr { border: none; border-top: 2px solid var(--border); margin: 2.5rem 0; }
+.toc { background: var(--bg-alt); border: 1px solid var(--border); border-radius: 8px; padding: 1rem 1.5rem; margin: 1.5rem 0 2rem; }
+.toc h2 { margin-top: 0; font-size: 1.1rem; border: none; padding: 0; }
+@media print {
+  body { max-width: none; padding: 1.5cm; font-size: 11pt; }
+  h1, h2 { page-break-after: avoid; }
+  table, pre, blockquote { page-break-inside: avoid; }
+  a { color: var(--text); border-bottom: none; }
+}
+@media (max-width: 768px) {
+  body { padding: 1.5rem 1rem; }
+  h1 { font-size: 1.75rem; }
+  h2 { font-size: 1.3rem; }
+  table { font-size: 0.85rem; }
+}
+</style>
+</head>
+<body>
+<h1>Guia de Testes — SIH (Sistema de Supervisão Industrial Halal)</h1>
+<p><strong>Para:</strong> Nilza — Qualidade EcoHalal
+<strong>Sistema:</strong> <a href="https://supervisao-industrial.ecohalal.solutions">https://supervisao-industrial.ecohalal.solutions</a>
+<strong>Versão deste guia:</strong> 2026-05-12</p>
+<hr>
+<h2>1. Sobre este guia</h2>
+<p>Este documento orienta a execução de um teste completo do SIH cobrindo todas
+as funcionalidades do sistema. O objetivo é validar que tudo funciona como
+esperado <strong>antes</strong> da liberação para o cliente FAMBRAS.</p>
+<p>A execução é dividida em <strong>12 módulos</strong> que cobrem todo o sistema. Cada
+módulo tem cenários numerados (ex.: M3.5 = Módulo 3, cenário 5). Os módulos
+devem ser executados na ordem proposta — alguns dependem de dados criados
+em módulos anteriores.</p>
+<p>Tempo estimado: <strong>4-6 horas</strong>. Pode ser dividido em várias sessões.</p>
+<hr>
+<h2>2. Como usar</h2>
+<h3>2.1 Marcação</h3>
+<p>Cada cenário tem <code>[ ]</code> no início. Marque com <code>[x]</code> ao concluir e adicione
+ao final:</p>
+<ul>
+<li>✅ se passou exatamente como esperado</li>
+<li>⚠️ se passou parcialmente (anote o que divergiu)</li>
+<li>❌ se falhou (anote tudo conforme item 2.2)</li>
+</ul>
+<h3>2.2 Em caso de falha — o que reportar</h3>
+<p>Para cada <code>❌</code>, anote em uma planilha ou documento separado:</p>
+<table>
+<thead>
+<tr>
+<th>Campo</th>
+<th>Exemplo</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Módulo + cenário</td>
+<td>M5.3</td>
+</tr>
+<tr>
+<td>Descrição curta</td>
+<td>&quot;Erro ao salvar relatório de abate&quot;</td>
+</tr>
+<tr>
+<td>URL completa</td>
+<td><code>/slaughter-reports/new</code></td>
+</tr>
+<tr>
+<td>Passo onde quebrou</td>
+<td>&quot;Após preencher tudo e clicar em &#39;Salvar Rascunho&#39;&quot;</td>
+</tr>
+<tr>
+<td>Mensagem de erro (UI)</td>
+<td>&quot;Falha ao salvar — tente novamente&quot;</td>
+</tr>
+<tr>
+<td>Status HTTP (DevTools)</td>
+<td>500</td>
+</tr>
+<tr>
+<td>Mensagem de erro (Console)</td>
+<td>conteúdo do erro vermelho</td>
+</tr>
+<tr>
+<td>Screenshot</td>
+<td>print da tela com o erro</td>
+</tr>
+</tbody></table>
+<p><strong>Como abrir DevTools:</strong> tecla <code>F12</code> (ou Ctrl+Shift+I). Aba <strong>Network</strong> mostra
+as requests; aba <strong>Console</strong> mostra erros JavaScript. Mantenha aberto durante
+todo o teste.</p>
+<h3>2.3 O que NÃO precisa testar</h3>
+<ul>
+<li>Performance / tempo de resposta (já foi avaliado pela equipe técnica)</li>
+<li>Compatibilidade com navegadores antigos (Internet Explorer, etc.)</li>
+<li>Layout em telas muito pequenas (sistema é desenhado para desktop)</li>
+</ul>
+<hr>
+<h2>3. Pré-requisitos</h2>
+<ul>
+<li><strong>Navegador:</strong> Chrome ou Edge atualizado. Recomendamos Chrome.</li>
+<li><strong>Tela:</strong> mínimo 1280×800. Ideal 1920×1080 ou maior.</li>
+<li><strong>Email pessoal acessível</strong> para testar notificações por email (cadastre no
+perfil de teste — qualquer email seu serve, incluindo Gmail/Outlook).</li>
+<li><strong>DevTools aberto:</strong> F12, aba Network.</li>
+<li><strong>Sem extensões interferindo:</strong> desative bloqueadores de anúncios e antivírus
+navegacionais durante o teste (algumas extensões interferem em popups).</li>
+</ul>
+<hr>
+<h2>4. Credenciais de acesso</h2>
+<table>
+<thead>
+<tr>
+<th>Perfil</th>
+<th>Email</th>
+<th>Senha</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Admin principal</td>
+<td><code>admin@sih.com</code></td>
+<td>(a senha do Renato — confirmar com ele antes de começar)</td>
+</tr>
+</tbody></table>
+<p>Durante o setup (Módulo 2.4), você vai criar <strong>seus próprios</strong> usuários de
+teste com email à sua escolha. A partir daí, use esses usuários nos módulos
+seguintes (não os usuários antigos de teste).</p>
+<hr>
+<h2>5. Setup inicial</h2>
+<h3>5.1 Confirme acesso</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Abra <a href="https://supervisao-industrial.ecohalal.solutions">https://supervisao-industrial.ecohalal.solutions</a> em uma janela
+anônima (Ctrl+Shift+N no Chrome)</li>
+<li><input disabled="" type="checkbox"> Tela de login deve aparecer</li>
+<li><input disabled="" type="checkbox"> Faça login com <code>admin@sih.com</code></li>
+<li><input disabled="" type="checkbox"> <strong>Esperado:</strong> redireciona para o Dashboard com o menu lateral à esquerda
+e seu nome (&quot;<a href="mailto:admin@sih.com">admin@sih.com</a>&quot;) no canto superior direito</li>
+</ul>
+<blockquote>
+<p>Se aparecer página em branco ou erro 500: pare, avise o Renato, NÃO siga.</p>
+</blockquote>
+<h3>5.2 Reconheça a interface</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Sidebar à esquerda com os grupos: Dashboard, Analytics, In Natura,
+Industrializados, Subprodutos, Inventário, Não-Conformidades, Escalas,
+Gestão</li>
+<li><input disabled="" type="checkbox"> Cabeçalho com sino de notificações 🔔 e seu nome</li>
+<li><input disabled="" type="checkbox"> Clique no botão <code>&lt;</code> do topo da sidebar — sidebar colapsa para ícones</li>
+<li><input disabled="" type="checkbox"> Clique no <code>&gt;</code> — expande de volta</li>
+</ul>
+<hr>
+<h2>MÓDULO 1 — Autenticação e Sessão</h2>
+<h3>M1.1 Login com credenciais válidas</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Já validado no Setup 5.1. Marcar ✅ se ali passou.</li>
+</ul>
+<h3>M1.2 Login com senha incorreta</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Faça logout (avatar no canto superior direito → &quot;Sair&quot;)</li>
+<li><input disabled="" type="checkbox"> Na tela de login, digite <code>admin@sih.com</code> + qualquer senha errada</li>
+<li><input disabled="" type="checkbox"> <strong>Esperado:</strong> mensagem &quot;Email ou senha inválidos&quot; (ou similar) sem
+redirecionar. <strong>Não</strong> deve dar erro 500 nem tela branca.</li>
+</ul>
+<h3>M1.3 Login com email inexistente</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Digite <code>nao-existe@teste.com</code> + qualquer senha</li>
+<li><input disabled="" type="checkbox"> <strong>Esperado:</strong> mesma mensagem genérica &quot;Email ou senha inválidos&quot;</li>
+<li><input disabled="" type="checkbox"> <strong>Importante (segurança):</strong> a mensagem NÃO deve dizer &quot;usuário não
+existe&quot; — isso vazaria existência de contas. Deve ser sempre genérica.</li>
+</ul>
+<h3>M1.4 Login válido após erro</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Logo após o erro, entre com <code>admin@sih.com</code> + senha correta</li>
+<li><input disabled="" type="checkbox"> <strong>Esperado:</strong> login normal, vai para Dashboard</li>
+</ul>
+<h3>M1.5 Logout</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Avatar → Sair</li>
+<li><input disabled="" type="checkbox"> <strong>Esperado:</strong> volta para tela de login, URL <code>/login</code></li>
+<li><input disabled="" type="checkbox"> Tente voltar com botão &quot;voltar&quot; do navegador</li>
+<li><input disabled="" type="checkbox"> <strong>Esperado:</strong> continua na tela de login (não deve voltar para Dashboard
+mantendo sessão antiga)</li>
+</ul>
+<h3>M1.6 Acesso direto sem login</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Estando deslogado, cole na URL: <code>/dashboard</code> (após o domínio)</li>
+<li><input disabled="" type="checkbox"> <strong>Esperado:</strong> redireciona para <code>/login</code>. NÃO deve mostrar Dashboard.</li>
+</ul>
+<hr>
+<h2>MÓDULO 2 — Gestão (Plantas, Usuários, Colaboradores)</h2>
+<blockquote>
+<p>Aqui você prepara os dados de teste para os módulos seguintes.</p>
+</blockquote>
+<h3>M2.1 Listar plantas existentes</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Logado como admin, vá em Gestão → Plantas</li>
+<li><input disabled="" type="checkbox"> <strong>Esperado:</strong> lista com pelo menos 3 plantas (Planta IN Teste, Planta IND
+Teste, Planta IN Teste 2)</li>
+<li><input disabled="" type="checkbox"> Cada linha mostra: nome, código SIF, tipo, status ativo/inativo</li>
+<li><input disabled="" type="checkbox"> Filtros e busca disponíveis no topo</li>
+</ul>
+<h3>M2.2 Criar planta nova</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Clique em &quot;Nova Planta&quot;</li>
+<li><input disabled="" type="checkbox"> Preencha:<ul>
+<li>Nome: <code>Planta QA Nilza</code></li>
+<li>SIF: <code>9999</code></li>
+<li>Tipo: Frigorífico</li>
+<li>Divisão: IN</li>
+<li>Espécies: marque &quot;bovino&quot; e &quot;ave&quot;</li>
+<li>Endereço: rua/cidade/estado/CEP (qualquer endereço real)</li>
+<li>Contato: telefone, email</li>
+<li>Deixe &quot;Planta Externa&quot; desmarcado</li>
+</ul>
+</li>
+<li><input disabled="" type="checkbox"> Clique em &quot;Salvar&quot;</li>
+<li><input disabled="" type="checkbox"> <strong>Esperado:</strong> redireciona para lista; planta aparece como &quot;Ativa&quot;</li>
+</ul>
+<h3>M2.3 Editar planta</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Na lista, clique na planta <code>Planta QA Nilza</code></li>
+<li><input disabled="" type="checkbox"> Mude o nome para <code>Planta QA Nilza (editada)</code></li>
+<li><input disabled="" type="checkbox"> Salve</li>
+<li><input disabled="" type="checkbox"> <strong>Esperado:</strong> retorna à lista com o novo nome</li>
+</ul>
+<h3>M2.4 Criar planta externa</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Nova Planta</li>
+<li><input disabled="" type="checkbox"> Preencha:<ul>
+<li>Nome: <code>Planta Externa QA</code></li>
+<li>SIF: <code>8888</code></li>
+<li>Tipo: Frigorífico</li>
+<li>Divisão: IN</li>
+<li>Marque a flag &quot;Planta Externa&quot; (ou similar)</li>
+<li>Certificadora: <code>Outra Cert Halal Inc.</code></li>
+<li>Número do certificado externo: <code>EXT-001</code></li>
+<li>Data emissão: data atual menos 1 mês</li>
+<li>Data expiração: data atual mais 1 ano</li>
+<li>Upload de um PDF qualquer (≤10 MB) — pode ser qualquer PDF</li>
+</ul>
+</li>
+<li><input disabled="" type="checkbox"> Salvar</li>
+<li><input disabled="" type="checkbox"> <strong>Esperado:</strong> planta salva. Na lista, deve aparecer com algum indicador
+visual de &quot;Externa&quot; (badge ou ícone diferente).</li>
+</ul>
+<h3>M2.5 Criar usuários de teste</h3>
+<p>Você vai criar 5 perfis de teste com <strong>seus próprios emails</strong> (ou aliases).
+Use uma convenção como <code>nilza+sup@ecohalal.com.br</code>, <code>nilza+ctrl@...</code>, etc.
+(Gmail e a maioria dos provedores aceitam o <code>+xxx</code> como sufixo no mesmo
+inbox.)</p>
+<p>Em <strong>Gestão → Usuários → Novo Usuário</strong>, crie:</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Nome</th>
+<th>Email</th>
+<th>Role</th>
+<th>Divisão</th>
+<th>extraPlantAccess</th>
+<th>isManager</th>
+<th>Senha</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>nilza-sup-IN</td>
+<td>(email seu sup-IN)</td>
+<td>supervisor</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td><code>QA@2026</code></td>
+</tr>
+<tr>
+<td>2</td>
+<td>nilza-sup-IND</td>
+<td>(email seu sup-IND)</td>
+<td>supervisor</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td><code>QA@2026</code></td>
+</tr>
+<tr>
+<td>3</td>
+<td>nilza-ctrl-IN</td>
+<td>(email seu ctrl-IN)</td>
+<td>controlador</td>
+<td>IN</td>
+<td>—</td>
+<td>false</td>
+<td><code>QA@2026</code></td>
+</tr>
+<tr>
+<td>4</td>
+<td>nilza-ctrl-IND</td>
+<td>(email seu ctrl-IND)</td>
+<td>controlador</td>
+<td>IND</td>
+<td>marcar 1 planta IN</td>
+<td>false</td>
+<td><code>QA@2026</code></td>
+</tr>
+<tr>
+<td>5</td>
+<td>nilza-gestor</td>
+<td>(email seu gestor)</td>
+<td>controlador</td>
+<td>IN</td>
+<td>—</td>
+<td><strong>true</strong></td>
+<td><code>QA@2026</code></td>
+</tr>
+</tbody></table>
+<ul>
+<li><input disabled="" type="checkbox"> Usuário 1 criado — campo &quot;Divisão&quot; não aparece (correto, supervisor não tem)</li>
+<li><input disabled="" type="checkbox"> Usuário 2 criado</li>
+<li><input disabled="" type="checkbox"> Usuário 3 criado — campo &quot;Divisão&quot; aparece como obrigatório para role=controlador</li>
+<li><input disabled="" type="checkbox"> Usuário 4 criado — multiselect &quot;Acesso Extra a Plantas&quot; aparece</li>
+<li><input disabled="" type="checkbox"> Usuário 5 criado — checkbox &quot;Gestor de Controladoria&quot; aparece e foi marcado</li>
+</ul>
+<h3>M2.6 Validação de email duplicado</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Tente criar mais um usuário com o email do usuário 1</li>
+<li><input disabled="" type="checkbox"> <strong>Esperado:</strong> erro claro &quot;Email já cadastrado&quot; (ou similar). NÃO deve dar
+erro 500.</li>
+</ul>
+<h3>M2.7 Validação de senha fraca</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Tente criar um usuário com senha <code>123</code></li>
+<li><input disabled="" type="checkbox"> <strong>Esperado:</strong> erro de validação na hora, antes de enviar.</li>
+</ul>
+<h3>M2.8 Inativar / reativar usuário</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Na lista de usuários, edite o usuário 1</li>
+<li><input disabled="" type="checkbox"> Desmarque &quot;Ativo&quot; → salve</li>
+<li><input disabled="" type="checkbox"> Faça logout e tente entrar como esse usuário inativo</li>
+<li><input disabled="" type="checkbox"> <strong>Esperado:</strong> login negado com mensagem clara (pode ser &quot;Usuário inativo&quot;
+ou &quot;Email ou senha inválidos&quot; — o importante é não permitir login)</li>
+<li><input disabled="" type="checkbox"> Volte como admin, reative o usuário, faça login com ele</li>
+<li><input disabled="" type="checkbox"> <strong>Esperado:</strong> entra normalmente</li>
+</ul>
+<h3>M2.9 Colaboradores (carregadores, supervisores externos, etc.)</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Vá em Gestão → Colaboradores</li>
+<li><input disabled="" type="checkbox"> Liste, deve haver alguns ou estar vazia</li>
+<li><input disabled="" type="checkbox"> Clique em &quot;Novo Colaborador&quot;</li>
+<li><input disabled="" type="checkbox"> Preencha: nome, documento (CPF/CNPJ), função, planta</li>
+<li><input disabled="" type="checkbox"> Salve</li>
+<li><input disabled="" type="checkbox"> <strong>Esperado:</strong> colaborador aparece na lista, vinculado à planta escolhida</li>
+</ul>
+<h3>M2.10 Remoção / desativação de colaborador</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Edite o colaborador criado</li>
+<li><input disabled="" type="checkbox"> Marque como inativo (ou exclua, se houver opção)</li>
+<li><input disabled="" type="checkbox"> Salve</li>
+<li><input disabled="" type="checkbox"> <strong>Esperado:</strong> sai da lista de ativos</li>
+</ul>
+<hr>
+<h2>MÓDULO 3 — Abate (FM 7.1.4)</h2>
+<blockquote>
+<p>Relatório de abate é o coração do sistema. Tem duas variantes: bovinos
+(FM 7.1.4.2) e aves (FM 7.1.4.1). Os campos mudam conforme a espécie.</p>
+</blockquote>
+<h3>M3.1 Listar abates</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Logado como admin, vá em In Natura → Abate</li>
+<li><input disabled="" type="checkbox"> <strong>Esperado:</strong> lista (pode estar vazia ou ter alguns abates anteriores)</li>
+<li><input disabled="" type="checkbox"> Filtros disponíveis: planta, status, período, espécie</li>
+</ul>
+<h3>M3.2 Criar abate BOVINO como supervisor</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Faça logout do admin</li>
+<li><input disabled="" type="checkbox"> Login como <code>nilza-sup-IN</code></li>
+<li><input disabled="" type="checkbox"> Vá em In Natura → Abate → clique em &quot;Novo Relatório&quot;</li>
+<li><input disabled="" type="checkbox"> Preencha:<ul>
+<li>Planta: <code>Planta QA Nilza (editada)</code> — só plantas tipo abatedouro/frigorífico aparecem</li>
+<li>Espécie: <strong>bovino</strong></li>
+<li>Data: hoje</li>
+<li>Hora início e fim do abate</li>
+<li>Número de animais abatidos</li>
+<li>Aterramento (data e horário)</li>
+<li>Lote: gerar lote automaticamente (ou digite manualmente)</li>
+<li>Degolador (slaughtererName e doc) — <strong>deve aparecer</strong></li>
+<li>Insensibilização (Bovino — FM 7.1.4.2) — Pressão aplicada, Animal vivo, Sem lesões nos 2 horários</li>
+<li>Avaliação geral</li>
+<li>Avaliação das câmaras de resfriamento</li>
+<li>Verificações checklist (todas C/NC)</li>
+<li>Observações</li>
+</ul>
+</li>
+<li><input disabled="" type="checkbox"> Clique em &quot;Salvar Rascunho&quot;</li>
+<li><input disabled="" type="checkbox"> <strong>Esperado:</strong> salva, redireciona para a tela do relatório com status
+&quot;rascunho&quot;</li>
+</ul>
+<h3>M3.3 Editar rascunho</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Mude qualquer campo (ex.: observações)</li>
+<li><input disabled="" type="checkbox"> Salve novamente</li>
+<li><input disabled="" type="checkbox"> <strong>Esperado:</strong> atualiza sem criar novo relatório</li>
+</ul>
+<h3>M3.4 Assinar abate</h3>
+<ul>
+<li><input disabled="" type="checkbox"> No mesmo relatório, clique em &quot;Assinar&quot;</li>
+<li><input disabled="" type="checkbox"> Confirme no diálogo de assinatura</li>
+<li><input disabled="" type="checkbox"> <strong>Esperado:</strong> status muda para &quot;assinado&quot;, aparece &quot;Assinado por
+nilza-sup-IN&quot; no topo, com hash da assinatura</li>
+</ul>
+<h3>M3.5 Após assinatura, edição bloqueada</h3>
+<ul>
+<li><input disabled="" type="checkbox"> <strong>Esperado:</strong> todos os campos ficam read-only. Botão &quot;Salvar&quot; não aparece.</li>
+<li><input disabled="" type="checkbox"> Botão &quot;Imprimir PDF&quot; aparece (verificar)</li>
+</ul>
+<h3>M3.6 Gerar PDF de abate bovino</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Clique em &quot;Imprimir PDF&quot;</li>
+<li><input disabled="" type="checkbox"> <strong>Esperado:</strong> baixa arquivo <code>abate-XX-XXXX.pdf</code></li>
+<li><input disabled="" type="checkbox"> Abra o PDF</li>
+<li><input disabled="" type="checkbox"> <strong>Confirmar no PDF:</strong><ul>
+<li>Cabeçalho com logo + número do relatório (formato <code>AB-SIFXXXX/AAAA/NNNNN</code>)</li>
+<li>Dados da planta (nome, SIF, endereço)</li>
+<li>Espécie: bovino</li>
+<li>Seção &quot;Degolador&quot; com nome e documento — <strong>deve aparecer</strong></li>
+<li>Seção Insensibilização: tabela com Pressão / Animal vivo / Sem lesões</li>
+<li>Checklist de verificações</li>
+<li>Assinatura: nome do supervisor, data/hora, hash</li>
+</ul>
+</li>
+</ul>
+<h3>M3.7 Criar abate AVE como supervisor</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Volte para a lista de abate</li>
+<li><input disabled="" type="checkbox"> &quot;Novo Relatório&quot;</li>
+<li><input disabled="" type="checkbox"> Planta: a mesma planta criada (ela tem ave e bovino)</li>
+<li><input disabled="" type="checkbox"> Espécie: <strong>ave</strong></li>
+<li><input disabled="" type="checkbox"> Data, hora, número de animais (ex.: 50.000)</li>
+<li><input disabled="" type="checkbox"> Aterramento</li>
+<li><input disabled="" type="checkbox"> <strong>Importante:</strong> seção &quot;Degolador&quot; NÃO deve aparecer (campos
+slaughtererName/slaughtererDoc ocultos)</li>
+<li><input disabled="" type="checkbox"> Insensibilização (Aves — FM 7.1.4.1) deve aparecer com:<ul>
+<li>Horário 1: Amperagem, Voltagem, Frequência, Tempo cuba, Vel. linha</li>
+<li>Horário 2: idem</li>
+<li>Tempo de retorno - Horário 1 e Horário 2</li>
+<li><strong>Conferir:</strong> todos os campos vazios têm placeholder no formato <code>Ex: 0,30</code>,
+<code>Ex: 40</code>, <code>Ex: 400</code>, <code>Ex: 7</code>, <code>Ex: 6000</code>, <code>Ex: 60</code> (cinza claro, não
+parecem valores reais)</li>
+</ul>
+</li>
+<li><input disabled="" type="checkbox"> Preencha todos os campos</li>
+<li><input disabled="" type="checkbox"> Verifica seção Checklist — deve incluir item &quot;Tasmya&quot; (tradição halal do
+degolador, mesmo sem identificação individual)</li>
+<li><input disabled="" type="checkbox"> Salvar rascunho → Assinar</li>
+<li><input disabled="" type="checkbox"> Gerar PDF</li>
+<li><input disabled="" type="checkbox"> <strong>Confirmar no PDF:</strong><ul>
+<li>Espécie: ave</li>
+<li>Seção Degolador AUSENTE</li>
+<li>Tabela Insensibilização AVES com os 5 campos</li>
+<li>Checklist com item Tasmya</li>
+</ul>
+</li>
+</ul>
+<h3>M3.8 Tentar criar abate sem campos obrigatórios</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Novo relatório, deixe campos obrigatórios em branco (planta, espécie,
+data)</li>
+<li><input disabled="" type="checkbox"> Clique em Salvar</li>
+<li><input disabled="" type="checkbox"> <strong>Esperado:</strong> validação clara antes de enviar OU mensagem de erro do
+backend. NÃO deve dar erro 500 nem tela em branco.</li>
+</ul>
+<h3>M3.9 Filtrar e buscar abates</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Volte para In Natura → Abate (logado como admin)</li>
+<li><input disabled="" type="checkbox"> Filtre por planta → só relatórios dessa planta aparecem</li>
+<li><input disabled="" type="checkbox"> Filtre por status &quot;assinado&quot; → só os assinados</li>
+<li><input disabled="" type="checkbox"> Filtre por período → só os da data</li>
+<li><input disabled="" type="checkbox"> Limpe filtros → todos voltam</li>
+</ul>
+<h3>M3.10 Reabrir relatório rejeitado (testado no Módulo 9)</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Esse cenário será testado quando rodarmos o Módulo 9 (Controladoria).
+Pular aqui.</li>
+</ul>
+<hr>
+<h2>MÓDULO 4 — Produção</h2>
+<blockquote>
+<p>Cobre 10 tipos diferentes: Desossa, Fabricação, Tripas, Fracionamento,
+Couro, Mucosa, Heparina Bruta, Heparina Purificação, Raspa/Aparas, Gelatina.
+Cada tipo tem campos específicos.</p>
+</blockquote>
+<h3>M4.1 Lista de produção</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Login como <code>nilza-sup-IN</code></li>
+<li><input disabled="" type="checkbox"> Vá em In Natura → Desossa</li>
+<li><input disabled="" type="checkbox"> <strong>Esperado:</strong> lista filtrada por <code>productionType=desossa</code></li>
+<li><input disabled="" type="checkbox"> Sidebar destaca &quot;Desossa&quot;</li>
+</ul>
+<h3>M4.2 Criar relatório de Desossa</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Clique em &quot;Novo Relatório&quot;</li>
+<li><input disabled="" type="checkbox"> Preencha:<ul>
+<li>Planta: alguma planta tipo <code>processamento</code> (se não houver, criar uma em
+Gestão → Plantas; ou aceitar erro de &quot;nenhuma planta disponível&quot; e
+reportar)</li>
+<li>Tipo: Desossa (deve estar pré-selecionado se acessou via &quot;Desossa&quot;)</li>
+<li>Data, hora</li>
+<li>Planta de origem da carcaça (selecione uma das suas plantas — pode ser
+a <code>Planta Externa QA</code> para validar o caminho de planta externa)</li>
+<li>Cortes produzidos (adicionar pelo menos 1)</li>
+<li>Rendimento (%)</li>
+<li>Temperaturas (entrada/saída)</li>
+<li>Lote</li>
+<li>Checklist</li>
+<li>Observações</li>
+</ul>
+</li>
+<li><input disabled="" type="checkbox"> Salvar Rascunho</li>
+<li><input disabled="" type="checkbox"> Assinar</li>
+<li><input disabled="" type="checkbox"> Imprimir PDF</li>
+<li><input disabled="" type="checkbox"> <strong>No PDF, confirmar:</strong><ul>
+<li>Tipo: Desossa</li>
+<li>Planta origem com nome + SIF</li>
+<li>Se origem é Planta Externa: nome da certificadora externa visível</li>
+<li>Tabela de cortes e rendimento</li>
+</ul>
+</li>
+</ul>
+<h3>M4.3 Criar relatório de Fabricação (Industrializados)</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Sidebar → Industrializados → Fabricação → Novo Relatório</li>
+<li><input disabled="" type="checkbox"> Preencha conforme campos do form. Lote, planta processamento, etc.</li>
+<li><input disabled="" type="checkbox"> Salvar Rascunho → Assinar → PDF</li>
+</ul>
+<h3>M4.4 Criar relatório de Tripas</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Industrializados → Tripas → Novo Relatório</li>
+<li><input disabled="" type="checkbox"> Mesmo fluxo</li>
+</ul>
+<h3>M4.5 Criar relatório de Fracionamento</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Industrializados → Fracionamento → Novo Relatório</li>
+<li><input disabled="" type="checkbox"> Mesmo fluxo</li>
+</ul>
+<h3>M4.6 Criar relatório de Couro (Subproduto)</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Subprodutos → Couro → Novo Relatório</li>
+<li><input disabled="" type="checkbox"> Preencha campos específicos de Couro (pode incluir wet blue, salgado, etc.)</li>
+<li><input disabled="" type="checkbox"> Salvar → Assinar → PDF</li>
+</ul>
+<h3>M4.7 Criar relatório de Mucosa</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Subprodutos → Mucosa → Novo Relatório</li>
+<li><input disabled="" type="checkbox"> Mesmo fluxo</li>
+</ul>
+<h3>M4.8 Criar relatório de Heparina Bruta</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Subprodutos → Heparina Bruta → Novo Relatório</li>
+<li><input disabled="" type="checkbox"> Mesmo fluxo</li>
+</ul>
+<h3>M4.9 Criar relatório de Heparina Purificação</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Subprodutos → Heparina Purif. → Novo Relatório</li>
+<li><input disabled="" type="checkbox"> Mesmo fluxo</li>
+</ul>
+<h3>M4.10 Criar relatório de Raspa/Aparas</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Subprodutos → Raspa/Aparas → Novo Relatório</li>
+<li><input disabled="" type="checkbox"> Mesmo fluxo</li>
+</ul>
+<h3>M4.11 Criar relatório de Gelatina</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Subprodutos → Gelatina → Novo Relatório</li>
+<li><input disabled="" type="checkbox"> Mesmo fluxo</li>
+</ul>
+<h3>M4.12 Editar rascunho de produção</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Em qualquer relatório acima ainda em rascunho, edite e salve novamente</li>
+<li><input disabled="" type="checkbox"> <strong>Esperado:</strong> atualização sem duplicar</li>
+</ul>
+<h3>M4.13 Tentar criar produção sem planta obrigatória</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Novo relatório, deixe planta vazia</li>
+<li><input disabled="" type="checkbox"> <strong>Esperado:</strong> validação bloqueia envio</li>
+</ul>
+<hr>
+<h2>MÓDULO 5 — Embarque</h2>
+<blockquote>
+<p>10 subtipos de embarque, todos no mesmo form com <code>Tipo de Embarque</code> variando:
+Exportação, Venda Mercado Interno, Transferência, Transf. In Natura,
+Emb. Exp. Industrializados, Venda Industrializados, Transf. Industrializados,
+Venda Subprodutos, Transf. Subprodutos, Transf. Genérica, Venda Couro.</p>
+</blockquote>
+<h3>M5.1 Criar Embarque Exportação</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Login como <code>nilza-sup-IN</code></li>
+<li><input disabled="" type="checkbox"> In Natura → Emb. Exportação → Novo Relatório</li>
+<li><input disabled="" type="checkbox"> <strong>Importante (auto-popular Origem):</strong><ul>
+<li>Selecione a planta primeiro</li>
+<li>Verifique que os campos &quot;Abatedouro / Frigorífico&quot; e &quot;Endereço de
+Carregamento&quot; foram preenchidos automaticamente com dados da planta</li>
+<li>Se a planta for tipo <code>processamento</code>, o campo populado será &quot;Unidade de
+Produção&quot;</li>
+</ul>
+</li>
+<li><input disabled="" type="checkbox"> Preencha:<ul>
+<li>Tipo Embarque: Exportação</li>
+<li>Data de carregamento</li>
+<li>Nº Série Relatório Halal</li>
+<li>Exportador / Importador</li>
+<li>Transporte: tipo (terrestre/aéreo/marítimo), veículo/placa, container, lacre</li>
+<li>Porto de Embarque / Porto de Destino / País de Destino</li>
+<li>Nº do Pedido / Nº CSI</li>
+<li>Adicionar pelo menos 1 produto (tabela de Produtos)</li>
+<li>Checklist de Verificações</li>
+<li>Observações</li>
+</ul>
+</li>
+<li><input disabled="" type="checkbox"> Salvar Rascunho → Assinar → Imprimir PDF</li>
+<li><input disabled="" type="checkbox"> <strong>No PDF, confirmar:</strong><ul>
+<li>Nº de série (formato <code>EM-SIFXXXX/AAAA/NNNNN</code>)</li>
+<li>Exportador + Importador + Portos + País destino</li>
+<li>Tabela de produtos com lote, código, validade</li>
+<li>Checklist</li>
+<li>Assinatura</li>
+</ul>
+</li>
+</ul>
+<h3>M5.2 Criar Venda Mercado Interno</h3>
+<ul>
+<li><input disabled="" type="checkbox"> In Natura → Venda Merc. Int. → Novo Relatório</li>
+<li><input disabled="" type="checkbox"> Preencha (foco em campos brasileiros: vendedor, cliente, endereço destino)</li>
+<li><input disabled="" type="checkbox"> Salvar → Assinar → PDF</li>
+</ul>
+<h3>M5.3 Criar Transferência</h3>
+<ul>
+<li><input disabled="" type="checkbox"> In Natura → Transferência → Novo Relatório</li>
+<li><input disabled="" type="checkbox"> <strong>Validar que ambos campos Origem e Destino aparecem</strong> (origem auto-populada,
+destino digitado)</li>
+<li><input disabled="" type="checkbox"> Salvar → Assinar → PDF mostra ambos endereços</li>
+</ul>
+<h3>M5.4 Criar Transferência In Natura</h3>
+<ul>
+<li><input disabled="" type="checkbox"> In Natura → Transf. In Natura → Novo Relatório</li>
+<li><input disabled="" type="checkbox"> Mesma validação de origem/destino</li>
+<li><input disabled="" type="checkbox"> Salvar → Assinar → PDF</li>
+</ul>
+<h3>M5.5 Embarque Industrializados</h3>
+<p>Repita o fluxo do M5.1 nos 3 subtipos abaixo:</p>
+<ul>
+<li><input disabled="" type="checkbox"> Industrializados → Emb. Export. Ind. → Novo Relatório → Salvar → Assinar → PDF</li>
+<li><input disabled="" type="checkbox"> Industrializados → Venda Ind. → Novo Relatório → Salvar → Assinar → PDF</li>
+<li><input disabled="" type="checkbox"> Industrializados → Transf. Ind. → Novo Relatório → Salvar → Assinar → PDF</li>
+</ul>
+<h3>M5.6 Embarque Subprodutos</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Subprodutos → Venda Subprod. → Novo → Salvar → Assinar → PDF</li>
+<li><input disabled="" type="checkbox"> Subprodutos → Transf. Subprod. → Novo → Salvar → Assinar → PDF</li>
+<li><input disabled="" type="checkbox"> Subprodutos → Transf. Genérica → Novo → Salvar → Assinar → PDF</li>
+<li><input disabled="" type="checkbox"> Subprodutos → Venda Couro → Novo → Salvar → Assinar → PDF</li>
+</ul>
+<h3>M5.7 Buscar certificado halal SysHalal</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Em qualquer relatório de embarque de tipo <code>transferencia_*</code> (rascunho),
+localize a seção/campo &quot;Certificado Halal&quot; (ou similar)</li>
+<li><input disabled="" type="checkbox"> Digite um número de certificado FAMBRAS real conhecido (pedir ao Renato
+um número válido)</li>
+<li><input disabled="" type="checkbox"> Clique em &quot;Buscar&quot;</li>
+<li><input disabled="" type="checkbox"> <strong>Esperado em ≤3s:</strong><ul>
+<li>Dados aparecem auto-preenchidos (validade, escopo, status)</li>
+<li>Badge &quot;Certificado FAMBRAS verificado&quot; (verde)</li>
+<li>Link para visualizar PDF</li>
+</ul>
+</li>
+<li><input disabled="" type="checkbox"> Clique no link do PDF → abre/baixa</li>
+<li><input disabled="" type="checkbox"> Limpe e digite <code>EXT-FAKE-12345</code></li>
+<li><input disabled="" type="checkbox"> Clique em Buscar</li>
+<li><input disabled="" type="checkbox"> <strong>Esperado:</strong> &quot;Certificado não encontrado&quot;, libera fallback de upload
+manual</li>
+</ul>
+<h3>M5.8 Anexar documentos em relatório</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Em rascunho de Venda ou Transferência, procure a seção &quot;Documentos
+Anexos&quot; (CSI, BL, etc.)</li>
+<li><input disabled="" type="checkbox"> Upload de um PDF qualquer ≤10 MB, categoria CSI</li>
+<li><input disabled="" type="checkbox"> <strong>Esperado:</strong> arquivo aparece na lista. Indicador de progresso durante o
+upload.</li>
+<li><input disabled="" type="checkbox"> Tente upload de arquivo &gt; 10 MB</li>
+<li><input disabled="" type="checkbox"> <strong>Esperado:</strong> erro claro com mensagem de tamanho</li>
+<li><input disabled="" type="checkbox"> Tente upload de arquivo <code>.exe</code></li>
+<li><input disabled="" type="checkbox"> <strong>Esperado:</strong> erro de tipo de arquivo</li>
+<li><input disabled="" type="checkbox"> Clique em download de um anexo</li>
+<li><input disabled="" type="checkbox"> <strong>Esperado:</strong> baixa via link temporário (S3 presigned URL)</li>
+<li><input disabled="" type="checkbox"> Assine o relatório</li>
+<li><input disabled="" type="checkbox"> <strong>Esperado:</strong> após assinatura, não é mais possível remover anexos</li>
+</ul>
+<h3>M5.9 Verificar serial único e crescente</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Crie 2 embarques de exportação em sequência na mesma planta</li>
+<li><input disabled="" type="checkbox"> <strong>Esperado:</strong> seriais consecutivos (<code>EM-SIFXXXX/AAAA/00001</code>, <code>00002</code>, …)</li>
+</ul>
+<h3>M5.10 Form de embarque sem planta</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Novo embarque sem selecionar planta → tente assinar</li>
+<li><input disabled="" type="checkbox"> <strong>Esperado:</strong> validação bloqueia</li>
+</ul>
+<hr>
+<h2>MÓDULO 6 — Inventário</h2>
+<h3>M6.1 Inventário de Carne Halal</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Login como <code>nilza-sup-IN</code> (ou admin se necessário)</li>
+<li><input disabled="" type="checkbox"> Sidebar → Inventário → Carne Halal</li>
+<li><input disabled="" type="checkbox"> <strong>Esperado:</strong> lista de recebimentos (pode estar vazia)</li>
+</ul>
+<h3>M6.2 Novo recebimento de carne</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Clique em &quot;Novo Recebimento&quot;</li>
+<li><input disabled="" type="checkbox"> Preencha:<ul>
+<li>Planta receptora (a sua)</li>
+<li>Data de recebimento</li>
+<li>Fornecedor / Planta origem</li>
+<li><strong>Campo HalalCertField</strong> — número de certificado halal</li>
+<li>Digite um cert FAMBRAS real → Buscar → preenche automaticamente</li>
+<li>Produto recebido (descrição, código)</li>
+<li>Quantidade, unidade, lote, validade</li>
+<li>Documento fiscal anexo</li>
+</ul>
+</li>
+<li><input disabled="" type="checkbox"> Salvar</li>
+<li><input disabled="" type="checkbox"> <strong>Esperado:</strong> entra na lista</li>
+</ul>
+<h3>M6.3 Lançamento de uso de carne recebida</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Na lista, abra um recebimento</li>
+<li><input disabled="" type="checkbox"> Clique em &quot;Usar&quot; ou &quot;Lançamento de Uso&quot;</li>
+<li><input disabled="" type="checkbox"> Lance saída parcial (ex.: 100 kg de 500 kg recebidos)</li>
+<li><input disabled="" type="checkbox"> Salvar</li>
+<li><input disabled="" type="checkbox"> <strong>Esperado:</strong> saldo atualizado (500 - 100 = 400)</li>
+<li><input disabled="" type="checkbox"> Tente lançar saída maior que saldo (ex.: 500 sobre 400)</li>
+<li><input disabled="" type="checkbox"> <strong>Esperado:</strong> validação bloqueia</li>
+</ul>
+<h3>M6.4 Inventário de Lotes de Produção</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Sidebar → Inventário → Lotes de Produção</li>
+<li><input disabled="" type="checkbox"> <strong>Esperado:</strong> lista de lotes</li>
+</ul>
+<h3>M6.5 Novo lote de produção</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Clique em &quot;Novo Lote&quot;</li>
+<li><input disabled="" type="checkbox"> Preencha lote, produto, quantidade, planta, data produção, validade</li>
+<li><input disabled="" type="checkbox"> <strong>HalalCertField</strong> se aplicável — busca FAMBRAS</li>
+<li><input disabled="" type="checkbox"> Salvar</li>
+<li><input disabled="" type="checkbox"> <strong>Esperado:</strong> entra na lista</li>
+</ul>
+<h3>M6.6 Transferência de lote</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Em um lote existente, clique em &quot;Transferir&quot;</li>
+<li><input disabled="" type="checkbox"> Selecione planta destino, quantidade</li>
+<li><input disabled="" type="checkbox"> Salvar</li>
+<li><input disabled="" type="checkbox"> <strong>Esperado:</strong> movimentação registrada, saldo da planta origem reduz e
+da planta destino aumenta</li>
+</ul>
+<h3>M6.7 Rotulagem</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Sidebar → Inventário → Rotulagem</li>
+<li><input disabled="" type="checkbox"> <strong>Esperado:</strong> página de rotulagem (pode estar em desenvolvimento — anote
+o que estiver disponível)</li>
+</ul>
+<h3>M6.8 Dashboard de Inventário (admin)</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Login como admin</li>
+<li><input disabled="" type="checkbox"> Sidebar → Inventário → Dashboard Inv. (só aparece se for admin/coordenador)</li>
+<li><input disabled="" type="checkbox"> <strong>Esperado:</strong> painel com indicadores de estoque, movimentações,
+vencimentos</li>
+</ul>
+<hr>
+<h2>MÓDULO 7 — Não-Conformidades (NCs)</h2>
+<h3>M7.1 Lista de NCs</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Sidebar → Não-Conformidades</li>
+<li><input disabled="" type="checkbox"> <strong>Esperado:</strong> lista (pode estar vazia)</li>
+</ul>
+<h3>M7.2 Nova NC</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Clique em &quot;Nova NC&quot;</li>
+<li><input disabled="" type="checkbox"> Preencha:<ul>
+<li>Tipo de relatório (Abate / Produção / Embarque)</li>
+<li>Relatório associado (selecionar um dos já criados)</li>
+<li>Descrição da NC</li>
+<li>Severidade (alta/média/baixa)</li>
+<li>Ação corretiva proposta</li>
+<li>Responsável</li>
+<li>Data limite</li>
+</ul>
+</li>
+<li><input disabled="" type="checkbox"> Salvar</li>
+<li><input disabled="" type="checkbox"> <strong>Esperado:</strong> NC aparece na lista vinculada ao relatório</li>
+</ul>
+<h3>M7.3 Atualizar NC</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Abra a NC criada</li>
+<li><input disabled="" type="checkbox"> Marque como &quot;Em tratamento&quot; → salve</li>
+<li><input disabled="" type="checkbox"> <strong>Esperado:</strong> status atualiza</li>
+<li><input disabled="" type="checkbox"> Marque como &quot;Resolvida&quot; com data e descrição da resolução</li>
+<li><input disabled="" type="checkbox"> <strong>Esperado:</strong> status final</li>
+</ul>
+<h3>M7.4 NC sem relatório associado</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Tente criar NC sem selecionar relatório</li>
+<li><input disabled="" type="checkbox"> <strong>Esperado:</strong> validação bloqueia (NC sempre tem relatório-pai)</li>
+</ul>
+<hr>
+<h2>MÓDULO 8 — Escalas (Schedules)</h2>
+<h3>M8.1 Lista de escalas</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Sidebar → Escalas</li>
+<li><input disabled="" type="checkbox"> <strong>Esperado:</strong> lista de escalas registradas</li>
+</ul>
+<h3>M8.2 Nova escala</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Clique em &quot;Nova Escala&quot;</li>
+<li><input disabled="" type="checkbox"> Preencha:<ul>
+<li>Período (data início/fim)</li>
+<li>Planta</li>
+<li>Turno</li>
+<li>Supervisor responsável</li>
+<li>Colaboradores escalados (multiselect)</li>
+<li>Tipo (Abate / Produção / Embarque)</li>
+</ul>
+</li>
+<li><input disabled="" type="checkbox"> Salvar</li>
+<li><input disabled="" type="checkbox"> <strong>Esperado:</strong> entra na lista</li>
+</ul>
+<h3>M8.3 Escala futura vs passada</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Conferir se há filtro/separação visual entre escalas futuras e passadas</li>
+<li><input disabled="" type="checkbox"> <strong>Esperado:</strong> comportamento claro (pode ser cor, tab, ou filtro)</li>
+</ul>
+<hr>
+<h2>MÓDULO 9 — Controladoria (Duplo Check)</h2>
+<blockquote>
+<p>Fluxo de aprovação. Supervisor assina → Controlador analisa → Aprova ou
+Rejeita. Se rejeitar, supervisor reabre e re-assina.</p>
+</blockquote>
+<h3>M9.1 Sidebar mostra &quot;Controladoria&quot; apenas para controlador</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Login como admin → sidebar <strong>não</strong> deve mostrar item &quot;Controladoria&quot;</li>
+<li><input disabled="" type="checkbox"> Logout, login como <code>nilza-ctrl-IN</code></li>
+<li><input disabled="" type="checkbox"> <strong>Esperado:</strong> sidebar mostra &quot;Controladoria&quot;</li>
+<li><input disabled="" type="checkbox"> Clique → abre dashboard de controladoria</li>
+</ul>
+<h3>M9.2 Dashboard de Controladoria</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Como <code>nilza-ctrl-IN</code>, no Controladoria, conferir:<ul>
+<li>KPIs no topo: &quot;Na fila&quot;, &quot;Em análise (Meus)&quot;, &quot;Aprovados hoje&quot;,
+&quot;Rejeitados hoje&quot;</li>
+<li>Tabs ou seções: Fila Pendente / Meus em Análise / Concluídos</li>
+<li>Filtros por tipo de relatório, planta, período</li>
+</ul>
+</li>
+</ul>
+<h3>M9.3 Segmentação IN/IND</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Como sup-IN, crie um abate na sua planta IN → assine</li>
+<li><input disabled="" type="checkbox"> Como sup-IND, crie um abate em planta IND → assine</li>
+<li><input disabled="" type="checkbox"> Logue como <code>nilza-ctrl-IN</code> → Controladoria</li>
+<li><input disabled="" type="checkbox"> <strong>Esperado:</strong> vê o relatório IN, <strong>não</strong> vê o relatório IND</li>
+<li><input disabled="" type="checkbox"> Logue como <code>nilza-ctrl-IND</code> (que tem extraPlantAccess em planta IN)</li>
+<li><input disabled="" type="checkbox"> <strong>Esperado:</strong> vê o relatório IND <strong>e também</strong> o IN</li>
+<li><input disabled="" type="checkbox"> Logue como <code>nilza-gestor</code> (isManager=true)</li>
+<li><input disabled="" type="checkbox"> <strong>Esperado:</strong> vê ambos</li>
+</ul>
+<h3>M9.4 Controlador NÃO pode criar relatório</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Como <code>nilza-ctrl-IN</code>, vá em In Natura → Abate</li>
+<li><input disabled="" type="checkbox"> <strong>Esperado:</strong> botão &quot;Novo Relatório&quot; NÃO aparece (controlador não cria)</li>
+<li><input disabled="" type="checkbox"> Abra um relatório existente</li>
+<li><input disabled="" type="checkbox"> <strong>Esperado:</strong> todos os campos read-only, sem botão &quot;Salvar&quot;</li>
+</ul>
+<h3>M9.5 Fluxo: Assumir → Aprovar</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Como <code>nilza-ctrl-IN</code>, Dashboard → aba &quot;Fila&quot;</li>
+<li><input disabled="" type="checkbox"> Clique no relatório assinado pelo sup → botão [Assumir para Análise]</li>
+<li><input disabled="" type="checkbox"> <strong>Esperado:</strong> sai da fila, vai para &quot;Meus&quot;, status muda para &quot;em análise
+por nilza-ctrl-IN&quot;</li>
+<li><input disabled="" type="checkbox"> Clique [Aprovar]</li>
+<li><input disabled="" type="checkbox"> <strong>Esperado:</strong> status muda para <code>aprovado</code> (badge verde forte)</li>
+</ul>
+<h3>M9.6 Fluxo: Assumir → Rejeitar</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Como sup-IN, crie outro abate → assine</li>
+<li><input disabled="" type="checkbox"> Como <code>nilza-ctrl-IN</code>, assuma o relatório → clique [Rejeitar]</li>
+<li><input disabled="" type="checkbox"> <strong>Esperado:</strong> modal exige motivo (texto). Tente confirmar vazio →
+bloqueia.</li>
+<li><input disabled="" type="checkbox"> Preencha motivo &quot;teste rejeição QA&quot; → confirmar</li>
+<li><input disabled="" type="checkbox"> <strong>Esperado:</strong> status <code>rejeitado</code> (badge vermelho)</li>
+</ul>
+<h3>M9.7 Supervisor vê rejeição e reabre</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Logue como sup-IN (autor do relatório rejeitado)</li>
+<li><input disabled="" type="checkbox"> Abra o relatório</li>
+<li><input disabled="" type="checkbox"> <strong>Esperado:</strong><ul>
+<li>Banner no topo &quot;Relatório devolvido pela Controladoria&quot;</li>
+<li>Motivo da rejeição visível (&quot;teste rejeição QA&quot;)</li>
+<li>Botão [Reabrir para Edição] disponível</li>
+</ul>
+</li>
+<li><input disabled="" type="checkbox"> Clique [Reabrir] → status volta para <code>rascunho</code></li>
+<li><input disabled="" type="checkbox"> Edite qualquer campo → re-assine</li>
+<li><input disabled="" type="checkbox"> <strong>Esperado:</strong> status <code>assinado</code>, retorna para fila do controlador</li>
+</ul>
+<h3>M9.8 Histórico de transições (statusHistory)</h3>
+<ul>
+<li><input disabled="" type="checkbox"> No relatório do M9.7, expanda &quot;Histórico&quot; ou &quot;StatusHistory&quot;</li>
+<li><input disabled="" type="checkbox"> <strong>Esperado:</strong> linha do tempo com TODAS as transições:<ul>
+<li>rascunho → assinado (sup, timestamp)</li>
+<li>assinado → em análise (ctrl, timestamp)</li>
+<li>em análise → rejeitado (ctrl, com motivo)</li>
+<li>rejeitado → rascunho (sup, ao reabrir)</li>
+<li>rascunho → assinado (sup, re-assinatura)</li>
+</ul>
+</li>
+</ul>
+<h3>M9.9 Gestor reatribui análise</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Como sup-IND, crie um relatório → assine</li>
+<li><input disabled="" type="checkbox"> Como <code>nilza-ctrl-IND</code>, assuma (não aprove)</li>
+<li><input disabled="" type="checkbox"> Logue como <code>nilza-gestor</code></li>
+<li><input disabled="" type="checkbox"> No dashboard, encontre o relatório em análise por ctrl-IND</li>
+<li><input disabled="" type="checkbox"> Clique [Reatribuir] → selecione outro controlador</li>
+<li><input disabled="" type="checkbox"> <strong>Esperado:</strong> assignedToId muda, statusHistory registra &quot;reassigned&quot;</li>
+</ul>
+<h3>M9.10 Aging visual (cores)</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Na fila do dashboard, conferir cores:<ul>
+<li>Verde: relatório criado há &lt; 24h</li>
+<li>Amarelo: 24-48h</li>
+<li>Vermelho: &gt; 48h</li>
+</ul>
+</li>
+<li><input disabled="" type="checkbox"> Se não houver relatórios antigos, pular ou anotar como &quot;não testável
+sem dados antigos&quot;</li>
+</ul>
+<h3>M9.11 KPIs batem com os números</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Conferir que o card &quot;Aprovados hoje&quot; tem o número de aprovações feitas
+no dia</li>
+<li><input disabled="" type="checkbox"> Mesmo para Rejeitados, Na fila, Em análise</li>
+</ul>
+<h3>M9.12 Filtros da Controladoria</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Tente filtrar por &quot;Todos os tipos&quot; → veja se retorna todos</li>
+<li><input disabled="" type="checkbox"> Tente filtrar só por &quot;Abate&quot; → só abates</li>
+<li><input disabled="" type="checkbox"> Tente filtrar por planta específica → só dessa planta</li>
+</ul>
+<hr>
+<h2>MÓDULO 10 — Notificações</h2>
+<h3>M10.1 Notificação in-app: ao assinar</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Como sup-IN, assine um relatório novo</li>
+<li><input disabled="" type="checkbox"> Em outra aba (ou janela anônima), logue como <code>nilza-ctrl-IN</code></li>
+<li><input disabled="" type="checkbox"> <strong>Esperado:</strong> sino 🔔 no header com badge mostrando contagem ≥1</li>
+<li><input disabled="" type="checkbox"> Clique no sino → dropdown abre</li>
+<li><input disabled="" type="checkbox"> <strong>Esperado:</strong> notificação &quot;Relatório aguardando aprovação&quot; aparece</li>
+<li><input disabled="" type="checkbox"> Clique na notificação</li>
+<li><input disabled="" type="checkbox"> <strong>Esperado:</strong> navega direto para o relatório</li>
+</ul>
+<h3>M10.2 Notificação in-app: ao aprovar</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Como ctrl-IN, assuma e aprove um relatório do sup-IN</li>
+<li><input disabled="" type="checkbox"> Logue como sup-IN</li>
+<li><input disabled="" type="checkbox"> <strong>Esperado:</strong> notificação &quot;Relatório aprovado&quot; no sino</li>
+</ul>
+<h3>M10.3 Notificação in-app: ao rejeitar</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Como sup-IN, assine novo relatório</li>
+<li><input disabled="" type="checkbox"> Como ctrl-IN, assuma e rejeite com motivo &quot;teste email QA&quot;</li>
+<li><input disabled="" type="checkbox"> Logue como sup-IN</li>
+<li><input disabled="" type="checkbox"> <strong>Esperado:</strong> notificação &quot;Relatório rejeitado&quot; no sino</li>
+</ul>
+<h3>M10.4 Email de rejeição (SES)</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Continuando do M10.3, confira a caixa de entrada do email do sup-IN
+(incluindo spam)</li>
+<li><input disabled="" type="checkbox"> <strong>Esperado em ≤2 min:</strong> email de <code>noreply@...</code> com:<ul>
+<li>Assunto contendo número do relatório</li>
+<li>Conteúdo: serial, planta, motivo &quot;teste email QA&quot;</li>
+<li>Link clicável para o relatório</li>
+</ul>
+</li>
+<li><input disabled="" type="checkbox"> <strong>Atenção:</strong> se SES não configurado, este passo pode falhar. Reporte
+como bug e siga.</li>
+</ul>
+<h3>M10.5 Marcar como lida</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Dropdown do sino → clique em uma notificação</li>
+<li><input disabled="" type="checkbox"> <strong>Esperado:</strong> notificação some ou fica marcada como lida; contagem do
+badge reduz em 1</li>
+<li><input disabled="" type="checkbox"> Clique em &quot;Marcar todas como lidas&quot;</li>
+<li><input disabled="" type="checkbox"> <strong>Esperado:</strong> badge zera, lista esvazia</li>
+</ul>
+<h3>M10.6 Página completa de notificações</h3>
+<ul>
+<li><input disabled="" type="checkbox"> No dropdown do sino, clique em &quot;Ver todas&quot;</li>
+<li><input disabled="" type="checkbox"> <strong>Esperado:</strong> abre página <code>/notifications</code> com lista completa de
+notificações (lidas e não lidas), com filtros</li>
+</ul>
+<hr>
+<h2>MÓDULO 11 — Dashboard e Analytics</h2>
+<h3>M11.1 Dashboard principal</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Sidebar → Dashboard</li>
+<li><input disabled="" type="checkbox"> <strong>Esperado:</strong> cards com KPIs gerais — total de relatórios do mês,
+pendentes na controladoria, NCs abertas, etc.</li>
+<li><input disabled="" type="checkbox"> Gráficos (Recharts) renderizam sem erro</li>
+</ul>
+<h3>M11.2 Analytics Overview</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Sidebar → Analytics</li>
+<li><input disabled="" type="checkbox"> <strong>Esperado:</strong> página com visão geral de todos os módulos analíticos</li>
+</ul>
+<h3>M11.3 Analytics — Abate</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Sidebar → Analytics → expandir (se for grupo) ou navegação direta</li>
+<li><input disabled="" type="checkbox"> Acesse <code>/analytics/slaughter</code></li>
+<li><input disabled="" type="checkbox"> <strong>Esperado:</strong> gráficos de abate (total animais, planta, espécie, período)</li>
+<li><input disabled="" type="checkbox"> Filtre por período → gráficos atualizam</li>
+</ul>
+<h3>M11.4 Analytics — Produção</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Acesse <code>/analytics/production</code></li>
+<li><input disabled="" type="checkbox"> <strong>Esperado:</strong> gráficos de produção (rendimento, tipos, cortes)</li>
+</ul>
+<h3>M11.5 Analytics — Embarque</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Acesse <code>/analytics/shipping</code></li>
+<li><input disabled="" type="checkbox"> <strong>Esperado:</strong> gráficos de embarque (volumes por destino, exportador,
+subtipo)</li>
+</ul>
+<h3>M11.6 Analytics — Não-Conformidades</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Acesse <code>/analytics/non-conformities</code></li>
+<li><input disabled="" type="checkbox"> <strong>Esperado:</strong> gráficos de NCs (status, severidade, tempo de resolução)</li>
+</ul>
+<h3>M11.7 Analytics — Supervisores</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Acesse <code>/analytics/supervisors</code></li>
+<li><input disabled="" type="checkbox"> <strong>Esperado:</strong> ranking/atividade dos supervisores (relatórios criados,
+taxa de aprovação, NCs geradas)</li>
+</ul>
+<h3>M11.8 Exportar / imprimir gráfico</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Se houver botão de export em qualquer gráfico, teste</li>
+<li><input disabled="" type="checkbox"> <strong>Esperado:</strong> baixa imagem ou PDF do gráfico (se a feature existir)</li>
+</ul>
+<hr>
+<h2>MÓDULO 12 — Lookup SysHalal Halal Cert</h2>
+<blockquote>
+<p>O SIH integra com o SysHalal (sistema externo de certificação FAMBRAS) para
+consultar certificados halal e validar a procedência. Testado em vários
+formulários (Recebimento de Carne, Lotes, Embarques).</p>
+</blockquote>
+<h3>M12.1 Lookup com certificado FAMBRAS válido</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Em qualquer form com HalalCertField (ex.: Inventário → Carne Halal →
+Novo Recebimento)</li>
+<li><input disabled="" type="checkbox"> Digite um número de certificado FAMBRAS REAL (peça ao Renato)</li>
+<li><input disabled="" type="checkbox"> Clique em &quot;Buscar&quot;</li>
+<li><input disabled="" type="checkbox"> <strong>Esperado em ≤3s:</strong><ul>
+<li>Campos preenchidos automaticamente: validade, escopo, status</li>
+<li>Badge verde &quot;Certificado FAMBRAS verificado&quot;</li>
+<li>Link para PDF do certificado</li>
+</ul>
+</li>
+</ul>
+<h3>M12.2 Visualizar PDF do certificado</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Clique no link do PDF</li>
+<li><input disabled="" type="checkbox"> <strong>Esperado:</strong> PDF abre em nova aba ou baixa</li>
+</ul>
+<h3>M12.3 Lookup com número inexistente</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Limpe e digite <code>EXT-FAKE-12345</code></li>
+<li><input disabled="" type="checkbox"> Clique em &quot;Buscar&quot;</li>
+<li><input disabled="" type="checkbox"> <strong>Esperado:</strong><ul>
+<li>Resposta &quot;Certificado não encontrado&quot;</li>
+<li>Interface oferece fallback: habilita upload manual + campos para preencher
+validade, número, etc.</li>
+</ul>
+</li>
+</ul>
+<h3>M12.4 Preencher cert externo manual (fallback)</h3>
+<ul>
+<li><input disabled="" type="checkbox"> No fallback, preencha:<ul>
+<li>Número: <code>EXT-FAKE-12345</code></li>
+<li>Validade: data futura</li>
+<li>Upload de PDF (qualquer)</li>
+</ul>
+</li>
+<li><input disabled="" type="checkbox"> Salve o relatório</li>
+<li><input disabled="" type="checkbox"> <strong>Esperado:</strong> salva com source = <code>manual</code></li>
+</ul>
+<h3>M12.5 Lookup em 3 forms diferentes</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Repita M12.1 em:<ul>
+<li>Inventário → Carne Halal → Novo Recebimento ✅ (já testado)</li>
+<li>Inventário → Lotes de Produção → Novo Lote</li>
+<li>Embarque tipo Transferência → seção Certificado Halal</li>
+</ul>
+</li>
+<li><input disabled="" type="checkbox"> <strong>Esperado:</strong> comportamento idêntico nos 3 lugares</li>
+</ul>
+<h3>M12.6 Comportamento com SysHalal indisponível</h3>
+<ul>
+<li><input disabled="" type="checkbox"> (Opcional, se conseguir simular indisponibilidade)</li>
+<li><input disabled="" type="checkbox"> <strong>Esperado:</strong> UI mostra erro amigável, libera fallback manual, formulário
+não trava</li>
+</ul>
+<hr>
+<h2>13. Anexo A — Como reportar bugs (resumo)</h2>
+<p>Para cada bug encontrado, preencher uma linha em planilha (Excel ou Google
+Sheets) com:</p>
+<table>
+<thead>
+<tr>
+<th>Coluna</th>
+<th>O que colocar</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Data</td>
+<td>data do teste</td>
+</tr>
+<tr>
+<td>Módulo + cenário</td>
+<td>ex.: M3.5</td>
+</tr>
+<tr>
+<td>Severidade</td>
+<td>🔴 Bloqueante / 🟠 Alta / 🟡 Média / 🟢 Baixa</td>
+</tr>
+<tr>
+<td>Descrição</td>
+<td>uma linha curta</td>
+</tr>
+<tr>
+<td>Passos para reproduzir</td>
+<td>numerados, claros</td>
+</tr>
+<tr>
+<td>Resultado esperado</td>
+<td>o que deveria ter acontecido</td>
+</tr>
+<tr>
+<td>Resultado obtido</td>
+<td>o que aconteceu</td>
+</tr>
+<tr>
+<td>URL</td>
+<td>URL completa onde quebrou</td>
+</tr>
+<tr>
+<td>Status HTTP</td>
+<td>(do DevTools Network)</td>
+</tr>
+<tr>
+<td>Mensagem de erro</td>
+<td>da UI e do console</td>
+</tr>
+<tr>
+<td>Screenshot</td>
+<td>nome do arquivo ou link</td>
+</tr>
+<tr>
+<td>Email do usuário usado</td>
+<td>qual perfil estava logado</td>
+</tr>
+</tbody></table>
+<h2>14. Anexo B — Severidades sugeridas</h2>
+<ul>
+<li>🔴 <strong>Bloqueante:</strong> impede uso do sistema (erro 500 ao logar, ao salvar
+relatório principal, ao acessar dashboard).</li>
+<li>🟠 <strong>Alta:</strong> funcionalidade não funciona mas tem workaround (botão sumiu,
+lista não atualiza, validação faltando).</li>
+<li>🟡 <strong>Média:</strong> UX ruim, dado errado mostrado, comportamento confuso.</li>
+<li>🟢 <strong>Baixa:</strong> cosmético (cor, espaçamento, texto típico).</li>
+</ul>
+<h2>15. Anexo C — Conclusão do teste</h2>
+<p>Ao terminar, mande ao Renato:</p>
+<ol>
+<li>Planilha com todos os bugs encontrados</li>
+<li>Estatística geral: X/Y cenários ✅, X/Y ❌, X/Y ⚠️</li>
+<li>Tempo total gasto no teste</li>
+<li>Avaliação geral subjetiva: &quot;Sistema usável&quot;, &quot;Precisa muitos ajustes&quot;,
+&quot;Funcional mas com fricções&quot;, etc.</li>
+<li>Sugestões de melhoria de UX que você notou e não cabiam em &quot;bug&quot;
+(ex.: textos confusos, fluxos longos, etiquetas mal nomeadas)</li>
+</ol>
+
+</body>
+</html>
