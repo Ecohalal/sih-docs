@@ -269,7 +269,7 @@
 <li>(B) enum <code>CertificateIssuanceMode</code> = <code>{workflow, manual}</code> <span class="badge badge-ok">OK</span></li>
 <li>(C) <code>_prisma_migrations</code>: hash real, finished_at preenchido, applied_steps_count=1 <span class="badge badge-ok">OK</span></li>
 </ul>
-<p><strong>Diferença vs SIH:</strong> AUTO_MIGRATE no ECS funcionou na primeira tentativa para <code>halalsphere-backend</code>. A dívida técnica de AUTO_MIGRATE quebrado é específica do <code>sih-backend</code>.</p>
+<p><strong>Diferença vs Supervisão Industrial Halal:</strong> AUTO_MIGRATE no ECS funcionou na primeira tentativa para <code>halalsphere-backend</code>. A dívida técnica de AUTO_MIGRATE quebrado é específica do <code>sih-backend</code>.</p>
 
 <h4>Dívida técnica conhecida (nova)</h4>
 <table>
@@ -291,7 +291,7 @@
 <h4>Impacto no resto do roadmap</h4>
 <ul>
 <li><strong>Seção 4.0 (Sprint imediata 12-18/mai)</strong>: substancialmente entregue. Falta apenas validação visual com FAMBRAS (15-17/mai), smoke pessoal e treinamento (18/mai) — não-código.</li>
-<li><strong>Seção 4.2 (GC — fechar Onda 1+)</strong>: service layer continua no plano para 3-4ª sem mai, sem ajustes.</li>
+<li><strong>Seção 4.2 (Gestão de Certificações — fechar Onda 1+)</strong>: service layer continua no plano para 3-4ª sem mai, sem ajustes.</li>
 <li><strong>Seção 6 (Dívida técnica)</strong>: adicionar entrada de Contracts (acima).</li>
 </ul>
 </section>
@@ -299,7 +299,7 @@
 <section id="sec-1">
 <h2>1. Arquitetura macro</h2>
 <pre class="diagram">┌─────────────────────────────────────────────────────────────────┐
-│                       GC (HalalSphere)                          │
+│                       Gestão de Certificações (HalalSphere)                          │
 │  Master de: CompanyGroup, Company, Plant, Certification,        │
 │  CertificationScope, MarketScope, Contract, Audit, Certificate. │
 │  Stack: NestJS 11 + Prisma 7 + Postgres + Redis + AWS           │
@@ -308,7 +308,7 @@
                │ REST API (token-based)       │ REST API
                │                              │
        ┌───────▼──────────┐          ┌───────▼─────────────────┐
-       │   SIH (Operação) │          │   SysHalal (Embarque)   │
+       │   Supervisão Industrial Halal (Operação) │          │   Sys Halal (Embarque)   │
        │  Lê Plant + Cert │          │  Lê Plant + Cert (s0)   │
        │  Próprio: relatos│          │  Próprio: BatchCert     │
        │  abate, prod,    │          │  emission SFDA          │
@@ -323,7 +323,7 @@
 
 <h4>Decisões arquiteturais persistidas em memória</h4>
 <ul>
-  <li><code>project_arquitetura_halal_ecosistema.md</code> — GC é master, SIH/SysHalal consumem.</li>
+  <li><code>project_arquitetura_halal_ecosistema.md</code> — Gestão de Certificações é master, Supervisão Industrial Halal/Sys Halal consumem.</li>
   <li><code>project_halalsphere_syshalal_coexistencia.md</code> — não fundir; coexistência com integração.</li>
   <li><code>project_conceito_grupo_categoria.md</code> — Grupo (holding) × Empresa (CNPJ) × Categoria (IN/IND).</li>
   <li><code>feedback_pricing_no_formula.md</code> — preço manual por contrato, sem fórmula global.</li>
@@ -359,7 +359,7 @@
 <section id="sec-3">
 <h2>3. Estado atual técnico (release tip)</h2>
 
-<h3>3.1 GC — halalsphere-backend + halalsphere-frontend</h3>
+<h3>3.1 Gestão de Certificações — halalsphere-backend + halalsphere-frontend</h3>
 <h4>Schema (banco)</h4>
 <ul>
   <li>76 modelos Prisma. Onda 1+ FAMBRAS — <strong>17 schema PRs entregues</strong> em mai/2026 (E, G-V). Pendente: nenhum item de schema.</li>
@@ -388,7 +388,7 @@
   <li><strong>Encoding <code>�</code></strong> em legalName/address.city quando dados via curl no Windows — validar antes de prod massiva.</li>
 </ul>
 
-<h3>3.2 SIH — sih-backend + sih-frontend</h3>
+<h3>3.2 Supervisão Industrial Halal — sih-backend + sih-frontend</h3>
 <p><strong>Reset prod 2026-05-11</strong> com backup <code>dump-db_ecohalal_sih-202605111435.sql</code>. Admin atual: <code>admin@sih.com</code>.</p>
 
 <h4>Schema (banco)</h4>
@@ -424,17 +424,17 @@
   <li>Ícone PWA <code>icon-192x192.png</code> não publicado no S3.</li>
 </ul>
 
-<h3>3.3 SysHalal — syshalal-api + syshalal-web</h3>
+<h3>3.3 Sys Halal — syshalal-api + syshalal-web</h3>
 <ul>
   <li>Em produção desde ago/2025. <strong>Sem alteração em curso.</strong></li>
-  <li>SIH consome <code>/certified*</code> via proxy (TASK-11/Sprint 5) — funcional.</li>
+  <li>Supervisão Industrial Halal consome <code>/certified*</code> via proxy (TASK-11/Sprint 5) — funcional.</li>
 </ul>
 </section>
 
 <section id="sec-4">
 <h2>4. Backlog por sistema (até jul/2026)</h2>
 
-<h3 style="color: var(--accent);">4.0 Sprint imediata 12-18/mai — Emissão manual de certificados com QR Code (GC) <span class="badge badge-warning">EM CURSO</span></h3>
+<h3 style="color: var(--accent);">4.0 Sprint imediata 12-18/mai — Emissão manual de certificados com QR Code (Gestão de Certificações) <span class="badge badge-warning">EM CURSO</span></h3>
 
 <p><strong>Compromisso externo:</strong> entregar à FAMBRAS até <strong>18/mai/2026</strong> uma tela que permita emitir novos certificados halal já com o <strong>QR Code novo</strong> e todos os gabaritos finalizados.</p>
 
@@ -480,7 +480,7 @@
 
 <p><strong>Ponte pós-julho:</strong> a tela <code>/qualidade/emissao-manual-certificado</code> permanece disponível como <strong>"emissão de exceção"</strong> após o go-live.</p>
 
-<h3>4.1 SIH — completar antes do go-live</h3>
+<h3>4.1 Supervisão Industrial Halal — completar antes do go-live</h3>
 
 <h4>Bloco A — bugs críticos (3ª semana mai)</h4>
 <ul>
@@ -505,7 +505,7 @@
 <ul>
   <li>Desossa bovinos (TASK-07) — campos específicos no <code>ProductionReportForm</code> + PDF.</li>
   <li>Plantas externas com certificadora não-FAMBRAS + upload de cert externo.</li>
-  <li>Cert SysHalal lookup (TASK-11) — <code>HalalCertField</code> em <code>MeatReceiptForm</code>/<code>BatchInventoryForm</code>/<code>ShippingReportForm</code> com fallback manual.</li>
+  <li>Cert Sys Halal lookup (TASK-11) — <code>HalalCertField</code> em <code>MeatReceiptForm</code>/<code>BatchInventoryForm</code>/<code>ShippingReportForm</code> com fallback manual.</li>
 </ul>
 
 <h4>Bloco D — IA POC (4ª semana jul / set)</h4>
@@ -514,7 +514,7 @@
   <li>Avaliar API MAPA para validação cruzada de SIF/CNPJ.</li>
 </ul>
 
-<h3>4.2 GC — fechar Onda 1+ + antecipar Onda 2</h3>
+<h3>4.2 Gestão de Certificações — fechar Onda 1+ + antecipar Onda 2</h3>
 
 <h4>Service layer Onda 1+ (3-4ª semana mai)</h4>
 <ul>
@@ -559,18 +559,27 @@
   <li>IA Matérias-primas básica (Onda 2 antecipada — 4ª sem jul).</li>
 </ul>
 
-<h3>4.3 SysHalal — congelado até ago/2026</h3>
+<h3>4.3 Sys Halal — congelado até ago/2026 <em>(exceto API v2, em paralelo)</em></h3>
 
-<h4>TASK-S0 — alinhamento com GC (ago)</h4>
+<h4>TASK-API-v2 — nova API de integração externa (mai-ago/2026, em paralelo)</h4>
 <ul>
-  <li>SysHalal deixa de ter cadastro próprio de Company/Plant; consome do GC via API.</li>
+  <li>A API atualmente usada por parceiros (despachantes, sistemas de clientes) e pelo importador interno de arquivos TXT empurra dados estruturados — detalhes de produto, datas de abate, datas de processamento — para campos genéricos de "descrição" e "informações adicionais", herança da versão anterior do sistema.</li>
+  <li>A base de dados <strong>já tem colunas segregadas</strong> para esses dados (refactor anterior). Falta a API e o importador de TXT evoluírem para popular as colunas corretas e devolver os campos estruturados no JSON de resposta.</li>
+  <li>Escopo: rewrite do controller de import + ajuste no parser de TXT + nova versão do schema OpenAPI da API externa (<code>/v2/...</code>) preservando <code>/v1/...</code> como deprecated.</li>
+  <li>Habilita certificados de embarque novos com rastreabilidade halal completa lote a lote, sem depender de regex/parsing de texto livre em "descrição".</li>
+  <li>Pode rodar em paralelo com TASK-S0 (consumo da Gestão de Certificações) porque toca módulos distintos.</li>
+</ul>
+
+<h4>TASK-S0 — alinhamento com Gestão de Certificações (ago)</h4>
+<ul>
+  <li>Sys Halal deixa de ter cadastro próprio de Company/Plant; consome da Gestão de Certificações via API.</li>
   <li>Migração de dados: mapear <code>syshalal.empresa.cnpj</code> → <code>gc.Plant.taxId</code>.</li>
-  <li>Backfill com pasta IFF-FAR (caso já mapeado pela ETL B.1 do GC).</li>
+  <li>Backfill com pasta IFF-FAR (caso já mapeado pela ETL B.1 da Gestão de Certificações).</li>
   <li>Roll-back plan: dual-write até confiança total.</li>
 </ul>
 
 <h4>Porta 4 — validação cruzada (ago)</h4>
-<p>Endpoint <code>GET /cross-validation/:lotId</code> no SIH retornando:</p>
+<p>Endpoint <code>GET /cross-validation/:lotId</code> na Supervisão Industrial Halal retornando:</p>
 <pre>{
   "plantSif": "...",
   "supervisorHalal": "...",
@@ -578,7 +587,7 @@
   "ncsInPeriod": [...],
   "volumeMatch": true/false
 }</pre>
-<p>SysHalal chama antes de assinar cert de embarque; bloqueia emissão se evidência operacional inconsistente.</p>
+<p>Sys Halal chama antes de assinar cert de embarque; bloqueia emissão se evidência operacional inconsistente.</p>
 </section>
 
 <section id="sec-5">
@@ -586,26 +595,26 @@
 
 <h3>5.1 Hoje</h3>
 <ul>
-  <li><strong>SIH → SysHalal</strong>: <code>GET /certified</code> proxy do SIH para consultar cert halal por número (TASK-11). Auth via API key.</li>
-  <li><strong>SIH ↔ GC</strong>: nenhuma.</li>
-  <li><strong>SysHalal ↔ GC</strong>: nenhuma.</li>
+  <li><strong>Supervisão Industrial Halal → Sys Halal</strong>: <code>GET /certified</code> proxy da Supervisão Industrial Halal para consultar cert halal por número (TASK-11). Auth via API key.</li>
+  <li><strong>Supervisão Industrial Halal ↔ Gestão de Certificações</strong>: nenhuma.</li>
+  <li><strong>Sys Halal ↔ Gestão de Certificações</strong>: nenhuma.</li>
 </ul>
 
 <h3>5.2 Jun-jul (antes do go-live)</h3>
 <ul>
-  <li><strong>SIH ← GC</strong> (opcional): SIH consome <code>Plant</code> do GC em vez de cadastrar próprio. Read-only inicial, com fallback ao local.</li>
+  <li><strong>Supervisão Industrial Halal ← Gestão de Certificações</strong> (opcional): Supervisão Industrial Halal consome <code>Plant</code> da Gestão de Certificações em vez de cadastrar próprio. Read-only inicial, com fallback ao local.</li>
 </ul>
 
 <h3>5.3 Ago-set (porta 4 ativa)</h3>
 <ul>
-  <li><strong>SysHalal → GC</strong>: <code>/companies/:taxId</code>, <code>/plants/:id</code>, <code>/certifications/active</code>.</li>
-  <li><strong>SysHalal → SIH</strong>: <code>/operational-evidence/:lotId</code>.</li>
-  <li><strong>GC → SIH</strong> (eventual): re-emissão de cert dispara webhook que invalida cache SIH.</li>
+  <li><strong>Sys Halal → Gestão de Certificações</strong>: <code>/companies/:taxId</code>, <code>/plants/:id</code>, <code>/certifications/active</code>.</li>
+  <li><strong>Sys Halal → Supervisão Industrial Halal</strong>: <code>/operational-evidence/:lotId</code>.</li>
+  <li><strong>Gestão de Certificações → Supervisão Industrial Halal</strong> (eventual): re-emissão de cert dispara webhook que invalida cache Supervisão Industrial Halal.</li>
 </ul>
 
 <h3>5.4 Cross-cutting</h3>
 <ul>
-  <li><strong>Email</strong>: AWS SES com domínio Ecohalal. Bug aberto: SES não chega no SIH — validar verified senders e env vars.</li>
+  <li><strong>Email</strong>: AWS SES com domínio Ecohalal. Bug aberto: SES não chega na Supervisão Industrial Halal — validar verified senders e env vars.</li>
   <li><strong>Storage</strong>: AWS S3 com presigned URLs.</li>
   <li><strong>Notificações</strong>: in-app via WebSocket/Polling; email via SES; <strong>WhatsApp</strong> pendente decisão de canal.</li>
   <li><strong>Auth</strong>: cada sistema tem JWT próprio. Possível SSO no futuro (Onda 3).</li>
@@ -617,13 +626,13 @@
 <table>
 <thead><tr><th>Item</th><th>Sistema</th><th>Severidade</th><th>Quando atacar</th></tr></thead>
 <tbody>
-<tr><td>AUTO_MIGRATE ECS não roda</td><td>SIH (e provavelmente GC)</td><td><span class="badge badge-critical">Alta</span></td><td>4ª sem mai</td></tr>
-<tr><td>Cache PWA stale agressivo</td><td>SIH</td><td><span class="badge badge-critical">Alta UX</span></td><td>4ª sem mai</td></tr>
-<tr><td>Encoding <code>�</code> em campos com acento via curl</td><td>GC</td><td><span class="badge badge-warning">Média</span></td><td>1ª sem jun</td></tr>
-<tr><td>Schema legado coexistindo (5 lugares)</td><td>GC</td><td><span class="badge badge-ok">Baixa</span></td><td>Pós Onda 1+ UI migrada</td></tr>
-<tr><td><code>companyGroup</code> renomeado para <code>division</code>; verificar código antigo</td><td>SIH</td><td><span class="badge badge-ok">Baixa</span></td><td>Auditoria pós-smoke</td></tr>
-<tr><td><code>Company.validationStatus</code> divergência front × prisma</td><td>GC</td><td><span class="badge badge-warning">Média</span></td><td>3ª sem mai</td></tr>
-<tr><td>43 mocks de testes pendentes Fase 2 SIH</td><td>SIH</td><td><span class="badge badge-ok">Baixa</span></td><td>Backlog</td></tr>
+<tr><td>AUTO_MIGRATE ECS não roda</td><td>Supervisão Industrial Halal (e provavelmente Gestão de Certificações)</td><td><span class="badge badge-critical">Alta</span></td><td>4ª sem mai</td></tr>
+<tr><td>Cache PWA stale agressivo</td><td>Supervisão Industrial Halal</td><td><span class="badge badge-critical">Alta UX</span></td><td>4ª sem mai</td></tr>
+<tr><td>Encoding <code>�</code> em campos com acento via curl</td><td>Gestão de Certificações</td><td><span class="badge badge-warning">Média</span></td><td>1ª sem jun</td></tr>
+<tr><td>Schema legado coexistindo (5 lugares)</td><td>Gestão de Certificações</td><td><span class="badge badge-ok">Baixa</span></td><td>Pós Onda 1+ UI migrada</td></tr>
+<tr><td><code>companyGroup</code> renomeado para <code>division</code>; verificar código antigo</td><td>Supervisão Industrial Halal</td><td><span class="badge badge-ok">Baixa</span></td><td>Auditoria pós-smoke</td></tr>
+<tr><td><code>Company.validationStatus</code> divergência front × prisma</td><td>Gestão de Certificações</td><td><span class="badge badge-warning">Média</span></td><td>3ª sem mai</td></tr>
+<tr><td>43 mocks de testes pendentes Fase 2 Supervisão Industrial Halal</td><td>Supervisão Industrial Halal</td><td><span class="badge badge-ok">Baixa</span></td><td>Backlog</td></tr>
 </tbody>
 </table>
 </section>
@@ -692,10 +701,10 @@
 <ul>
   <li><strong>ROADMAP-DIRETORIA-2026-05-12.html</strong> — versão executiva (audiência: diretoria + FAMBRAS)</li>
   <li><strong>FAMBRAS-VISITA-1504-ONDA-1+.md</strong> — Onda 1+ detalhada</li>
-  <li><strong>SMOKE-TEST-2026-05-11-RESULTADOS.md</strong> — status SIH com bugs</li>
-  <li><strong>BRIEFING-PROXIMA-SESSAO-SMOKE-TEST.md</strong> — retomar smoke SIH</li>
+  <li><strong>SMOKE-TEST-2026-05-11-RESULTADOS.md</strong> — status Supervisão Industrial Halal com bugs</li>
+  <li><strong>BRIEFING-PROXIMA-SESSAO-SMOKE-TEST.md</strong> — retomar smoke Supervisão Industrial Halal</li>
   <li><strong>DECISOES-LINA-2026-05-09.md</strong> — respostas FAMBRAS</li>
-  <li><strong>CADASTRO-EMPRESA-PLANTA-NOVO-MODELO.md</strong> (halalsphere-docs) — design do refactor GC</li>
+  <li><strong>CADASTRO-EMPRESA-PLANTA-NOVO-MODELO.md</strong> (halalsphere-docs) — design do refactor Gestão de Certificações</li>
 </ul>
 </section>
 
