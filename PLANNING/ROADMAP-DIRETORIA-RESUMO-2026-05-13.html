@@ -37,10 +37,13 @@
     display: flex;
     justify-content: space-between;
     align-items: flex-end;
+    gap: 8pt;
     border-bottom: 2.5pt solid var(--primary);
     padding-bottom: 4pt;
     margin-bottom: 8pt;
   }
+  header > div:first-child { flex: 1; min-width: 0; }
+  header .meta { flex-shrink: 0; }
   header .title {
     font-size: 14pt;
     font-weight: 700;
@@ -160,6 +163,30 @@
       padding: 12mm 12mm;
       box-shadow: 0 2pt 8pt rgba(0,0,0,0.1);
     }
+  }
+
+  /* Print: força cores de fundo + evita quebrar linha da tabela no meio.
+     Sem isso, browsers (Chrome especialmente) desligam "background graphics"
+     por padrao e a tabela imprime sem as faixas coloridas, sem o header verde
+     e sem distincao entre os 4 blocos. */
+  @media print {
+    *,
+    *::before,
+    *::after {
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+      color-adjust: exact !important;
+    }
+    body { background: white; }
+    .page { padding: 0; }
+    table.matrix { font-size: 9pt; }
+    table.matrix th,
+    table.matrix td { padding: 4pt 6pt; }
+    table.matrix thead { display: table-header-group; }
+    table.matrix tfoot { display: table-footer-group; }
+    table.matrix tr { page-break-inside: avoid; break-inside: avoid; }
+    table.matrix tr.group-header { page-break-after: avoid; break-after: avoid; }
+    header, footer { page-break-inside: avoid; break-inside: avoid; }
   }
 </style>
 </head>
