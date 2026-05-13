@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Roadmap Ecohalal — Quadro Resumo Diretoria — 2026-05-13</title>
+<style>
+  @page {
+    size: A4 landscape;
+    margin: 8mm 10mm;
+  }
+  :root {
+    --primary: #0f5d4f;
+    --primary-light: #e6f2ef;
+    --accent: #c9882d;
+    --text: #1a1a1a;
+    --muted: #555;
+    --border: #c8c8c8;
+    --bg-done: #e6f2ef;
+    --bg-soon: #fff7e6;
+    --bg-future: #f3f3f3;
+    --bg-pinned: #fdf0ee;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    color: var(--text);
+    background: white;
+    font-size: 9.5pt;
+    line-height: 1.35;
+  }
+  .page {
+    width: 100%;
+    padding: 4mm 0;
+  }
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    border-bottom: 2.5pt solid var(--primary);
+    padding-bottom: 4pt;
+    margin-bottom: 8pt;
+  }
+  header .title {
+    font-size: 14pt;
+    font-weight: 700;
+    color: var(--primary);
+    line-height: 1.1;
+  }
+  header .subtitle {
+    font-size: 8.5pt;
+    color: var(--muted);
+    margin-top: 2pt;
+  }
+  header .meta {
+    text-align: right;
+    font-size: 7.5pt;
+    color: var(--muted);
+    line-height: 1.4;
+  }
+  header .meta strong { color: var(--text); }
+
+  table.matrix {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 8.5pt;
+  }
+  table.matrix th {
+    background: var(--primary);
+    color: white;
+    text-align: left;
+    padding: 4pt 6pt;
+    font-weight: 600;
+    font-size: 8pt;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  table.matrix td {
+    padding: 3.5pt 6pt;
+    border-bottom: 0.5pt solid var(--border);
+    vertical-align: top;
+  }
+  table.matrix tr.group-header td {
+    background: var(--primary-light);
+    color: var(--primary);
+    font-weight: 700;
+    font-size: 8.5pt;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    padding: 3pt 6pt;
+    border-top: 1pt solid var(--primary);
+    border-bottom: 1pt solid var(--primary);
+  }
+  table.matrix tr.row-done td { background: var(--bg-done); }
+  table.matrix tr.row-soon td { background: var(--bg-soon); }
+  table.matrix tr.row-future td { background: var(--bg-future); }
+  table.matrix tr.row-pinned td { background: var(--bg-pinned); }
+
+  table.matrix .name {
+    font-weight: 600;
+    color: var(--text);
+    width: 18%;
+  }
+  table.matrix .desc {
+    color: var(--text);
+    width: 42%;
+  }
+  table.matrix .who {
+    color: var(--muted);
+    width: 22%;
+    font-size: 8pt;
+  }
+  table.matrix .date {
+    width: 18%;
+    font-weight: 600;
+    text-align: right;
+    font-size: 8pt;
+    white-space: nowrap;
+  }
+  .date-done { color: #2e7d4f; }
+  .date-soon { color: #b76a00; }
+  .date-future { color: var(--muted); }
+  .date-pinned { color: #b8332a; font-weight: 700; }
+
+  footer {
+    margin-top: 8pt;
+    padding-top: 6pt;
+    border-top: 0.5pt solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 7pt;
+    color: var(--muted);
+  }
+  footer .legend {
+    display: flex;
+    gap: 10pt;
+    flex-wrap: wrap;
+  }
+  footer .legend span {
+    display: inline-flex;
+    align-items: center;
+    gap: 3pt;
+  }
+  footer .legend .swatch {
+    display: inline-block;
+    width: 8pt;
+    height: 8pt;
+    border-radius: 2pt;
+    border: 0.5pt solid var(--border);
+  }
+
+  @media screen {
+    body { background: #efeae0; padding: 12pt; }
+    .page {
+      background: white;
+      max-width: 297mm;
+      min-height: 210mm;
+      margin: 0 auto;
+      padding: 12mm 12mm;
+      box-shadow: 0 2pt 8pt rgba(0,0,0,0.1);
+    }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+<header>
+  <div>
+    <div class="title">Roadmap Ecossistema Halal Ecohalal</div>
+    <div class="subtitle">Quadro resumo para Diretoria · Sistemas, audiência e prazos</div>
+  </div>
+  <div class="meta">
+    <div><strong>Atualizado:</strong> 2026-05-13</div>
+    <div><strong>Horizonte:</strong> mai/2026 → mai/2027</div>
+    <div><strong>Marco principal:</strong> Go-live FAMBRAS em julho/2026</div>
+  </div>
+</header>
+
+<table class="matrix">
+  <thead>
+    <tr>
+      <th>Nome do produto</th>
+      <th>Descrição (o que faz)</th>
+      <th>Quem usa</th>
+      <th>Data de entrega</th>
+    </tr>
+  </thead>
+  <tbody>
+
+    <tr class="group-header"><td colspan="4">Em produção (entregue)</td></tr>
+
+    <tr class="row-done">
+      <td class="name">GC — Cadastro multi-país</td>
+      <td class="desc">Cadastro de Empresa e Planta com CNPJ/RUC/SIF/SIE/Establecimiento; suporte a 5 países (BR/AR/CO/PY/EC) e múltiplas normas (GSO, OIC/SMIIC).</td>
+      <td class="who">Analistas, gestores e clientes</td>
+      <td class="date date-done">mai/2026 ✓</td>
+    </tr>
+
+    <tr class="row-done">
+      <td class="name">GC — Modelo de dados FAMBRAS (Onda 1+)</td>
+      <td class="desc">17 entidades novas: mercados-destino, categorias industriais GSO/SMIIC, alteração de escopo (6 tipos), 4 tipos de certificado, subcontratação, marca própria/licenciada, auditoria multi-estágio.</td>
+      <td class="who">Sistema (base para todas as telas)</td>
+      <td class="date date-done">mai/2026 ✓</td>
+    </tr>
+
+    <tr class="row-done">
+      <td class="name">GC — Emissão Manual de Certificado</td>
+      <td class="desc">Tela que permite emitir certificado halal com o novo QR Code sem precisar passar pelo fluxo completo. Ponte até go-live de julho; depois fica como emissão de exceção.</td>
+      <td class="who">Equipe Qualidade FAMBRAS</td>
+      <td class="date date-done">13/mai/2026 ✓</td>
+    </tr>
+
+    <tr class="row-done">
+      <td class="name">GC — Catálogo de 15 selos de acreditadores</td>
+      <td class="desc">Selos integrados: GAC, ENAS, OIC/SMIIC, BPJPH (Indonésia), MUIS (Singapura), MS (Malásia), UAE, Saudi Halal Center, SASO, Qatar, Oman, Kuwait, IMANOR (Marrocos), Singapore Halal, Thailand.</td>
+      <td class="who">Sistema (renderização do PDF)</td>
+      <td class="date date-done">13/mai/2026 ✓</td>
+    </tr>
+
+    <tr class="row-done">
+      <td class="name">GC — Verificação pública de certificado (QR)</td>
+      <td class="desc">Página pública aberta (sem login) acessada via QR Code do PDF. Mostra status, validade, empresa, tipo de certificação. Mecanismo público de validação.</td>
+      <td class="who">Cliente, despachante, auditor externo, qualquer um com acesso ao QR</td>
+      <td class="date date-done">mai/2026 ✓</td>
+    </tr>
+
+    <tr class="row-done">
+      <td class="name">SIH — Controladoria com duplo check</td>
+      <td class="desc">Segmentação IN (in natura) / IND (industrializados), perfil Controladoria, workflow de aprovação/rejeição com motivo obrigatório, transferências com origem e destino, notificações in-app.</td>
+      <td class="who">Supervisores em campo + Controladoria FAMBRAS</td>
+      <td class="date date-done">mai/2026 ✓</td>
+    </tr>
+
+    <tr class="row-done">
+      <td class="name">SysHalal — Emissão de certificado de embarque</td>
+      <td class="desc">Sistema operacional para emitir certificado halal por lote/embarque; integração SFDA (Saudi Halal Center) e dados públicos.</td>
+      <td class="who">Despachantes + clientes</td>
+      <td class="date date-done">desde ago/2025 ✓</td>
+    </tr>
+
+    <tr class="group-header"><td colspan="4">Próximas entregas (maio–junho/2026)</td></tr>
+
+    <tr class="row-soon">
+      <td class="name">GC — Camada de serviço Onda 1+</td>
+      <td class="desc">Re-emissão automática de certificado em alteração de escopo, preço por contrato sobrescrevível, alertas de SLA reverso (30/15/7 dias antes da auditoria).</td>
+      <td class="who">Analistas, comercial, jurídico</td>
+      <td class="date date-soon">3-4ª semana mai/2026</td>
+    </tr>
+
+    <tr class="row-soon">
+      <td class="name">SIH — Sprint 5 (Desossa + cert externo)</td>
+      <td class="desc">Relatório de Desossa para bovinos, plantas externas com certificadora não-FAMBRAS, busca automática de certificado halal via API do SysHalal.</td>
+      <td class="who">Supervisores + Controladoria FAMBRAS</td>
+      <td class="date date-soon">mai-jun/2026</td>
+    </tr>
+
+    <tr class="row-soon">
+      <td class="name">GC — Wizard de solicitação (5 passos)</td>
+      <td class="desc">Cliente abre nova certificação por wizard ramificado por categoria; captura APPCC, subcontratação, marcas, escopo de produtos.</td>
+      <td class="who">Clientes Ecohalal</td>
+      <td class="date date-soon">1ª-2ª semana jun/2026</td>
+    </tr>
+
+    <tr class="row-soon">
+      <td class="name">GC — Hub de alteração de escopo</td>
+      <td class="desc">5 cards na linguagem do cliente cobrindo 6 tipos de mudança (novo produto, mudança de CNPJ, marca cliente, etc.) com aviso prévio de aditivo contratual.</td>
+      <td class="who">Clientes + analistas</td>
+      <td class="date date-soon">2ª-3ª semana jun/2026</td>
+    </tr>
+
+    <tr class="row-soon">
+      <td class="name">GC — FM 9.3 unificado (auditoria mobile)</td>
+      <td class="desc">Tela única para auditor executar auditoria em campo no celular; seções colapsáveis carimbadas com avatar e horário do autor.</td>
+      <td class="who">Auditores FAMBRAS em campo</td>
+      <td class="date date-soon">3ª-4ª semana jun/2026</td>
+    </tr>
+
+    <tr class="row-soon">
+      <td class="name">GC — Inbox do analista + Hub de docs IT 7.12</td>
+      <td class="desc">Fila inteligente do analista (FM 7.1.9, HAS, matérias-primas) + biblioteca permanente de documentos a serem enviados ao cliente.</td>
+      <td class="who">Analistas + Qualidade FAMBRAS</td>
+      <td class="date date-soon">4ª semana jun/2026</td>
+    </tr>
+
+    <tr class="row-soon">
+      <td class="name">GC — Catálogo de Laboratórios</td>
+      <td class="desc">7 labs aprovados FAMBRAS (EUROFINS, FOODCHAIN, CQA, INTECSO, SENAI, UNIANÁLISES, FREITAG) com tipos de análise permitidos por lab.</td>
+      <td class="who">Qualidade FAMBRAS (mantém) + clientes (leitura)</td>
+      <td class="date date-soon">1ª semana jun/2026</td>
+    </tr>
+
+    <tr class="row-pinned">
+      <td class="name">Treinamento FAMBRAS (Qualidade)</td>
+      <td class="desc">Sessão prática (1h) ensinando a operadora Qualidade FAMBRAS a usar a tela de emissão manual. Cobre os 4 gabaritos principais e o QR Code novo.</td>
+      <td class="who">FAMBRAS — equipe Qualidade</td>
+      <td class="date date-pinned">18/mai/2026</td>
+    </tr>
+
+    <tr class="row-pinned">
+      <td class="name">Validação visual com FAMBRAS</td>
+      <td class="desc">Janela combinada com Elaine (Qualidade FAMBRAS) para validação dos gabaritos PDF, QR Code, posicionamento dos selos.</td>
+      <td class="who">FAMBRAS + Ecohalal</td>
+      <td class="date date-pinned">15-17/mai/2026</td>
+    </tr>
+
+    <tr class="group-header"><td colspan="4">Go-live FAMBRAS — Julho/2026 (entrega-âncora)</td></tr>
+
+    <tr class="row-pinned">
+      <td class="name">GC + SIH em operação plena na FAMBRAS</td>
+      <td class="desc">Cliente FAMBRAS opera 100% no ecossistema: fluxo de certificação digital no GC + operação industrial diária no SIH. Marco contratual.</td>
+      <td class="who">FAMBRAS — todos os perfis (cliente, analista, gestão, supervisão, controladoria)</td>
+      <td class="date date-pinned">jul/2026</td>
+    </tr>
+
+    <tr class="row-soon">
+      <td class="name">GC — Editor de planilha MP (Airtable-like)</td>
+      <td class="desc">Editor inline de matérias-primas e fornecedores com importação de Excel e reconciliação visual. Fecha o ciclo de homologação.</td>
+      <td class="who">Clientes Ecohalal</td>
+      <td class="date date-soon">1ª-2ª semana jul/2026</td>
+    </tr>
+
+    <tr class="row-soon">
+      <td class="name">GC — Programa de Certificação (3 modos)</td>
+      <td class="desc">Painel-mãe da gestão com 3 visões: Executivo (KPIs, gráficos), Operacional (tabela densa) e por Colaborador (carga ponderada por complexidade).</td>
+      <td class="who">Gestores + Controladoria + analistas</td>
+      <td class="date date-soon">3ª-4ª semana jul/2026</td>
+    </tr>
+
+    <tr class="row-soon">
+      <td class="name">GC — IA para matérias-primas</td>
+      <td class="desc">Avaliação automática de criticidade, origem animal e espécie de matérias-primas via Claude API. Sai como rascunho para revisão do analista.</td>
+      <td class="who">Analistas FAMBRAS</td>
+      <td class="date date-soon">4ª semana jul/2026</td>
+    </tr>
+
+    <tr class="row-soon">
+      <td class="name">Migração de dados — caso piloto IFF</td>
+      <td class="desc">ETL da pasta do cliente IFF (caso real de alteração de escopo, IFF-FAR) para validar processo de migração de clientes legados.</td>
+      <td class="who">Ecohalal interno + FAMBRAS</td>
+      <td class="date date-soon">1ª semana jul/2026</td>
+    </tr>
+
+    <tr class="group-header"><td colspan="4">Pós Go-live — agosto/2026 em diante</td></tr>
+
+    <tr class="row-future">
+      <td class="name">SysHalal alinhado com GC</td>
+      <td class="desc">SysHalal passa a consumir Empresa, Planta e Certificado vigente direto do GC via API; deixa de manter cadastro próprio.</td>
+      <td class="who">Despachantes + clientes (transparente)</td>
+      <td class="date date-future">ago/2026</td>
+    </tr>
+
+    <tr class="row-future">
+      <td class="name">Validação Cruzada de 4 Portas (ativação)</td>
+      <td class="desc">SysHalal valida lote antes de emitir certificado de embarque consultando 4 fontes: empresa habilitada (GC), certificado vigente (GC), produto no escopo (GC) e evidência operacional no chão (SIH). Diferencial competitivo único.</td>
+      <td class="who">Sistema (transparente) — protege clientes e Ecohalal</td>
+      <td class="date date-future">ago-set/2026</td>
+    </tr>
+
+    <tr class="row-future">
+      <td class="name">SIH — POC de IA em documentos</td>
+      <td class="desc">Extração estruturada de dados de PDFs (certificados, CSI, BL, fatura) via Claude API; reduz digitação manual.</td>
+      <td class="who">Operadores SIH</td>
+      <td class="date date-future">jul-set/2026</td>
+    </tr>
+
+    <tr class="row-future">
+      <td class="name">GC — Onda 3 (HAS revisor + auditoria não-anunciada + imparcialidade)</td>
+      <td class="desc">Revisor de HAS em 2 estágios, workflow de auditoria não-anunciada (D-90/D-15/D-5), alerta de imparcialidade do auditor (3 anos consecutivos).</td>
+      <td class="who">Analistas + auditores + gestão de auditoria</td>
+      <td class="date date-future">out-dez/2026</td>
+    </tr>
+
+    <tr class="row-future">
+      <td class="name">Escala e expansão — Multi-tenant + API pública</td>
+      <td class="desc">Suporte a múltiplas certificadoras no GC com isolamento; integração com HAKSIS/SiHalal/MOIAT; API pública de validação cruzada como serviço.</td>
+      <td class="who">Outras certificadoras halal + parceiros</td>
+      <td class="date date-future">jan-mai/2027</td>
+    </tr>
+
+  </tbody>
+</table>
+
+<footer>
+  <div class="legend">
+    <span><span class="swatch" style="background: var(--bg-done);"></span> Em produção</span>
+    <span><span class="swatch" style="background: var(--bg-soon);"></span> Próximas entregas</span>
+    <span><span class="swatch" style="background: var(--bg-pinned);"></span> Marco datado</span>
+    <span><span class="swatch" style="background: var(--bg-future);"></span> Visão futura</span>
+  </div>
+  <div>Ecohalal Soluções · documento interno</div>
+</footer>
+
+</div>
+</body>
+</html>
