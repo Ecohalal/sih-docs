@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Roadmap Técnico — Ecossistema Halal Ecohalal — 2026-05-12</title>
+<style>
+  :root {
+    --primary: #0f5d4f;
+    --primary-light: #e6f2ef;
+    --accent: #c9882d;
+    --text: #1a1a1a;
+    --muted: #555;
+    --border: #d8d8d8;
+    --bg: #fafafa;
+    --card: #ffffff;
+    --critical: #b8332a;
+    --warning: #b76a00;
+    --ok: #2e7d4f;
+    --code-bg: #f5f4f0;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.55;
+    color: var(--text);
+    background: var(--bg);
+    margin: 0;
+    padding: 2rem 1rem;
+  }
+  .container { max-width: 1040px; margin: 0 auto; }
+  header.doc-header {
+    background: var(--card);
+    border-left: 5px solid var(--primary);
+    padding: 1.5rem 2rem;
+    margin-bottom: 2rem;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+  header.doc-header h1 {
+    margin: 0 0 0.5rem;
+    font-size: 1.55rem;
+    color: var(--primary);
+    font-weight: 600;
+  }
+  header.doc-header .meta {
+    color: var(--muted);
+    font-size: 0.92rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem 1.5rem;
+  }
+  header.doc-header .meta strong { color: var(--text); }
+  header.doc-header .audience-note {
+    margin-top: 0.6rem;
+    font-size: 0.85rem;
+    color: var(--accent);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  nav.toc {
+    background: var(--card);
+    padding: 1rem 1.5rem;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    margin-bottom: 2rem;
+    font-size: 0.93rem;
+  }
+  nav.toc h2 {
+    margin: 0 0 0.5rem;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--muted);
+    font-weight: 600;
+  }
+  nav.toc ol { margin: 0; padding-left: 1.5rem; }
+  nav.toc li { margin: 0.15rem 0; }
+  nav.toc a { color: var(--primary); text-decoration: none; }
+  nav.toc a:hover { text-decoration: underline; }
+  section {
+    background: var(--card);
+    padding: 1.5rem 2rem;
+    margin-bottom: 1.5rem;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+  }
+  h2 {
+    color: var(--primary);
+    border-bottom: 2px solid var(--primary-light);
+    padding-bottom: 0.4rem;
+    margin-top: 0;
+    font-size: 1.3rem;
+  }
+  h3 {
+    color: var(--text);
+    margin-top: 1.5rem;
+    font-size: 1.08rem;
+  }
+  h4 { font-size: 0.98rem; color: var(--muted); margin-bottom: 0.4rem; }
+  p { margin: 0.6rem 0; }
+  ul, ol { margin: 0.6rem 0; padding-left: 1.5rem; }
+  li { margin: 0.25rem 0; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+    font-size: 0.9rem;
+  }
+  th, td {
+    padding: 0.55rem 0.7rem;
+    text-align: left;
+    border: 1px solid var(--border);
+    vertical-align: top;
+  }
+  th {
+    background: var(--primary-light);
+    color: var(--primary);
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+  }
+  tr:nth-child(even) td { background: #f7f7f5; }
+  code {
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+    background: var(--code-bg);
+    padding: 0.1rem 0.35rem;
+    border-radius: 3px;
+    font-size: 0.85em;
+  }
+  pre {
+    background: #1f2933;
+    color: #e8e8e8;
+    padding: 1rem;
+    border-radius: 4px;
+    overflow-x: auto;
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+    font-size: 0.82rem;
+    line-height: 1.4;
+  }
+  pre.diagram {
+    background: var(--code-bg);
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+  .badge {
+    display: inline-block;
+    padding: 0.15rem 0.5rem;
+    border-radius: 3px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    white-space: nowrap;
+  }
+  .badge-critical { background: #fce4e2; color: var(--critical); }
+  .badge-warning { background: #fff0d6; color: var(--warning); }
+  .badge-ok { background: #e0f3e8; color: var(--ok); }
+  .badge-info { background: var(--primary-light); color: var(--primary); }
+  .callout {
+    border-left: 4px solid var(--accent);
+    background: #fdf7ec;
+    padding: 0.8rem 1rem;
+    margin: 1rem 0;
+    border-radius: 0 3px 3px 0;
+  }
+  .callout strong { color: var(--accent); }
+  .callout-info { border-left-color: var(--primary); background: var(--primary-light); }
+  .callout-info strong { color: var(--primary); }
+  blockquote {
+    border-left: 3px solid var(--border);
+    margin: 1rem 0;
+    padding: 0.3rem 1rem;
+    color: var(--muted);
+  }
+  footer.doc-footer {
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.85rem;
+    padding: 2rem 0 1rem;
+  }
+  @media print {
+    body { padding: 0; background: white; }
+    section, header.doc-header, nav.toc { box-shadow: none; border: none; padding: 0.5rem 0; }
+    nav.toc { page-break-after: always; }
+    section { page-break-inside: avoid; }
+    h2 { page-break-after: avoid; }
+    table { page-break-inside: avoid; font-size: 0.8rem; }
+    pre { page-break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+<header class="doc-header">
+  <h1>Roadmap Técnico — Ecossistema Halal Ecohalal</h1>
+  <div class="audience-note">Uso interno · Time técnico Ecohalal</div>
+  <div class="meta">
+    <span><strong>Publicação inicial:</strong> 2026-05-12 (manhã)</span>
+    <span><strong>Última atualização:</strong> 2026-05-12 (fim do dia)</span>
+    <span><strong>Horizonte:</strong> mai/2026 → mai/2027</span>
+    <span><strong>Âncora:</strong> jul/2026 (go-live FAMBRAS)</span>
+    <span><strong>Capacidade:</strong> 1 dev + IA generativa massiva</span>
+  </div>
+</header>
+
+<nav class="toc">
+  <h2>Índice</h2>
+  <ol>
+    <li><a href="#sec-0">Evolução desde a publicação inicial</a></li>
+    <li><a href="#sec-1">Arquitetura macro</a></li>
+    <li><a href="#sec-2">Stack por repo</a></li>
+    <li><a href="#sec-3">Estado atual técnico (release tip)</a></li>
+    <li><a href="#sec-4">Backlog por sistema (até jul/2026)</a></li>
+    <li><a href="#sec-5">Pontos de integração</a></li>
+    <li><a href="#sec-6">Dívida técnica conhecida</a></li>
+    <li><a href="#sec-7">Quality gates pré-deploy</a></li>
+    <li><a href="#sec-8">Riscos técnicos e mitigações</a></li>
+    <li><a href="#sec-9">Capacidade e ritmo (calibração realista)</a></li>
+    <li><a href="#sec-10">Anexos</a></li>
+  </ol>
+</nav>
+
+<section id="sec-0" style="border-left: 5px solid var(--accent);">
+<h2 style="color: var(--accent);">0. Evolução desde a publicação inicial</h2>
+<blockquote>Esta seção registra tudo que foi modificado no roadmap após a publicação inicial. Seções 1-10 abaixo continuam válidas exceto onde explicitamente atualizadas.</blockquote>
+
+<h3>2026-05-12 — Sprint emissão manual de certificado (C1-C8) entregue + S3 endurecido</h3>
+
+<h4>Entregáveis em produção (commits em <code>release</code>)</h4>
+<table>
+<thead><tr><th>ID</th><th>Repo</th><th>Commit(s)</th><th>Descrição</th></tr></thead>
+<tbody>
+<tr><td>C3</td><td><code>halalsphere-backend</code></td><td><code>cfabfda3..3e361b38</code></td><td>Schema <code>Certificate.issuanceMode = workflow | manual</code> + migration <code>20260512100000_add_certificate_issuance_mode</code>. AUTO_MIGRATE rodou normalmente em prod (confirmado via 3 queries SQL: coluna, enum, <code>_prisma_migrations</code>).</td></tr>
+<tr><td>C2</td><td><code>halalsphere-backend</code></td><td>(mesmo commit)</td><td><code>POST /certificates/manual-emit</code> com <code>@Roles('qualidade', 'admin')</code>. Transação atômica cria Certification synthetic + Scope + Brands + Products + Certificate + History. Reusa <code>CertificatePdfService.generateAndStore()</code> para PDF + QR.</td></tr>
+<tr><td>C1</td><td><code>halalsphere-frontend</code></td><td><code>14d62e2f..c68cfcbb</code></td><td>Página <code>/qualidade/emissao-manual-certificado</code> em 7 seções. RHF + zod + TanStack mutation. Success view com link PDF/QR/verify.</td></tr>
+<tr><td>C5</td><td><code>halalsphere-backend</code></td><td><code>3e361b38..3ef7c684</code></td><td>15 selos cortados de <code>logos.png</code> (1719×2675, 5×3 grid) via <code>scripts/crop-seals.ts</code> (sharp). Resolve TODOs históricos: enas, oic, kepkaban, muis, ms agora apontam para PNGs reais. <strong>Descoberta</strong>: o que parecia "Turkey/GIMDES" é na verdade o selo oficial <em>Halal Accreditation Agency</em> com texto "OIC/SMIIC 2:2019 ACCREDITED 2023-039". <code>ALL_SEALS_REGISTRY</code> exporta os 16 selos (FAMBRAS + 15). 9 novas variantes em <code>MARKET_VARIANT_CONFIGS</code>.</td></tr>
+<tr><td>C5</td><td><code>halalsphere-frontend</code></td><td><code>c68cfcbb..b2134e2d</code></td><td>Tela manual passa de 7 para 17 templates no dropdown de acreditação.</td></tr>
+<tr><td>C6</td><td>—</td><td>(já existia)</td><td><code>/verify/:certNumber</code> confirmado funcional.</td></tr>
+</tbody>
+</table>
+
+<h4>Hotfixes pós-deploy (mesmo dia, mesmo ciclo de release)</h4>
+<table>
+<thead><tr><th>ID</th><th>Repo</th><th>Commit</th><th>Descrição</th></tr></thead>
+<tbody>
+<tr><td>Hotfix-1</td><td><code>halalsphere-frontend</code></td><td><code>b2134e2d..92050efa</code></td><td>Sidebar + MobileMenu ganham link "Emitir Certificado (manual)" (ícone <code>FilePlus</code>) para role <code>qualidade</code> e admin.</td></tr>
+<tr><td>Hotfix-2</td><td><code>halalsphere-backend</code></td><td><code>3ef7c684..8437f6b0</code></td><td><strong>Bug S3 AccessDenied</strong>: bucket privado (correto) mas backend devolvia URL pública sem assinatura. Refactor: <code>uploadToS3</code> agora retorna <code>s3://bucket/key</code> (URI canônico, persistido no DB). Novo helper <code>presignS3Uri(stored, options)</code> gera presigned URL fresca (TTL 15min) a cada consumo. Aceita também URLs <code>https://...</code> legadas — sem migration de dados.</td></tr>
+<tr><td>Hotfix-3</td><td><code>halalsphere-backend</code></td><td><code>8437f6b0..87865853</code></td><td>Endpoint dedicado <strong><code>GET /certificates/:id/download-url?asset=pdf|qr</code></strong> retorna <code>{ url, expiresIn, filename }</code>. NÃO regenera o PDF — só o link. Idempotente. Resolve a dúvida do PO: "preciso poder baixar D+10, D+30, sem regerar o PDF".</td></tr>
+<tr><td>Hotfix-3</td><td><code>halalsphere-frontend</code></td><td><code>92050efa..1f45b716</code></td><td><code>certificateService.getDownloadUrl(id, asset)</code> + tela manual emission success view usa o novo endpoint.</td></tr>
+<tr><td>Hotfix-4</td><td><code>halalsphere-frontend</code></td><td><code>1f45b716..19a08f3b</code></td><td>Telas legadas <code>CertificationDetails.tsx</code> e <code>Certificate.tsx</code> migradas para o novo endpoint. Causa raiz: usavam <code>cert.pdfUrl</code> direto do banco como <code>href</code>.</td></tr>
+</tbody>
+</table>
+
+<h4>Decisões arquiteturais novas</h4>
+<ol>
+<li><strong>Armazenamento canônico em S3</strong>: <code>Certificate.pdfUrl</code> e <code>qrCodeUrl</code> no banco devem armazenar <strong>URI <code>s3://bucket/key</code></strong>, NUNCA URLs HTTP públicas. URLs HTTP geradas on-demand via <code>presignS3Uri()</code>.</li>
+<li><strong>Backward compat sem migration</strong>: <code>presignS3Uri()</code> aceita tanto <code>s3://...</code> quanto <code>https://bucket.s3.*.amazonaws.com/...</code> legadas. Sem UPDATE em massa.</li>
+<li><strong>PDF imutável, link presigned regenerado</strong>: <code>generateAndStore()</code> tem cache forte. Forçar regeneração requer <code>forceRegenerate: true</code> explícito.</li>
+<li><strong>TTL 15min</strong> (<code>expiresIn: 900</code>): suficiente para download imediato. Re-uso chama o endpoint dedicado.</li>
+<li><strong>Role gating de download</strong>: <code>GET /:id/download-url</code> aberto a praticamente todas as roles internas. Decisão consciente: certificado é documento oficial. Acesso público via QR Code → <code>/verify/:certNumber</code> (sem download).</li>
+</ol>
+
+<h4>Migration confirmada em prod (DBeaver, 2026-05-12 18:13Z)</h4>
+<ul>
+<li>(A) coluna <code>issuance_mode</code> existe (USER-DEFINED, default workflow, NOT NULL) <span class="badge badge-ok">OK</span></li>
+<li>(B) enum <code>CertificateIssuanceMode</code> = <code>{workflow, manual}</code> <span class="badge badge-ok">OK</span></li>
+<li>(C) <code>_prisma_migrations</code>: hash real, finished_at preenchido, applied_steps_count=1 <span class="badge badge-ok">OK</span></li>
+</ul>
+<p><strong>Diferença vs SIH:</strong> AUTO_MIGRATE no ECS funcionou na primeira tentativa para <code>halalsphere-backend</code>. A dívida técnica de AUTO_MIGRATE quebrado é específica do <code>sih-backend</code>.</p>
+
+<h4>Dívida técnica conhecida (nova)</h4>
+<table>
+<thead><tr><th>Item</th><th>Sistema</th><th>Severidade</th><th>Observação</th></tr></thead>
+<tbody>
+<tr><td><code>Contracts.pdfUrl</code> armazenado como URL HTTP direta em vez de <code>s3://</code> URI</td><td>backend + ContractList/Details/Management + CertificationDetails seção existingContract</td><td><span class="badge badge-warning">Média</span></td><td>Mesmo padrão de bug. Aplicar mesmo refactor: storage canônico s3:// + presignS3Uri. Backlog separado.</td></tr>
+<tr><td><code>manualEmit</code> response devolve <code>pdfUrl</code>/<code>qrCodeUrl</code> que expiram em 15min</td><td>backend</td><td><span class="badge badge-ok">Baixa</span></td><td>Hoje funciona porque o front usa o endpoint dedicado. Limpeza opcional: remover esses campos da response.</td></tr>
+<tr><td>Sem botão "Imprimir comprovante de emissão" no success view</td><td>frontend</td><td><span class="badge badge-ok">Baixa UX</span></td><td>Operadora pode querer recibo. Backlog.</td></tr>
+</tbody>
+</table>
+
+<h4>Memórias persistidas (Claude)</h4>
+<ul>
+<li><code>project_emissao_manual_certificado_18mai.md</code> — escopo C1-C8, baseline e ponte pós go-live.</li>
+<li><code>feedback_pdf_certificado_aberto.md</code> — PDF sem senha em definitivo (GAP-28 cancelado).</li>
+<li><code>feedback_no_presume_query_success.md</code> — não presumir resultado de queries pelo "deu resultado" informal do PO.</li>
+</ul>
+
+<h4>Impacto no resto do roadmap</h4>
+<ul>
+<li><strong>Seção 4.0 (Sprint imediata 12-18/mai)</strong>: substancialmente entregue. Falta apenas validação visual com FAMBRAS (15-17/mai), smoke pessoal e treinamento (18/mai) — não-código.</li>
+<li><strong>Seção 4.2 (GC — fechar Onda 1+)</strong>: service layer continua no plano para 3-4ª sem mai, sem ajustes.</li>
+<li><strong>Seção 6 (Dívida técnica)</strong>: adicionar entrada de Contracts (acima).</li>
+</ul>
+</section>
+
+<section id="sec-1">
+<h2>1. Arquitetura macro</h2>
+<pre class="diagram">┌─────────────────────────────────────────────────────────────────┐
+│                       GC (HalalSphere)                          │
+│  Master de: CompanyGroup, Company, Plant, Certification,        │
+│  CertificationScope, MarketScope, Contract, Audit, Certificate. │
+│  Stack: NestJS 11 + Prisma 7 + Postgres + Redis + AWS           │
+└──────────────┬──────────────────────────────┬───────────────────┘
+               │                              │
+               │ REST API (token-based)       │ REST API
+               │                              │
+       ┌───────▼──────────┐          ┌───────▼─────────────────┐
+       │   SIH (Operação) │          │   SysHalal (Embarque)   │
+       │  Lê Plant + Cert │          │  Lê Plant + Cert (s0)   │
+       │  Próprio: relatos│          │  Próprio: BatchCert     │
+       │  abate, prod,    │          │  emission SFDA          │
+       │  emb, NCs, inv   │          │                         │
+       │  Stack: NestJS+  │          │  Stack: NestJS legacy   │
+       │  Prisma+Postgres │          │  + Postgres             │
+       └────────┬─────────┘          └──────────┬──────────────┘
+                │                               │
+                │ /operational-evidence/:lot    │ /cross-validation
+                └──────────────►(porta 4)◄──────┘
+                          (out/2026)</pre>
+
+<h4>Decisões arquiteturais persistidas em memória</h4>
+<ul>
+  <li><code>project_arquitetura_halal_ecosistema.md</code> — GC é master, SIH/SysHalal consumem.</li>
+  <li><code>project_halalsphere_syshalal_coexistencia.md</code> — não fundir; coexistência com integração.</li>
+  <li><code>project_conceito_grupo_categoria.md</code> — Grupo (holding) × Empresa (CNPJ) × Categoria (IN/IND).</li>
+  <li><code>feedback_pricing_no_formula.md</code> — preço manual por contrato, sem fórmula global.</li>
+  <li><code>feedback_no_supabase_no_poc.md</code> — toda feature é produção; sem mock.</li>
+</ul>
+</section>
+
+<section id="sec-2">
+<h2>2. Stack por repo</h2>
+<table>
+<thead><tr><th>Repo</th><th>Branch</th><th>Stack</th></tr></thead>
+<tbody>
+<tr><td><code>halalsphere-backend</code></td><td><code>release</code></td><td>NestJS 11 + Prisma 7 + Postgres + Redis + Passport-JWT + Anthropic SDK + AWS (S3, SES, SNS, Secrets Manager)</td></tr>
+<tr><td><code>halalsphere-frontend</code></td><td><code>release</code></td><td>Vite 7 + React 19 + Radix + Tailwind v4 + TanStack Query + react-hook-form + zod + Recharts + pdfjs-dist</td></tr>
+<tr><td><code>sih-backend</code></td><td><code>release</code></td><td>NestJS 11 + Prisma 7 + Postgres + bcrypt + JWT HS256 self-contained + pdfkit</td></tr>
+<tr><td><code>sih-frontend</code></td><td><code>release</code></td><td>Vite + React 19 + Tailwind + shadcn/ui + TanStack Query + Axios + PWA (vite-plugin-pwa)</td></tr>
+<tr><td><code>syshalal-api</code></td><td><code>release</code></td><td>NestJS legacy + Prisma + Postgres + pdf-lib</td></tr>
+<tr><td><code>syshalal-web</code></td><td><code>release</code></td><td>Next.js 14 + React 18 + Chart.js + next-auth</td></tr>
+</tbody>
+</table>
+
+<h4>Convenções consolidadas</h4>
+<ul>
+  <li>pnpm v10+ com <code>onlyBuiltDependencies</code> no <code>package.json</code> para CodeBuild.</li>
+  <li>TS strict via <code>tsc -b</code> (não <code>tsc --noEmit</code>) — rodar local antes de pushar <code>release</code>.</li>
+  <li>Zod v4: separar <code>BaseSchema</code> + <code>RefinedSchema</code>; <code>.refine()</code> quebra <code>.partial()</code> em runtime.</li>
+  <li>Migrations: gerar via Prisma, validar <code>_prisma_migrations</code> antes de cada push. <strong>AUTO_MIGRATE no ECS não está funcionando</strong> consistentemente; aplicar manualmente via DBeaver com checksum 'manual' até resolver.</li>
+  <li>Swagger: regenerar via <code>npm run generate:swagger</code> + <code>node scripts/generate-api-gateway.js</code>.</li>
+  <li>Repos Ecohalal: usar <strong>somente</strong> remote organizacional; sem fork pessoal.</li>
+</ul>
+</section>
+
+<section id="sec-3">
+<h2>3. Estado atual técnico (release tip)</h2>
+
+<h3>3.1 GC — halalsphere-backend + halalsphere-frontend</h3>
+<h4>Schema (banco)</h4>
+<ul>
+  <li>76 modelos Prisma. Onda 1+ FAMBRAS — <strong>17 schema PRs entregues</strong> em mai/2026 (E, G-V). Pendente: nenhum item de schema.</li>
+  <li>Convivência legado + novo no schema (marcadas com "Legado — substituído por X"): <code>brandType</code> + <code>ownership</code>, <code>auditType</code> + <code>stage</code>, <code>templateType</code> + <code>certificateType</code>, <code>applicableStandards[]</code> + <code>MarketScope</code>, <code>hasSubcontracted</code> + <code>Subcontractor</code>.</li>
+</ul>
+
+<h4>Backend (lógica/API)</h4>
+<ul>
+  <li>50 módulos NestJS, 754 testes verdes.</li>
+  <li>Refactor Empresa+Planta entregue. <code>/auth/register</code> cria Plant default em transação atômica. PlantModule completo (CRUD + soft-delete + reactivate).</li>
+</ul>
+
+<h4>Frontend (telas)</h4>
+<ul>
+  <li>Multi-país completo em tipos (<code>Plant</code>, <code>SanitaryCodeType</code> 17 valores, <code>PlantType</code>, <code>Species</code>).</li>
+  <li><code>plant.service.ts</code> com 7 métodos; <code>PlantsManager</code> integrado em <code>GroupCompanyDetail</code>.</li>
+  <li>Wizard step 4 persiste production data via <code>plantService.update</code>.</li>
+</ul>
+
+<h4>Gaps conhecidos</h4>
+<ul>
+  <li><strong>TargetMarketsStep não persistia</strong> (gap pré-U1 — wizard captura países mas submit não chama <code>bulkUpsertMarketScopes</code>).</li>
+  <li><strong>Company.validationStatus</strong> existe no front mas não no Prisma.</li>
+  <li><strong>Service layer da Onda 1+</strong>: hook re-emissão (item 10), Proposal.feeOverride (item 18), SLA reverso (item 20).</li>
+  <li><strong>ETL B.1</strong>: ingestão da pasta IFF-FAR (caso real).</li>
+  <li><strong>Encoding <code>�</code></strong> em legalName/address.city quando dados via curl no Windows — validar antes de prod massiva.</li>
+</ul>
+
+<h3>3.2 SIH — sih-backend + sih-frontend</h3>
+<p><strong>Reset prod 2026-05-11</strong> com backup <code>dump-db_ecohalal_sih-202605111435.sql</code>. Admin atual: <code>admin@sih.com</code>.</p>
+
+<h4>Schema (banco)</h4>
+<ul>
+  <li>Migration <code>20260511160000_rename_companygroup_to_division</code> aplicada manualmente (segunda vez que AUTO_MIGRATE não rodou).</li>
+  <li>3 plantas + 6 usuários + 2 abates aprovados + 1 produção assinado em prod.</li>
+</ul>
+
+<h4>Sprints validadas</h4>
+<ul>
+  <li>Sprint 1 (TASK-02 + TASK-03) — perfil Controladoria + segmentação IN/IND <span class="badge badge-ok">OK</span></li>
+  <li>Sprint 2 (TASK-01 + TASK-04) — duplo check + workflow rejeição/reabertura <span class="badge badge-ok">OK</span></li>
+  <li>Sprint 3 (TASK-05 + TASK-08) — transferências origem/destino + degolador condicional <span class="badge badge-ok">OK</span></li>
+  <li>Sprint 4 (TASK-06 + TASK-09) — notificações in-app <span class="badge badge-ok">OK</span> / email SES <span class="badge badge-critical">FALHA</span> / anexos <span class="badge badge-critical">REGRESSÃO</span></li>
+  <li>Sprint 5 (TASK-07 + TASK-11) — <span class="badge badge-warning">PENDENTE</span></li>
+</ul>
+
+<h4>Bugs críticos abertos (smoke 11/12-mai)</h4>
+<table>
+<thead><tr><th>#</th><th>Bug</th><th>Onde</th></tr></thead>
+<tbody>
+<tr><td>11</td><td>PDF some após aprovação (compliance halal exige PDF)</td><td>sih-frontend: condição render botão PDF</td></tr>
+<tr><td>13</td><td>Sessão vaza entre logout/login (cache TanStack + route guards frouxos)</td><td>sih-frontend: useAuth/useLogout, middleware role</td></tr>
+<tr><td>14</td><td>Email SES de rejeição não chega</td><td>sih-backend NotificationService + ECS env vars + console SES</td></tr>
+<tr><td>16</td><td>AttachmentsSection não renderiza em nenhum form (regressão Sprint 4)</td><td>sih-frontend ShippingReportForm/ProductionReportForm + git log</td></tr>
+</tbody>
+</table>
+
+<h4>Dívida infra</h4>
+<ul>
+  <li>AUTO_MIGRATE ECS não roda (2ª vez) — investigar Task Definition + buildspec.</li>
+  <li>Cache PWA stale agressivo — workbox runtime cache + TanStack Query a investigar.</li>
+  <li>Ícone PWA <code>icon-192x192.png</code> não publicado no S3.</li>
+</ul>
+
+<h3>3.3 SysHalal — syshalal-api + syshalal-web</h3>
+<ul>
+  <li>Em produção desde ago/2025. <strong>Sem alteração em curso.</strong></li>
+  <li>SIH consome <code>/certified*</code> via proxy (TASK-11/Sprint 5) — funcional.</li>
+</ul>
+</section>
+
+<section id="sec-4">
+<h2>4. Backlog por sistema (até jul/2026)</h2>
+
+<h3 style="color: var(--accent);">4.0 Sprint imediata 12-18/mai — Emissão manual de certificados com QR Code (GC) <span class="badge badge-warning">EM CURSO</span></h3>
+
+<p><strong>Compromisso externo:</strong> entregar à FAMBRAS até <strong>18/mai/2026</strong> uma tela que permita emitir novos certificados halal já com o <strong>QR Code novo</strong> e todos os gabaritos finalizados.</p>
+
+<div class="callout callout-info">
+<strong>Baseline técnica (já entregue em sessão 2026-04-12):</strong>
+<ul style="margin-top: 0.4rem;">
+<li>4 renderers em <code>halalsphere-backend/src/certificate/pdf/</code>:
+  <ul>
+    <li><code>approval-renderer.ts</code> (FM 7.7.1 Standard landscape)</li>
+    <li><code>certificate-renderer.ts</code> (FM 7.7.2 Standard portrait)</li>
+    <li><code>approval-arabic-renderer.ts</code> (FM 7.7.1 Arabic bilingue)</li>
+    <li><code>certificate-arabic-renderer.ts</code> (FM 7.7.2 Arabic bilingue)</li>
+  </ul>
+</li>
+<li><code>qrcode-generator.ts</code> com logo FAMBRAS sobreposto + error correction H</li>
+<li><code>country-config.ts</code> (BR/AR/CO/PY/EC) + <code>seal-config.ts</code> com combos GAC_ENAS, OIC_SMIIC</li>
+<li>Disclaimers granel/álcool no attachment</li>
+<li>Persistência S3 versionada</li>
+<li>Endpoint <code>@Public()</code> para verificação via QR Code</li>
+<li><code>generatePdf()</code> no front + botões "Download PDF" em <code>Certificate.tsx</code> e <code>CertificationDetails.tsx</code></li>
+<li>Validado em prod com <code>TST.SOC.2602.0001.BRA</code> (v5 OK)</li>
+</ul>
+</div>
+
+<h4>Gap para o 18/mai — o que falta</h4>
+<table>
+<thead><tr><th>ID</th><th>Entregável</th><th>Janela</th><th>Risco</th></tr></thead>
+<tbody>
+<tr><td>C1</td><td><strong>Tela <code>/qualidade/emissao-manual-certificado</code></strong> — formulário standalone (não passa por <code>CertificationRequest</code>/<code>Proposal</code>/<code>Contract</code>). Acessível <strong>apenas pela role <code>qualidade</code></strong> (RBAC enforcement no front + guard backend). Campos: Empresa (autocomplete), Planta, número do certificado, datas, escopo de produtos (tabela inline), mercados (multi-select), formCode, templateCode, país, flags granel/álcool</td><td>12-14/mai</td><td><span class="badge badge-ok">Baixo</span></td></tr>
+<tr><td>C2</td><td><strong>Endpoint <code>POST /certificates/manual-emit</code></strong> — guard <code>@Roles('qualidade')</code>; cria <code>Certificate</code> mínimo no banco, chama <code>certificate-pdf.service.generateAndStore()</code>, retorna URL S3 + ID. Validar unicidade do <code>certificateNumber</code></td><td>12-13/mai</td><td><span class="badge badge-ok">Baixo</span></td></tr>
+<tr><td>C3</td><td><strong>Schema</strong>: adicionar enum <code>Certificate.issuanceMode = 'MANUAL' | 'WORKFLOW'</code> para auditoria pós go-live</td><td>12/mai</td><td><span class="badge badge-ok">Baixo</span></td></tr>
+<tr><td>C4</td><td><strong>Validação visual fim-a-fim</strong> dos 4 gabaritos com dados reais em prod. <strong>Janela de validação com FAMBRAS aberta a partir de 15/mai</strong></td><td>15-17/mai</td><td><span class="badge badge-warning">Médio</span></td></tr>
+<tr><td>C5</td><td><strong>Selos faltantes</strong> (ENAS, OIC, BPJPH, MUIS, MS). <strong>Dependência: solicitar a Elaine (depto. Qualidade FAMBRAS)</strong> PNGs em transparente; pedido formal até 14/mai</td><td>14-17/mai</td><td><span class="badge badge-critical">Alto</span></td></tr>
+<tr><td>C6</td><td><strong>Página pública <code>/verify/:certNumber</code></strong> — confirmar UI dedicada renderizando dados do certificado + selo "verificado"</td><td>14-15/mai</td><td><span class="badge badge-ok">Baixo</span></td></tr>
+<tr><td>C7</td><td><strong>Decisão de produto: PDF aberto sem senha.</strong> GAP-28 permanece desativado — não fazer nada nesta sprint nem no go-live. Remover do backlog</td><td>—</td><td>—</td></tr>
+<tr><td>C8</td><td><strong>Roteiro de smoke + treinamento</strong> — 1h com operador da Qualidade FAMBRAS emitindo 1 certificado de cada gabarito</td><td>18/mai</td><td><span class="badge badge-ok">Baixo</span></td></tr>
+</tbody>
+</table>
+
+<div class="callout">
+<strong>Mitigação para C5 (selos):</strong> se FAMBRAS não entregar até 16/mai, emitir com placeholders em cinza neutro + texto "Selo a ser substituído" no rodapé. QR Code continua funcionando. Selos hot-swapáveis sem regerar o PDF.
+</div>
+
+<p><strong>Ponte pós-julho:</strong> a tela <code>/qualidade/emissao-manual-certificado</code> permanece disponível como <strong>"emissão de exceção"</strong> após o go-live.</p>
+
+<h3>4.1 SIH — completar antes do go-live</h3>
+
+<h4>Bloco A — bugs críticos (3ª semana mai)</h4>
+<ul>
+  <li>Fix #11: condição render PDF inclui <code>aprovado</code> (status final/assinado em geral).</li>
+  <li>Fix #13: <code>queryClient.clear()</code> no logout + route guards por role + redirect default por role.</li>
+  <li>Fix #14: investigar SES sandbox/env vars/handler engolido — CloudWatch + SES console.</li>
+  <li>Fix #16: investigar git log <code>AttachmentsSection</code> + condição render — provável remoção acidental durante refactor companyGroup→division.</li>
+</ul>
+
+<h4>Bloco B — UX e infra (4ª semana mai / 1ª semana jun)</h4>
+<ul>
+  <li>AUTO_MIGRATE ECS — analisar Task Definition prod, env vars, comando de startup.</li>
+  <li>PWA cache: configurar <code>NetworkFirst</code> em runtime caching API; auditar <code>invalidateQueries</code>; <code>refetchOnMount: 'always'</code> em queries de dashboard.</li>
+  <li>Route guard em <code>/slaughter-reports/new</code> etc.</li>
+  <li>Auto-popular Origem/Destino do form de embarque a partir de <code>plant</code> selecionada (#10 do smoke).</li>
+  <li>Placeholders Insensibilização Aves com <code>Ex: 0,30</code> etc. (#7).</li>
+  <li>Filtro "Todos os tipos" na Controladoria — debug (#3 do smoke).</li>
+  <li>Notificações: badge sino consistente + página <code>/notifications</code> (#8, #9).</li>
+</ul>
+
+<h4>Bloco C — Sprint 5 (1ª semana jun)</h4>
+<ul>
+  <li>Desossa bovinos (TASK-07) — campos específicos no <code>ProductionReportForm</code> + PDF.</li>
+  <li>Plantas externas com certificadora não-FAMBRAS + upload de cert externo.</li>
+  <li>Cert SysHalal lookup (TASK-11) — <code>HalalCertField</code> em <code>MeatReceiptForm</code>/<code>BatchInventoryForm</code>/<code>ShippingReportForm</code> com fallback manual.</li>
+</ul>
+
+<h4>Bloco D — IA POC (4ª semana jul / set)</h4>
+<ul>
+  <li>Extração de dados de documentos via Claude API (cert, CSI, BL, fatura).</li>
+  <li>Avaliar API MAPA para validação cruzada de SIF/CNPJ.</li>
+</ul>
+
+<h3>4.2 GC — fechar Onda 1+ + antecipar Onda 2</h3>
+
+<h4>Service layer Onda 1+ (3-4ª semana mai)</h4>
+<ul>
+  <li><strong>Item 10</strong> — Hook <code>ScopeAmendment.onApprove() → CertificateService.reissue()</code> para 5 dos 6 tipos. Trigger via Nest EventEmitter (não SQL).</li>
+  <li><strong>Item 18</strong> — <code>Proposal.feeOverride</code> aceito sem fórmula + cálculo automático vira <strong>template sugerido</strong> sobrescrevível.</li>
+  <li><strong>Item 20</strong> — SLA reverso 30d antes da auditoria + alertas D-30/D-15/D-7 (BullMQ + Redis).</li>
+  <li>Backfill <code>MarketDestination</code> aditivo com <code>GulfRestrictionConfig</code> (item 23) — enum <code>UNDETERMINED</code> transitório.</li>
+</ul>
+
+<h4>Fix gaps pré-Onda 1+ (3ª semana mai)</h4>
+<ul>
+  <li>Fix <code>TargetMarketsStep</code> chamando <code>bulkUpsertMarketScopes</code> no submit do wizard.</li>
+  <li>Alinhar <code>Company.validationStatus</code> — adicionar ao Prisma ou remover do front.</li>
+</ul>
+
+<h4>UI Onda 1+ (jun/jul)</h4>
+<table>
+<thead><tr><th>ID</th><th>Tela</th><th>Janela</th><th>Notas técnicas</th></tr></thead>
+<tbody>
+<tr><td>U1</td><td>Wizard solicitação 5 passos ramificado</td><td>1-2ª sem jun</td><td>JSON-driven, engine compartilhada com U3/U4</td></tr>
+<tr><td>U2</td><td>Split-view analista FM 7.1.9</td><td>2ª sem jun</td><td>Cálculo paramétrico GSO/SMIIC/IAF MD 5</td></tr>
+<tr><td>U3</td><td>Hub alteração de escopo (5 cards)</td><td>2-3ª sem jun</td><td>6 tipos de amendment; aviso de aditivo com custo</td></tr>
+<tr><td>U4</td><td>Engine wizard JSON-driven</td><td>1-2ª sem jun</td><td>Componente compartilhado (U1/U3/U6)</td></tr>
+<tr><td>U5</td><td>FM 9.3 unificado mobile</td><td>3-4ª sem jun</td><td>Seções colapsáveis carimbadas; offline-first opcional</td></tr>
+<tr><td>U6</td><td>Hub permanente IT 7.12 docs</td><td>4ª sem jun</td><td>Nudges contextuais</td></tr>
+<tr><td>U7</td><td>Editor planilha MP Airtable-like</td><td>1-2ª sem jul</td><td>Import Excel + reconciliação visual</td></tr>
+<tr><td>U8</td><td>Inbox analista</td><td>4ª sem jun</td><td>Fila FM 7.1.9 + HAS + MPs</td></tr>
+<tr><td>U9</td><td>Tela aditivo contratual + PDF preview</td><td>2ª sem jul</td><td>pdfjs-dist + <code>&lt;ContractPreview contractId&gt;</code></td></tr>
+<tr><td>U10</td><td>Template proposta/contrato em PDF</td><td>3ª sem jun</td><td>pdfkit (já no stack)</td></tr>
+<tr><td>U11</td><td>Mercado interno × exportação dual-toggle</td><td>2ª sem jun</td><td>Chip colorido na listagem</td></tr>
+</tbody>
+</table>
+
+<h4>Operacional (mai-jul)</h4>
+<ul>
+  <li>Catálogo de Laboratórios + role Qualidade + 7 labs seed FAMBRAS (Onda 2 antecipada — 1ª sem jun).</li>
+  <li>Templates de proposta/contrato em PDF (U10).</li>
+  <li>Seed dos 17+ documentos IT 7.12 na <code>KnowledgeBase</code> versionada.</li>
+  <li>HomologationProfile FAMBRAS (laticínio, armazém, frigorífico, industrial) como seed.</li>
+  <li>ETL pasta IFF-FAR — dry-run em staging antes (1ª sem jul).</li>
+  <li>Tela <strong>Programa de Certificação 3 modos</strong> (Onda 2 antecipada — 3-4ª sem jul).</li>
+  <li>IA Matérias-primas básica (Onda 2 antecipada — 4ª sem jul).</li>
+</ul>
+
+<h3>4.3 SysHalal — congelado até ago/2026</h3>
+
+<h4>TASK-S0 — alinhamento com GC (ago)</h4>
+<ul>
+  <li>SysHalal deixa de ter cadastro próprio de Company/Plant; consome do GC via API.</li>
+  <li>Migração de dados: mapear <code>syshalal.empresa.cnpj</code> → <code>gc.Plant.taxId</code>.</li>
+  <li>Backfill com pasta IFF-FAR (caso já mapeado pela ETL B.1 do GC).</li>
+  <li>Roll-back plan: dual-write até confiança total.</li>
+</ul>
+
+<h4>Porta 4 — validação cruzada (ago)</h4>
+<p>Endpoint <code>GET /cross-validation/:lotId</code> no SIH retornando:</p>
+<pre>{
+  "plantSif": "...",
+  "supervisorHalal": "...",
+  "abateDates": [...],
+  "ncsInPeriod": [...],
+  "volumeMatch": true/false
+}</pre>
+<p>SysHalal chama antes de assinar cert de embarque; bloqueia emissão se evidência operacional inconsistente.</p>
+</section>
+
+<section id="sec-5">
+<h2>5. Pontos de integração</h2>
+
+<h3>5.1 Hoje</h3>
+<ul>
+  <li><strong>SIH → SysHalal</strong>: <code>GET /certified</code> proxy do SIH para consultar cert halal por número (TASK-11). Auth via API key.</li>
+  <li><strong>SIH ↔ GC</strong>: nenhuma.</li>
+  <li><strong>SysHalal ↔ GC</strong>: nenhuma.</li>
+</ul>
+
+<h3>5.2 Jun-jul (antes do go-live)</h3>
+<ul>
+  <li><strong>SIH ← GC</strong> (opcional): SIH consome <code>Plant</code> do GC em vez de cadastrar próprio. Read-only inicial, com fallback ao local.</li>
+</ul>
+
+<h3>5.3 Ago-set (porta 4 ativa)</h3>
+<ul>
+  <li><strong>SysHalal → GC</strong>: <code>/companies/:taxId</code>, <code>/plants/:id</code>, <code>/certifications/active</code>.</li>
+  <li><strong>SysHalal → SIH</strong>: <code>/operational-evidence/:lotId</code>.</li>
+  <li><strong>GC → SIH</strong> (eventual): re-emissão de cert dispara webhook que invalida cache SIH.</li>
+</ul>
+
+<h3>5.4 Cross-cutting</h3>
+<ul>
+  <li><strong>Email</strong>: AWS SES com domínio Ecohalal. Bug aberto: SES não chega no SIH — validar verified senders e env vars.</li>
+  <li><strong>Storage</strong>: AWS S3 com presigned URLs.</li>
+  <li><strong>Notificações</strong>: in-app via WebSocket/Polling; email via SES; <strong>WhatsApp</strong> pendente decisão de canal.</li>
+  <li><strong>Auth</strong>: cada sistema tem JWT próprio. Possível SSO no futuro (Onda 3).</li>
+</ul>
+</section>
+
+<section id="sec-6">
+<h2>6. Dívida técnica conhecida</h2>
+<table>
+<thead><tr><th>Item</th><th>Sistema</th><th>Severidade</th><th>Quando atacar</th></tr></thead>
+<tbody>
+<tr><td>AUTO_MIGRATE ECS não roda</td><td>SIH (e provavelmente GC)</td><td><span class="badge badge-critical">Alta</span></td><td>4ª sem mai</td></tr>
+<tr><td>Cache PWA stale agressivo</td><td>SIH</td><td><span class="badge badge-critical">Alta UX</span></td><td>4ª sem mai</td></tr>
+<tr><td>Encoding <code>�</code> em campos com acento via curl</td><td>GC</td><td><span class="badge badge-warning">Média</span></td><td>1ª sem jun</td></tr>
+<tr><td>Schema legado coexistindo (5 lugares)</td><td>GC</td><td><span class="badge badge-ok">Baixa</span></td><td>Pós Onda 1+ UI migrada</td></tr>
+<tr><td><code>companyGroup</code> renomeado para <code>division</code>; verificar código antigo</td><td>SIH</td><td><span class="badge badge-ok">Baixa</span></td><td>Auditoria pós-smoke</td></tr>
+<tr><td><code>Company.validationStatus</code> divergência front × prisma</td><td>GC</td><td><span class="badge badge-warning">Média</span></td><td>3ª sem mai</td></tr>
+<tr><td>43 mocks de testes pendentes Fase 2 SIH</td><td>SIH</td><td><span class="badge badge-ok">Baixa</span></td><td>Backlog</td></tr>
+</tbody>
+</table>
+</section>
+
+<section id="sec-7">
+<h2>7. Quality gates pré-deploy</h2>
+<p>Checklist obrigatório antes de qualquer push em <code>ecohalal/release</code>:</p>
+<ol>
+  <li><strong>Migrations</strong> — gerar, validar localmente, registrar em <code>prisma/migrations/</code>. Se AUTO_MIGRATE não rodar, aplicar manualmente.</li>
+  <li><strong>Swagger</strong> — <code>npm run generate:swagger</code> + <code>node scripts/generate-api-gateway.js</code>. Commit dos dois arquivos.</li>
+  <li><strong>TS strict</strong> — <code>tsc -b</code> verde (não só <code>tsc --noEmit</code>).</li>
+  <li><strong>Zod v4</strong> — DTOs com Create/Update separados; <code>.refine()</code> no Refined, não no Base.</li>
+  <li><strong>Tests</strong> — <code>pnpm test</code> verde; aceitar legacy se contado e justificado.</li>
+  <li><strong>Branch</strong> — trabalhar em <code>release</code> direto (sem PR <code>release→main</code>); push dispara CI/CD.</li>
+  <li><strong>Reconciliação</strong> — após hotfix em <code>release</code>, merge <code>release → develop</code> para não perder.</li>
+</ol>
+</section>
+
+<section id="sec-8">
+<h2>8. Riscos técnicos e mitigações</h2>
+<table>
+<thead><tr><th>Risco</th><th>Mitigação</th></tr></thead>
+<tbody>
+<tr><td><strong>Elaine (Qualidade FAMBRAS) atrasar entrega dos selos reais para 18/mai</strong></td><td>Pedido formal a Elaine até 14/mai; fallback com placeholders cinza + texto "Selo a ser substituído"; selos hot-swapáveis sem regerar PDF (S3 versionado)</td></tr>
+<tr><td><strong>Tela manual de emissão criar certificados sem rastreabilidade</strong> ao fluxo completo pós julho</td><td>Campo <code>issuanceMode='MANUAL'</code> no Certificate + dashboard de auditoria separa manuais de workflow</td></tr>
+<tr><td><strong>QR Code novo divergir do design aprovado pela FAMBRAS</strong></td><td>Validação visual com FAMBRAS a partir de <strong>15/mai</strong> (3 dias antes do go-live operacional); layout do QR é parametrizável em <code>qrcode-generator.ts</code></td></tr>
+<tr><td>Backfill <code>MarketDestination</code> com dados ambíguos</td><td>Enum <code>UNDETERMINED</code> transitório + dashboard analista resolve antes do <code>NOT NULL</code></td></tr>
+<tr><td>Materialização <code>DocumentRequest</code> via hook explode N</td><td>Cap por request (~50) + alertas + dry-run staging</td></tr>
+<tr><td>Trigger duplo de re-emissão (SQL antigo + hook novo)</td><td>Desativar SQL no mesmo deploy</td></tr>
+<tr><td><code>CertificationScope</code> polimórfico por categoria</td><td>Core + <code>categoryDetailsJson</code> validado por Zod no boundary (não N tabelas-junção)</td></tr>
+<tr><td>AUTO_MIGRATE silencioso vira deploy quebrado em prod</td><td>Investigar antes da próxima migration; aplicar manual com checksum 'manual' até resolver</td></tr>
+<tr><td>Coexistência legado + novo no schema confunde o front</td><td>Telas migram gradualmente; só remover legado depois que TODAS as telas migrarem</td></tr>
+<tr><td>Smoke test em prod descobre regressão pós-deploy</td><td>Reset prod autorizado pelo PO permite reset de estado quando necessário</td></tr>
+<tr><td><code>axios</code> direto vs <code>@nestjs/axios</code> em código novo</td><td>Code review enforce <code>@nestjs/axios</code> em backend Nest</td></tr>
+</tbody>
+</table>
+</section>
+
+<section id="sec-9">
+<h2>9. Capacidade e ritmo (calibração realista)</h2>
+<h4>Velocidade observada (maio/2026)</h4>
+<table>
+<thead><tr><th>Tipo de trabalho</th><th>Velocidade real</th><th>Velocidade "típica de mercado"</th></tr></thead>
+<tbody>
+<tr><td>Schema PR aditivo (migration + tipos + tests)</td><td>30-60 min cada</td><td>1-3 dias cada</td></tr>
+<tr><td>Refactor cross-stack (23 arquivos)</td><td>1-2 horas</td><td>1-2 sprints</td></tr>
+<tr><td>Smoke test de sprint completo em prod</td><td>2-4 horas</td><td>1-2 dias</td></tr>
+<tr><td>Tela nova com wizard + schema + tests</td><td>4-8 horas</td><td>1-2 semanas</td></tr>
+<tr><td>ETL com dry-run staging</td><td>1 dia</td><td>1 sprint</td></tr>
+</tbody>
+</table>
+
+<p><strong>Implicação:</strong> o roadmap pode ser executado <strong>com folga</strong> se o gargalo não for desenvolvimento. Os gargalos reais previstos:</p>
+<ol>
+  <li><strong>Decisões de UX</strong> com FAMBRAS (Lina/Fuad) — agendar sessões quinzenais.</li>
+  <li><strong>Disponibilidade do cliente real</strong> para amostra de dados (IFF-FAR).</li>
+  <li><strong>Email/integrações com terceiros</strong> (SES sandbox, SFDA, SharePoint).</li>
+  <li><strong>Treinamento operacional FAMBRAS</strong> — depende de agenda dos supervisores.</li>
+</ol>
+
+<p><strong>Buffer recomendado para go-live julho:</strong> ~25% (i.e., terminar desenvolvimento em jun-15 dá folga até jul-30 para integração+treinamento).</p>
+</section>
+
+<section id="sec-10">
+<h2>10. Anexos</h2>
+<ul>
+  <li><strong>ROADMAP-DIRETORIA-2026-05-12.html</strong> — versão executiva (audiência: diretoria + FAMBRAS)</li>
+  <li><strong>FAMBRAS-VISITA-1504-ONDA-1+.md</strong> — Onda 1+ detalhada</li>
+  <li><strong>SMOKE-TEST-2026-05-11-RESULTADOS.md</strong> — status SIH com bugs</li>
+  <li><strong>BRIEFING-PROXIMA-SESSAO-SMOKE-TEST.md</strong> — retomar smoke SIH</li>
+  <li><strong>DECISOES-LINA-2026-05-09.md</strong> — respostas FAMBRAS</li>
+  <li><strong>CADASTRO-EMPRESA-PLANTA-NOVO-MODELO.md</strong> (halalsphere-docs) — design do refactor GC</li>
+</ul>
+</section>
+
+<footer class="doc-footer">
+  Documento gerado em 2026-05-12 — Ecohalal Soluções • Uso interno
+</footer>
+
+</div>
+</body>
+</html>

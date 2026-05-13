@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Roadmap Ecossistema Halal Ecohalal — Diretoria — 2026-05-12</title>
+<style>
+  :root {
+    --primary: #0f5d4f;
+    --primary-light: #e6f2ef;
+    --accent: #c9882d;
+    --text: #1a1a1a;
+    --muted: #555;
+    --border: #d8d8d8;
+    --bg: #fafafa;
+    --card: #ffffff;
+    --critical: #b8332a;
+    --warning: #b76a00;
+    --ok: #2e7d4f;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.55;
+    color: var(--text);
+    background: var(--bg);
+    margin: 0;
+    padding: 2rem 1rem;
+  }
+  .container { max-width: 960px; margin: 0 auto; }
+  header.doc-header {
+    background: var(--card);
+    border-left: 5px solid var(--primary);
+    padding: 1.5rem 2rem;
+    margin-bottom: 2rem;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+  header.doc-header h1 {
+    margin: 0 0 0.5rem;
+    font-size: 1.65rem;
+    color: var(--primary);
+    font-weight: 600;
+  }
+  header.doc-header .meta {
+    color: var(--muted);
+    font-size: 0.92rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem 1.5rem;
+  }
+  header.doc-header .meta strong { color: var(--text); }
+  nav.toc {
+    background: var(--card);
+    padding: 1rem 1.5rem;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    margin-bottom: 2rem;
+    font-size: 0.93rem;
+  }
+  nav.toc h2 {
+    margin: 0 0 0.5rem;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--muted);
+    font-weight: 600;
+  }
+  nav.toc ol { margin: 0; padding-left: 1.5rem; }
+  nav.toc li { margin: 0.15rem 0; }
+  nav.toc a { color: var(--primary); text-decoration: none; }
+  nav.toc a:hover { text-decoration: underline; }
+  section {
+    background: var(--card);
+    padding: 1.5rem 2rem;
+    margin-bottom: 1.5rem;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+  }
+  h2 {
+    color: var(--primary);
+    border-bottom: 2px solid var(--primary-light);
+    padding-bottom: 0.4rem;
+    margin-top: 0;
+    font-size: 1.3rem;
+  }
+  h3 {
+    color: var(--text);
+    margin-top: 1.5rem;
+    font-size: 1.08rem;
+  }
+  h4 { font-size: 0.98rem; color: var(--muted); margin-bottom: 0.4rem; }
+  p { margin: 0.6rem 0; }
+  ul, ol { margin: 0.6rem 0; padding-left: 1.5rem; }
+  li { margin: 0.25rem 0; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+    font-size: 0.92rem;
+  }
+  th, td {
+    padding: 0.55rem 0.7rem;
+    text-align: left;
+    border: 1px solid var(--border);
+    vertical-align: top;
+  }
+  th {
+    background: var(--primary-light);
+    color: var(--primary);
+    font-weight: 600;
+    font-size: 0.88rem;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+  }
+  tr:nth-child(even) td { background: #f7f7f5; }
+  code {
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+    background: #f0f0ed;
+    padding: 0.1rem 0.35rem;
+    border-radius: 3px;
+    font-size: 0.88em;
+  }
+  .badge {
+    display: inline-block;
+    padding: 0.15rem 0.5rem;
+    border-radius: 3px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+  .badge-critical { background: #fce4e2; color: var(--critical); }
+  .badge-warning { background: #fff0d6; color: var(--warning); }
+  .badge-ok { background: #e0f3e8; color: var(--ok); }
+  .badge-info { background: var(--primary-light); color: var(--primary); }
+  .callout {
+    border-left: 4px solid var(--accent);
+    background: #fdf7ec;
+    padding: 0.8rem 1rem;
+    margin: 1rem 0;
+    border-radius: 0 3px 3px 0;
+  }
+  .callout strong { color: var(--accent); }
+  .callout-critical {
+    border-left-color: var(--critical);
+    background: #fdf0ee;
+  }
+  .callout-critical strong { color: var(--critical); }
+  blockquote {
+    border-left: 3px solid var(--border);
+    margin: 1rem 0;
+    padding: 0.3rem 1rem;
+    color: var(--muted);
+    font-style: italic;
+  }
+  footer.doc-footer {
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.85rem;
+    padding: 2rem 0 1rem;
+  }
+  @media print {
+    body { padding: 0; background: white; }
+    section, header.doc-header, nav.toc { box-shadow: none; border: none; padding: 0.5rem 0; }
+    nav.toc { page-break-after: always; }
+    section { page-break-inside: avoid; }
+    h2 { page-break-after: avoid; }
+    table { page-break-inside: avoid; font-size: 0.85rem; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+<header class="doc-header">
+  <h1>Roadmap Ecossistema Halal Ecohalal — Versão Diretoria</h1>
+  <div class="meta">
+    <span><strong>Publicação inicial:</strong> 2026-05-12 (manhã)</span>
+    <span><strong>Última atualização:</strong> 2026-05-12 (fim do dia)</span>
+    <span><strong>Autor:</strong> Renato Ribeiro (Ecohalal)</span>
+    <span><strong>Horizonte:</strong> mai/2026 → mai/2027</span>
+    <span><strong>Âncora:</strong> Go-live FAMBRAS — julho/2026</span>
+  </div>
+</header>
+
+<nav class="toc">
+  <h2>Índice</h2>
+  <ol>
+    <li><a href="#sec-0">Atualizações desde a publicação inicial</a></li>
+    <li><a href="#sec-1">Sumário executivo</a></li>
+    <li><a href="#sec-2">Visão: 3 sistemas, 1 jornada</a></li>
+    <li><a href="#sec-3">Tese estratégica: validação cruzada de 4 portas</a></li>
+    <li><a href="#sec-4">Estado atual (maio/2026)</a></li>
+    <li><a href="#sec-5">Roadmap por fase</a></li>
+    <li><a href="#sec-6">Riscos e mitigações</a></li>
+    <li><a href="#sec-7">Por que esse plano fecha em julho</a></li>
+    <li><a href="#sec-8">Próximos passos imediatos</a></li>
+    <li><a href="#sec-9">Anexos relacionados</a></li>
+  </ol>
+</nav>
+
+<section id="sec-0" style="border-left: 5px solid var(--accent);">
+<h2 style="color: var(--accent);">0. Atualizações desde a publicação inicial</h2>
+<blockquote>Esta seção registra a evolução do roadmap após sua publicação inicial. Conteúdo das seções 1-9 abaixo permanece válido salvo onde explicitamente atualizado.</blockquote>
+
+<h3>2026-05-12 (mesmo dia da publicação) — Sprint imediata 12-18/mai entregue em horas, não dias</h3>
+
+<p>Compromisso original era ter a emissão manual de certificado disponível <strong>até 18/mai</strong>. Na prática, <strong>5 dos 8 entregáveis ficaram em produção no mesmo dia</strong> da publicação do roadmap:</p>
+
+<table>
+<thead><tr><th>Entregável</th><th>Status</th></tr></thead>
+<tbody>
+<tr><td>Schema <code>issuance_mode</code> no banco</td><td><span class="badge badge-ok">deployed + migration confirmada em prod via SQL</span></td></tr>
+<tr><td>Endpoint backend <code>POST /certificates/manual-emit</code></td><td><span class="badge badge-ok">deployed</span></td></tr>
+<tr><td>Tela <code>/qualidade/emissao-manual-certificado</code> (role Qualidade)</td><td><span class="badge badge-ok">deployed</span></td></tr>
+<tr><td>Página pública de verificação QR Code</td><td><span class="badge badge-ok">já existia, confirmada</span></td></tr>
+<tr><td>15 selos de acreditadores reais integrados (ENAS, OIC, BPJPH, MUIS, MS, GAC + 9 países)</td><td><span class="badge badge-ok">deployed</span></td></tr>
+</tbody>
+</table>
+
+<div class="callout">
+<strong>Destrava de risco crítico:</strong> Elaine (Qualidade FAMBRAS) entregou os selos antes do prazo de 14/mai, em arquivo único (<code>logos.png</code>). Foram recortados via script automatizado em 15 PNGs individuais — incluindo descoberta positiva: o selo que mapeamos como "OIC/SMIIC" é o <strong>oficial do Halal Accreditation Agency</strong> (não placeholder).
+</div>
+
+<h4>Hotfixes aplicados durante o dia (descobertos em uso real do PO)</h4>
+<ul>
+  <li>Link no menu lateral para acessar a tela manual (ausente após o primeiro deploy — corrigido em &lt; 30min)</li>
+  <li>Bug crítico de acesso ao PDF/QR no S3 (bucket privado, links públicos retornavam <em>AccessDenied</em>) — resolvido com URLs assinadas temporárias</li>
+  <li>Endpoint dedicado para baixar PDF a qualquer momento — cliente clica, sistema gera link fresco em milissegundos, <strong>PDF original permanece imutável no S3</strong> indefinidamente</li>
+  <li>Hotfix em outras telas legadas (<code>/certificados/:id</code>, <code>/certificacoes/:id</code>) que também usavam links diretos do S3 — todas migradas para o novo endpoint</li>
+</ul>
+
+<h4>Pendências conhecidas (fora do escopo da sprint atual)</h4>
+<ul>
+  <li>Módulo de <strong>Contratos</strong> (<code>/juridico/contratos</code>) também armazena PDFs no mesmo bucket privado e usa links diretos — se foram emitidos com a URL legada, vão dar <em>AccessDenied</em> até receberem o mesmo tratamento. Tratar em sprint separada do jurídico.</li>
+</ul>
+
+<h4>Pendências para semana de 13-18/mai</h4>
+<ul>
+  <li>Smoke pessoal do PO com 4 gabaritos diferentes (sanity check antes da FAMBRAS validar)</li>
+  <li>Janela de validação visual com a FAMBRAS abre <strong>15/mai</strong></li>
+  <li>Treinamento da operadora Qualidade FAMBRAS em <strong>18/mai</strong></li>
+</ul>
+
+<h4>Impacto no roadmap</h4>
+<ul>
+  <li>Seção 5.0 (Sprint imediata) considerada <strong>substancialmente entregue</strong>; remanesce só validação operacional com cliente (não-código).</li>
+  <li>O compromisso de jul/2026 (go-live FAMBRAS GC + SIH) ganhou folga: parte do escopo da Onda 1+ que estava em maio já está em produção. Service layer Onda 1+ (hooks re-emissão, fee override, SLA reverso) continua como próximo bloco da semana.</li>
+</ul>
+</section>
+
+<section id="sec-1">
+<h2>1. Sumário executivo</h2>
+<p>A Ecohalal opera um ecossistema de <strong>3 sistemas integrados</strong> que cobrem a jornada completa do cliente certificado halal — da pré-venda à exportação do lote. Hoje os 3 sistemas estão <strong>em produção</strong> com clientes reais. Os próximos 12 meses consolidam o ecossistema em torno de uma tese estratégica que <strong>nenhum concorrente global possui</strong> hoje: a <strong>validação cruzada de 4 portas</strong> entre certificadora, operação industrial e exportação.</p>
+
+<h4>Compromissos críticos</h4>
+<ul>
+  <li><strong>18/mai/2026 (6 dias)</strong> — Disponibilizar emissão manual de certificados com o <strong>novo QR Code</strong> desenhado pela Ecohalal, atendendo todos os gabaritos de layout. Ponte operacional até a plataforma nova entrar em julho.</li>
+  <li><strong>Julho/2026</strong> — Go-live FAMBRAS com SIH (operação) + GC (certificação) completos.</li>
+  <li><strong>Setembro/2026</strong> — SysHalal alinhado com GC (operação cruzada porta 4 ativa).</li>
+  <li><strong>Maio/2027</strong> — Ecossistema consolidado com camadas de IA, ondas operacionais estabilizadas, integração externa com acreditadores quando relevante.</li>
+</ul>
+
+<div class="callout">
+  <strong>Por que esse roadmap é executável:</strong> o desenvolvimento é conduzido por uma equipe pequena (um líder técnico + automação massiva com IA generativa). Esse modelo já entregou, em maio/2026, <strong>17 PRs de schema completos da Onda 1+ FAMBRAS em uma única sessão</strong> e validou 2 sprints inteiras do SIH em produção em uma única tarde. O ritmo é compatível com prazos curtos; o gargalo real é decisão de produto e validação com cliente, não código.
+</div>
+</section>
+
+<section id="sec-2">
+<h2>2. Visão: 3 sistemas, 1 jornada</h2>
+<table>
+<thead><tr><th>Sistema</th><th>Papel na jornada</th><th>Quem usa</th><th>Estado hoje</th></tr></thead>
+<tbody>
+<tr><td><strong>GC</strong> (HalalSphere — Gestão de Certificações)</td><td>Pré-mercado e ciclo de certificação: solicitação → proposta → contrato → auditoria → comitê → emissão de certificado de habilitação → manutenção/renovação</td><td>EcoHalal interna (analistas, auditores, comitê, jurídico, qualidade) + cliente certificado</td><td>Em produção; Onda 1+ FAMBRAS com 17/20 itens de schema entregues</td></tr>
+<tr><td><strong>SIH</strong> (Supervisão Industrial Halal)</td><td>Operação diária do supervisor halal em campo: relatórios de abate, produção, embarque, NCs, inventário, duplo check Controladoria</td><td>FAMBRAS (supervisores em campo, controladoria, gestão)</td><td>Em produção; sprints 1-4 validadas em prod, sprint 5 em validação</td></tr>
+<tr><td><strong>SysHalal</strong></td><td>Emissão de certificado de exportação por lote, integração SFDA (Saudi Halal Center) e dados públicos</td><td>Despachantes + clientes para emissão de certificado de embarque</td><td>Em produção desde agosto/2025; sem alterações em curso</td></tr>
+</tbody>
+</table>
+
+<h4>Decisão arquitetural confirmada (mai/2026)</h4>
+<ul>
+  <li>GC é o <strong>master</strong> de cadastro de Empresa, Planta, Certificado de habilitação, escopo, contratos.</li>
+  <li>SIH <strong>consome</strong> do GC e do SysHalal via API.</li>
+  <li>SysHalal e GC <strong>coexistem em paralelo</strong>, com propósitos distintos (despachante vs certificadora). Não há fusão; há integração.</li>
+</ul>
+</section>
+
+<section id="sec-3">
+<h2>3. Tese estratégica: validação cruzada de 4 portas</h2>
+<p>Para o SysHalal emitir um certificado de exportação por lote, hoje o mercado mundial valida apenas 3 portas:</p>
+<ol>
+  <li><strong>Empresa habilitada</strong> (cadastro)</li>
+  <li><strong>Certificado de habilitação válido</strong> (vigência)</li>
+  <li><strong>Produto no escopo</strong> (escopo da habilitação cobre o que está sendo emitido)</li>
+</ol>
+<p>A Ecohalal adiciona a <strong>4ª porta — evidência operacional</strong>:</p>
+<ol start="4">
+  <li><strong>Lote tem rastreabilidade no chão de fábrica</strong> (datas de abate/produção, supervisor halal responsável, volumes, NCs do período) — extraída diretamente do SIH.</li>
+</ol>
+
+<h4>Por que isso é diferencial</h4>
+<p>Casos documentados de fraude halal no mercado global (adulteração de QR Code, mistura de lotes, certificado de papel divergente da operação real) acontecem exatamente porque as portas 1-3 são auditáveis em papel, mas a porta 4 não está ligada digitalmente. O ecossistema da Ecohalal <strong>fecha esse vão</strong> integrando SIH (operação real) ↔ GC (papel/escopo) ↔ SysHalal (emissão).</p>
+
+<p><strong>Onde a porta 4 entra no roadmap:</strong> out/2026 (após go-live FAMBRAS), entra em operação real validando lote por lote.</p>
+</section>
+
+<section id="sec-4">
+<h2>4. Estado atual (maio/2026)</h2>
+
+<h3>4.1 GC — HalalSphere</h3>
+<ul>
+  <li><strong>Refactor multi-país</strong> entregue e em produção (mai/2026) — modelo Empresa + Planta + país de destino + norma de acreditação correto desde o dia 1.</li>
+  <li><strong>Onda 1+ FAMBRAS — 17/20 itens de schema entregues</strong> em produção, todos aditivos, sem regressão. Inclui:
+    <ul>
+      <li>Modelagem de mercado (multi-país × multi-norma)</li>
+      <li>Categorias industriais GSO/SMIIC</li>
+      <li>Alteração de escopo (6 tipos discriminantes)</li>
+      <li>Certificados (4 tipos: único, habilitação, embarque exportação, embarque interno)</li>
+      <li>Subcontratação, marca própria/licenciada, declaração de conformidade</li>
+      <li>Auditoria com estágios (1, 2, manutenção, recertificação, especial)</li>
+    </ul>
+  </li>
+  <li><strong>Falta da Onda 1+:</strong> camada de serviço (3 hooks: re-emissão de certificado, preço por contrato, SLA reverso), ETL de migração da pasta de cliente real (IFF-FAR), reforma do wizard de solicitação e 10 telas operacionais.</li>
+</ul>
+
+<h3>4.2 SIH — Supervisão Industrial</h3>
+<ul>
+  <li><strong>Sprints 1 a 4 validadas em produção</strong> com o reset da base FAMBRAS feito em mai/2026:
+    <ul>
+      <li>Perfil <strong>Controladoria</strong> com permissões restritas</li>
+      <li>Segmentação <strong>IN (in natura)</strong> × <strong>IND (industrializados)</strong> funcionando</li>
+      <li>Workflow <strong>duplo check</strong> (supervisor assina → controladoria aprova/rejeita) com motivo obrigatório, reabertura, histórico completo</li>
+      <li>Transferências com origem + destino (5 subtipos)</li>
+      <li>Notificações in-app</li>
+    </ul>
+  </li>
+  <li><strong>Falta validar:</strong> Sprint 5 (relatório de Desossa bovina + integração de cert halal com SysHalal — TASK-11).</li>
+  <li><strong>4 bugs críticos mapeados</strong> no smoke test (anexos não renderizam, PDF some após aprovação, sessão vaza entre logout/login, email SES não chega) — todos fixáveis na primeira semana de junho.</li>
+</ul>
+
+<h3>4.3 SysHalal</h3>
+<ul>
+  <li>Em produção desde agosto/2025. Não há alteração em curso.</li>
+  <li>Próximo trabalho (TASK-S0) é o <strong>alinhamento com GC</strong>: SysHalal deixa de ter cadastro próprio de empresa/planta e passa a consumir do GC. Programado para agosto/2026, <strong>depois</strong> do go-live FAMBRAS.</li>
+</ul>
+</section>
+
+<section id="sec-5">
+<h2>5. Roadmap por fase</h2>
+
+<h3 style="color: var(--accent);">5.0 12-18/mai/2026 — Sprint imediata: emissão manual com QR Code <span class="badge badge-warning">EM CURSO</span></h3>
+<p><strong>Objetivo:</strong> dar à FAMBRAS, em 6 dias, a capacidade de emitir novos certificados halal já com o <strong>QR Code novo</strong> (desenhado pela Ecohalal) e todos os gabaritos finalizados — sem depender do fluxo completo de certificação que entra apenas em julho.</p>
+
+<p><strong>Contexto:</strong> o GC já tem 4 renderers de PDF prontos (FM 7.7.1 e FM 7.7.2 em variantes Standard e Arabic bilingue), gerador de QR Code com logo FAMBRAS, persistência S3 e endpoint público de verificação. Falta a porta de entrada manual — uma tela que aceite os dados sem exigir o fluxo completo solicitação → proposta → contrato → auditoria → comitê.</p>
+
+<table>
+<thead><tr><th>Frente</th><th>Entregável</th><th>Janela</th></tr></thead>
+<tbody>
+<tr><td>GC</td><td>Tela "Emissão Manual de Certificado" (role <strong>qualidade</strong>) — formulário com Empresa, Planta, escopo de produtos, mercados, número do certificado, datas, flags granel/álcool</td><td>12-15/mai</td></tr>
+<tr><td>GC</td><td>Validação fim-a-fim dos 4 gabaritos em produção com dados reais — janela aberta <strong>a partir de 15/mai</strong></td><td>15-17/mai</td></tr>
+<tr><td>GC</td><td>Selos reais pendentes (ENAS, OIC, BPJPH, MUIS, MS) — <strong>dependência: solicitar ao depto. Qualidade FAMBRAS (Elaine)</strong></td><td>14-17/mai</td></tr>
+<tr><td>GC</td><td>QR Code novo validado em todos os 4 gabaritos com URL de verificação pública funcionando — validação visual a partir de 15/mai</td><td>15-17/mai</td></tr>
+<tr><td>GC</td><td>Apresentação à FAMBRAS + treinamento curto (1h) para operador (Qualidade) emitir manualmente</td><td>18/mai</td></tr>
+</tbody>
+</table>
+
+<div class="callout">
+  <strong>Decisão de produto:</strong> PDF emitido <strong>sem senha</strong> (aberto). GAP-28 fica desativado também no go-live de julho — não reabilitar.
+</div>
+
+<p><strong>Bridge até julho:</strong> essa tela continua válida até o go-live FAMBRAS, quando o fluxo completo passa a emitir certificados de forma automatizada via proposta → contrato → comitê. A tela manual permanece disponível como "emissão de exceção" pós go-live.</p>
+
+<h4>Dependências externas</h4>
+<ul>
+  <li><strong>Elaine (depto. Qualidade FAMBRAS)</strong> entregar PNGs dos 5 selos faltantes (ENAS, OIC, BPJPH, MUIS, MS) — pedido formal a disparar até 14/mai.</li>
+  <li>Validação visual do QR Code e dos gabaritos com a FAMBRAS aberta a partir de <strong>15/mai</strong> — janela de 3 dias antes do go-live operacional do 18.</li>
+</ul>
+
+<h3>5.1 Maio/2026 (resto do mês) — Estabilização SIH + serviços Onda 1+ GC</h3>
+<table>
+<thead><tr><th>Sistema</th><th>Entregável</th><th>Janela</th></tr></thead>
+<tbody>
+<tr><td>SIH</td><td>Fechar 4 bugs críticos do smoke test (anexos, PDF aprovado, sessão entre logins, email SES)</td><td>3ª semana mai</td></tr>
+<tr><td>SIH</td><td>Validar sprint 5 (Desossa + cert halal externo)</td><td>4ª semana mai</td></tr>
+<tr><td>SIH</td><td>Corrigir cache PWA stale (Controladoria precisa de Ctrl+Shift+R)</td><td>4ª semana mai</td></tr>
+<tr><td>GC</td><td>Service layer Onda 1+ (hook re-emissão, preço por contrato, SLA reverso)</td><td>3-4ª semana mai</td></tr>
+<tr><td>GC</td><td>Fix gap TargetMarketsStep (wizard captura países mas não persistia)</td><td>3ª semana mai</td></tr>
+<tr><td>GC</td><td>Backfill MarketDestination com config Golfo</td><td>4ª semana mai</td></tr>
+</tbody>
+</table>
+
+<h3>5.2 Junho/2026 — Frontend Onda 1+ GC + endurecimento SIH</h3>
+<table>
+<thead><tr><th>Sistema</th><th>Entregável</th><th>Janela</th></tr></thead>
+<tbody>
+<tr><td>GC</td><td>Wizard de solicitação 5 passos ramificado por categoria (U1)</td><td>1-2ª sem jun</td></tr>
+<tr><td>GC</td><td>Hub de alteração de escopo (5 cards + wizard parametrizado U3/U4)</td><td>2-3ª sem jun</td></tr>
+<tr><td>GC</td><td>Tela split-view do analista FM 7.1.9 (cálculo de tempo de auditoria) U2</td><td>2ª sem jun</td></tr>
+<tr><td>GC</td><td>FM 9.3 unificado (auditoria em campo, mobile, com colapsáveis carimbados) U5</td><td>3-4ª sem jun</td></tr>
+<tr><td>GC</td><td>Inbox do analista U8 + Hub permanente de docs IT 7.12 U6</td><td>4ª sem jun</td></tr>
+<tr><td>GC</td><td>Catálogo de Laboratórios + role Qualidade (7 labs FAMBRAS seed)</td><td>1ª sem jun</td></tr>
+<tr><td>GC</td><td>Templates de proposta/contrato em PDF via pdfkit (U10)</td><td>3ª sem jun</td></tr>
+<tr><td>SIH</td><td>Auto-popular Origem/Destino do form de embarque a partir da planta</td><td>1ª sem jun</td></tr>
+<tr><td>SIH</td><td>Route guards por role + clear queryClient no logout</td><td>1ª sem jun</td></tr>
+<tr><td>SIH</td><td>Notificações: badge consistente + página <code>/notifications</code></td><td>2ª sem jun</td></tr>
+</tbody>
+</table>
+
+<h3 style="color: var(--accent);">5.3 Julho/2026 — Go-live FAMBRAS (entrega-âncora) <span class="badge badge-info">MARCO</span></h3>
+<table>
+<thead><tr><th>Frente</th><th>Entregável</th><th>Janela</th></tr></thead>
+<tbody>
+<tr><td>Implantação</td><td>ETL pasta IFF-FAR (cliente real, alteração FAR) — caso piloto de migração de dados legados</td><td>1ª sem jul</td></tr>
+<tr><td>Implantação</td><td>Seed de HomologationProfile FAMBRAS (laticínio, armazém, frigorífico, industrial)</td><td>1ª sem jul</td></tr>
+<tr><td>Implantação</td><td>Treinamento FAMBRAS (3 perfis: cliente, analista, gestão)</td><td>2-3ª sem jul</td></tr>
+<tr><td>GC</td><td>Editor inline planilha MP/fornecedores Airtable-like (U7) — fecha o ciclo de homologação</td><td>1-2ª sem jul</td></tr>
+<tr><td>GC</td><td>Aditivo contratual com PDF preview (U9)</td><td>2ª sem jul</td></tr>
+<tr><td>GC</td><td>Tela Programa de Certificação 3 modos (Executivo/Operacional/Colaborador) — Onda 2 antecipada</td><td>3-4ª sem jul</td></tr>
+<tr><td>GC</td><td>IA Matérias-primas básica (criticidade + origem animal) — Onda 2 antecipada</td><td>4ª sem jul</td></tr>
+<tr><td>SIH</td><td>Smoke final + ajustes pós-treinamento</td><td>continuous</td></tr>
+<tr><td>SIH</td><td>POC IA — extração de dados de documentos (Claude API) — começo</td><td>4ª sem jul</td></tr>
+</tbody>
+</table>
+
+<div class="callout">
+  <strong>Marco:</strong> ao fim de julho, FAMBRAS está em produção com:
+  <ul style="margin-top: 0.4rem;">
+    <li>100% do fluxo de certificação (solicitação → emissão) digital no GC.</li>
+    <li>100% do fluxo operacional (relatórios, NCs, inventário, duplo check) digital no SIH.</li>
+    <li>Acompanhamento ao vivo do programa de certificação em uma só tela.</li>
+  </ul>
+</div>
+
+<h3>5.4 Agosto-setembro/2026 — Alinhamento SysHalal + porta 4</h3>
+<table>
+<thead><tr><th>Sistema</th><th>Entregável</th><th>Janela</th></tr></thead>
+<tbody>
+<tr><td>SysHalal</td><td>TASK-S0: consumir cadastro de Empresa/Planta/Certificado do GC via API</td><td>ago</td></tr>
+<tr><td>Integração</td><td>API <code>/cross-validation/:lot</code> consumida pelo SysHalal antes de emitir cert de embarque</td><td>ago</td></tr>
+<tr><td>Integração</td><td>SIH expõe <code>/operational-evidence/:lot</code> para alimentar a porta 4</td><td>ago</td></tr>
+<tr><td>GC</td><td>Programa de Certificação refinado (mapa de calor de auditores, balanceamento)</td><td>set</td></tr>
+<tr><td>GC</td><td>Auditoria não-anunciada — workflow (notificação 90d, janela 15d, blackout 5d)</td><td>set</td></tr>
+<tr><td>GC</td><td>Imparcialidade do auditor — alerta após 3 anos com mesmo cliente</td><td>set</td></tr>
+<tr><td>SIH</td><td>POC IA documentos — entrega beta (extração estruturada de PDFs)</td><td>set</td></tr>
+</tbody>
+</table>
+
+<h3>5.5 Outubro-dezembro/2026 — Onda 3 GC + estabilização</h3>
+<ul>
+  <li><strong>Revisor de HAS em 2 estágios</strong> (cliente envia HAS → analista revisa superficialmente → auditor revisa em campo).</li>
+  <li><strong>Reconhecimento automático</strong> de certificado halal de matéria-prima via links dos acreditadores (GAC, JAKIM, BPJPH, MUIS).</li>
+  <li><strong>Calendário avançado de auditores</strong> + balanceamento de carga ponderado por complexidade.</li>
+  <li><strong>Tradução formal</strong> de documentos (workflow de pedido + entrega).</li>
+  <li><strong>Dashboards executivos</strong> de receita, ciclo, taxa de aprovação por país.</li>
+  <li><strong>Geolocalização e foto na assinatura</strong> do supervisor SIH (pedido FAMBRAS adiado para pós-implantação).</li>
+</ul>
+
+<h3>5.6 Janeiro-maio/2027 — Escala e expansão</h3>
+<ul>
+  <li>Multi-tenant operacional (várias certificadoras no mesmo GC com isolamento estrito).</li>
+  <li>Onboarding self-service de novas plantas/empresas.</li>
+  <li>Integração com <strong>HAKSIS, SiHalal, MOIAT, halal.gov.sa</strong> (registros externos por país de destino).</li>
+  <li>Marketplace de auditores (qualificação cruzada entre certificadoras).</li>
+  <li>API pública de validação cruzada para parceiros (porta 4 como serviço).</li>
+</ul>
+</section>
+
+<section id="sec-6">
+<h2>6. Riscos e mitigações</h2>
+<table>
+<thead><tr><th>Risco</th><th>Prob.</th><th>Impacto</th><th>Mitigação</th></tr></thead>
+<tbody>
+<tr><td><strong>Elaine (Qualidade FAMBRAS) não entregar selos reais até 17/mai</strong></td><td><span class="badge badge-warning">Média</span></td><td><span class="badge badge-critical">Alto</span></td><td>Pedido formal à Elaine até 14/mai listando ENAS/OIC/BPJPH/MUIS/MS em PNG transparente; fallback: emitir com placeholders em cinza neutro + QR Code funcionando, selos hot-swapáveis depois sem regerar PDFs</td></tr>
+<tr><td>Atraso de feedback FAMBRAS em decisões de UX (wizards, hub de escopo)</td><td><span class="badge badge-warning">Média</span></td><td><span class="badge badge-critical">Alto</span></td><td>Sessões quinzenais marcadas com Lina Ramadan; perguntas residuais já respondidas em mai/2026</td></tr>
+<tr><td>Migração de dados legados (pasta IFF-FAR) revelar campos faltantes no schema</td><td><span class="badge badge-warning">Média</span></td><td><span class="badge badge-warning">Médio</span></td><td>ETL é dry-run em staging antes de prod; schema permite extensão aditiva sem breaking change</td></tr>
+<tr><td>Bug crítico de regressão no SIH em produção durante uso real FAMBRAS</td><td><span class="badge badge-ok">Baixa</span></td><td><span class="badge badge-critical">Alto</span></td><td>4 perfis de usuário teste + smoke documentado; rollback via release branch</td></tr>
+<tr><td>Capacidade do time (1 dev + IA) virar gargalo se houver dependência de UI especializada</td><td><span class="badge badge-warning">Média</span></td><td><span class="badge badge-warning">Médio</span></td><td>Onda 2/3 já mapeadas como "se houver folga"; entregas críticas de jul não dependem delas</td></tr>
+<tr><td>Cliente FAMBRAS questionar "minha planta tá no GC?" antes de set/2026</td><td><span class="badge badge-critical">Alta</span></td><td><span class="badge badge-ok">Baixo</span></td><td>SIH e GC continuam operando como hoje; integração leitura via TASK-11 já existe; sync GC↔SIH é Onda futura (D)</td></tr>
+<tr><td>SysHalal precisar de mudança antes de ago/2026</td><td><span class="badge badge-ok">Baixa</span></td><td><span class="badge badge-critical">Alto</span></td><td>TASK-S0 só começa após go-live FAMBRAS; congelado até lá</td></tr>
+</tbody>
+</table>
+</section>
+
+<section id="sec-7">
+<h2>7. Por que esse plano fecha em julho</h2>
+<p>A tabela abaixo mostra o que <strong>já está pronto</strong> vs. o que falta, separado por tipo de trabalho. O total de "código a escrever" é pequeno; a maior parte é <strong>integração e validação operacional</strong>, que tem prazo dependente de FAMBRAS, não da equipe técnica.</p>
+<table>
+<thead><tr><th>Frente</th><th>Entregue</th><th>Falta</th><th>Risco de prazo</th></tr></thead>
+<tbody>
+<tr><td>GC schema (banco de dados)</td><td><strong>100%</strong></td><td>0% (3 hooks de serviço)</td><td><span class="badge badge-ok">Baixo</span></td></tr>
+<tr><td>GC backend (lógica/API)</td><td>90%</td><td>Service layer Onda 1+ + tela Programa de Certificação</td><td><span class="badge badge-ok">Baixo</span></td></tr>
+<tr><td>GC frontend (telas)</td><td>60%</td><td>10 telas Onda 1+ + 1 tela Onda 2</td><td><span class="badge badge-warning">Médio</span></td></tr>
+<tr><td>SIH backend</td><td>95%</td><td>4 bugs + auto_migrate infra</td><td><span class="badge badge-ok">Baixo</span></td></tr>
+<tr><td>SIH frontend</td><td>90%</td><td>UX (cache, route guards, anexos auto-popular)</td><td><span class="badge badge-ok">Baixo</span></td></tr>
+<tr><td>Migração dados FAMBRAS</td><td>0%</td><td>ETL IFF-FAR + seed Homologação</td><td><span class="badge badge-warning">Médio</span></td></tr>
+<tr><td>Treinamento FAMBRAS</td><td>0%</td><td>3 perfis × material + sessões</td><td><span class="badge badge-warning">Médio</span></td></tr>
+</tbody>
+</table>
+</section>
+
+<section id="sec-8">
+<h2>8. Próximos passos imediatos</h2>
+<ol>
+  <li><strong>Esta semana (mai/12-18) — TOP PRIORIDADE</strong> — entregar a emissão manual de certificados com QR Code novo + 4 gabaritos completos (seção 5.0). Em paralelo: corrigir os 4 bugs críticos do smoke SIH e fechar os 3 hooks de service layer da Onda 1+ GC.</li>
+  <li><strong>Próxima semana (mai/19-25)</strong> — validar sprint 5 SIH + arrancar wizard solicitação GC (U1) e Hub de alteração de escopo (U3).</li>
+  <li><strong>Última semana de mai (mai/26-31)</strong> — apresentar este roadmap formalmente à diretoria Ecohalal e disparar agendamento FAMBRAS para sessões quinzenais de jun-jul.</li>
+  <li><strong>Primeira semana de jun</strong> — primeira sessão FAMBRAS de validação UX (com Lina Ramadan + Fuad Arisheh) sobre os wizards.</li>
+  <li><strong>Começo de jul</strong> — congelar escopo de go-live; tudo que ficar de fora vai para Onda 2 (ago em diante).</li>
+</ol>
+</section>
+
+<section id="sec-9">
+<h2>9. Anexos relacionados</h2>
+<ul>
+  <li><strong>FAMBRAS-VISITA-1504-ONDA-1+.md</strong> — plano consolidado da Onda 1+ FAMBRAS (~25 entregáveis)</li>
+  <li><strong>SMOKE-TEST-2026-05-11-RESULTADOS.md</strong> — status do smoke SIH com bugs e pendências mapeados</li>
+  <li><strong>DECISOES-LINA-2026-05-09.md</strong> — respostas formais da Lina Ramadan que destravaram a Onda 1+</li>
+  <li><strong>CADASTRO-EMPRESA-PLANTA-NOVO-MODELO.md (halalsphere-docs)</strong> — design do refactor multi-país do GC</li>
+  <li><strong>ROADMAP-TECNICO-2026-05-12.html</strong> — versão técnica deste roadmap (para alinhamento interno de execução)</li>
+</ul>
+</section>
+
+<footer class="doc-footer">
+  Documento gerado em 2026-05-12 — Ecohalal Soluções • Confidencial
+</footer>
+
+</div>
+</body>
+</html>
