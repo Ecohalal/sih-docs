@@ -201,7 +201,7 @@
   <div class="audience-note">Uso interno · Time técnico Ecohalal</div>
   <div class="meta">
     <span><strong>Publicação inicial:</strong> 2026-05-12 (manhã)</span>
-    <span><strong>Última atualização:</strong> 2026-05-12 (fim do dia)</span>
+    <span><strong>Última atualização:</strong> 2026-05-13</span>
     <span><strong>Horizonte:</strong> mai/2026 → mai/2027</span>
     <span><strong>Âncora:</strong> jul/2026 (go-live FAMBRAS)</span>
     <span><strong>Capacidade:</strong> 1 dev + IA generativa massiva</span>
@@ -229,30 +229,28 @@
 <h2 style="color: var(--accent);">0. Evolução desde a publicação inicial</h2>
 <blockquote>Esta seção registra tudo que foi modificado no roadmap após a publicação inicial. Seções 1-10 abaixo continuam válidas exceto onde explicitamente atualizadas.</blockquote>
 
-<h3>2026-05-12 — Sprint emissão manual de certificado (C1-C8) entregue + S3 endurecido</h3>
-
-<h4>Entregáveis em produção (commits em <code>release</code>)</h4>
+<h3>2026-05-12 — Publicação do roadmap + sprint inicial em produção</h3>
 <table>
-<thead><tr><th>ID</th><th>Repo</th><th>Commit(s)</th><th>Descrição</th></tr></thead>
+<thead><tr><th>ID</th><th>Repo</th><th>Commit(s)</th><th>Data</th><th>Descrição</th></tr></thead>
 <tbody>
-<tr><td>C3</td><td><code>halalsphere-backend</code></td><td><code>cfabfda3..3e361b38</code></td><td>Schema <code>Certificate.issuanceMode = workflow | manual</code> + migration <code>20260512100000_add_certificate_issuance_mode</code>. AUTO_MIGRATE rodou normalmente em prod (confirmado via 3 queries SQL: coluna, enum, <code>_prisma_migrations</code>).</td></tr>
-<tr><td>C2</td><td><code>halalsphere-backend</code></td><td>(mesmo commit)</td><td><code>POST /certificates/manual-emit</code> com <code>@Roles('qualidade', 'admin')</code>. Transação atômica cria Certification synthetic + Scope + Brands + Products + Certificate + History. Reusa <code>CertificatePdfService.generateAndStore()</code> para PDF + QR.</td></tr>
-<tr><td>C1</td><td><code>halalsphere-frontend</code></td><td><code>14d62e2f..c68cfcbb</code></td><td>Página <code>/qualidade/emissao-manual-certificado</code> em 7 seções. RHF + zod + TanStack mutation. Success view com link PDF/QR/verify.</td></tr>
-<tr><td>C5</td><td><code>halalsphere-backend</code></td><td><code>3e361b38..3ef7c684</code></td><td>15 selos cortados de <code>logos.png</code> (1719×2675, 5×3 grid) via <code>scripts/crop-seals.ts</code> (sharp). Resolve TODOs históricos: enas, oic, kepkaban, muis, ms agora apontam para PNGs reais. <strong>Descoberta</strong>: o que parecia "Turkey/GIMDES" é na verdade o selo oficial <em>Halal Accreditation Agency</em> com texto "OIC/SMIIC 2:2019 ACCREDITED 2023-039". <code>ALL_SEALS_REGISTRY</code> exporta os 16 selos (FAMBRAS + 15). 9 novas variantes em <code>MARKET_VARIANT_CONFIGS</code>.</td></tr>
-<tr><td>C5</td><td><code>halalsphere-frontend</code></td><td><code>c68cfcbb..b2134e2d</code></td><td>Tela manual passa de 7 para 17 templates no dropdown de acreditação.</td></tr>
-<tr><td>C6</td><td>—</td><td>(já existia)</td><td><code>/verify/:certNumber</code> confirmado funcional.</td></tr>
+<tr><td>C3</td><td><code>halalsphere-backend</code></td><td><code>26665501</code> + merge <code>3e361b38</code></td><td>2026-05-12</td><td>Schema <code>Certificate.issuanceMode = workflow | manual</code> + migration <code>20260512100000_add_certificate_issuance_mode</code>. AUTO_MIGRATE rodou normalmente em prod (confirmado em 13/mai via 3 queries SQL: coluna, enum, <code>_prisma_migrations</code>).</td></tr>
+<tr><td>C2</td><td><code>halalsphere-backend</code></td><td>(mesmo commit)</td><td>2026-05-12</td><td><code>POST /certificates/manual-emit</code> com <code>@Roles('qualidade', 'admin')</code>. Transação atômica cria Certification synthetic + Scope + Brands + Products + Certificate + History. Reusa <code>CertificatePdfService.generateAndStore()</code> para PDF + QR.</td></tr>
+<tr><td>C1</td><td><code>halalsphere-frontend</code></td><td><code>9e1f7a20</code> + merge <code>c68cfcbb</code></td><td>2026-05-12</td><td>Página <code>/qualidade/emissao-manual-certificado</code> em 7 seções. RHF + zod + TanStack mutation. Success view com link PDF/QR/verify.</td></tr>
+<tr><td>C6</td><td>—</td><td>(já existia)</td><td>—</td><td><code>/verify/:certNumber</code> confirmado funcional.</td></tr>
 </tbody>
 </table>
 
-<h4>Hotfixes pós-deploy (mesmo dia, mesmo ciclo de release)</h4>
+<h3>2026-05-13 — Selos FAMBRAS + 4 hotfixes pós uso real</h3>
 <table>
-<thead><tr><th>ID</th><th>Repo</th><th>Commit</th><th>Descrição</th></tr></thead>
+<thead><tr><th>ID</th><th>Repo</th><th>Commit</th><th>Data</th><th>Descrição</th></tr></thead>
 <tbody>
-<tr><td>Hotfix-1</td><td><code>halalsphere-frontend</code></td><td><code>b2134e2d..92050efa</code></td><td>Sidebar + MobileMenu ganham link "Emitir Certificado (manual)" (ícone <code>FilePlus</code>) para role <code>qualidade</code> e admin.</td></tr>
-<tr><td>Hotfix-2</td><td><code>halalsphere-backend</code></td><td><code>3ef7c684..8437f6b0</code></td><td><strong>Bug S3 AccessDenied</strong>: bucket privado (correto) mas backend devolvia URL pública sem assinatura. Refactor: <code>uploadToS3</code> agora retorna <code>s3://bucket/key</code> (URI canônico, persistido no DB). Novo helper <code>presignS3Uri(stored, options)</code> gera presigned URL fresca (TTL 15min) a cada consumo. Aceita também URLs <code>https://...</code> legadas — sem migration de dados.</td></tr>
-<tr><td>Hotfix-3</td><td><code>halalsphere-backend</code></td><td><code>8437f6b0..87865853</code></td><td>Endpoint dedicado <strong><code>GET /certificates/:id/download-url?asset=pdf|qr</code></strong> retorna <code>{ url, expiresIn, filename }</code>. NÃO regenera o PDF — só o link. Idempotente. Resolve a dúvida do PO: "preciso poder baixar D+10, D+30, sem regerar o PDF".</td></tr>
-<tr><td>Hotfix-3</td><td><code>halalsphere-frontend</code></td><td><code>92050efa..1f45b716</code></td><td><code>certificateService.getDownloadUrl(id, asset)</code> + tela manual emission success view usa o novo endpoint.</td></tr>
-<tr><td>Hotfix-4</td><td><code>halalsphere-frontend</code></td><td><code>1f45b716..19a08f3b</code></td><td>Telas legadas <code>CertificationDetails.tsx</code> e <code>Certificate.tsx</code> migradas para o novo endpoint. Causa raiz: usavam <code>cert.pdfUrl</code> direto do banco como <code>href</code>.</td></tr>
+<tr><td>C5</td><td><code>halalsphere-backend</code></td><td><code>368dbe46</code> + merge <code>3ef7c684</code></td><td>2026-05-13</td><td>15 selos cortados de <code>logos.png</code> (1719×2675, 5×3 grid) via <code>scripts/crop-seals.ts</code> (sharp). Resolve TODOs históricos: enas, oic, kepkaban, muis, ms agora apontam para PNGs reais. <strong>Descoberta</strong>: o que parecia "Turkey/GIMDES" é na verdade o selo oficial <em>Halal Accreditation Agency</em> com texto "OIC/SMIIC 2:2019 ACCREDITED 2023-039". <code>ALL_SEALS_REGISTRY</code> exporta os 16 selos (FAMBRAS + 15). 9 novas variantes em <code>MARKET_VARIANT_CONFIGS</code>.</td></tr>
+<tr><td>C5</td><td><code>halalsphere-frontend</code></td><td><code>70724120</code> + merge <code>b2134e2d</code></td><td>2026-05-13</td><td>Tela manual passa de 7 para 17 templates no dropdown de acreditação.</td></tr>
+<tr><td>Hotfix-1</td><td><code>halalsphere-frontend</code></td><td><code>92050efa</code></td><td>2026-05-13</td><td>Sidebar + MobileMenu ganham link "Emitir Certificado (manual)" (ícone <code>FilePlus</code>) para role <code>qualidade</code> e admin.</td></tr>
+<tr><td>Hotfix-2</td><td><code>halalsphere-backend</code></td><td><code>8437f6b0</code></td><td>2026-05-13</td><td><strong>Bug S3 AccessDenied</strong>: bucket privado (correto) mas backend devolvia URL pública sem assinatura. Refactor: <code>uploadToS3</code> agora retorna <code>s3://bucket/key</code> (URI canônico, persistido no DB). Novo helper <code>presignS3Uri(stored, options)</code> gera presigned URL fresca (TTL 15min) a cada consumo. Aceita também URLs <code>https://...</code> legadas — sem migration de dados.</td></tr>
+<tr><td>Hotfix-3</td><td><code>halalsphere-backend</code></td><td><code>87865853</code></td><td>2026-05-13</td><td>Endpoint dedicado <strong><code>GET /certificates/:id/download-url?asset=pdf|qr</code></strong> retorna <code>{ url, expiresIn, filename }</code>. NÃO regenera o PDF — só o link. Idempotente. Resolve a dúvida do PO: "preciso poder baixar D+10, D+30, sem regerar o PDF".</td></tr>
+<tr><td>Hotfix-3</td><td><code>halalsphere-frontend</code></td><td><code>1f45b716</code></td><td>2026-05-13</td><td><code>certificateService.getDownloadUrl(id, asset)</code> + tela manual emission success view usa o novo endpoint.</td></tr>
+<tr><td>Hotfix-4</td><td><code>halalsphere-frontend</code></td><td><code>19a08f3b</code></td><td>2026-05-13</td><td>Telas legadas <code>CertificationDetails.tsx</code> e <code>Certificate.tsx</code> migradas para o novo endpoint. Causa raiz: usavam <code>cert.pdfUrl</code> direto do banco como <code>href</code>.</td></tr>
 </tbody>
 </table>
 

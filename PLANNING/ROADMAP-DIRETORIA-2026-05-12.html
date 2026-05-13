@@ -178,7 +178,7 @@
   <h1>Roadmap Ecossistema Halal Ecohalal — Versão Diretoria</h1>
   <div class="meta">
     <span><strong>Publicação inicial:</strong> 2026-05-12 (manhã)</span>
-    <span><strong>Última atualização:</strong> 2026-05-12 (fim do dia)</span>
+    <span><strong>Última atualização:</strong> 2026-05-13</span>
     <span><strong>Autor:</strong> Renato Ribeiro (Ecohalal)</span>
     <span><strong>Horizonte:</strong> mai/2026 → mai/2027</span>
     <span><strong>Âncora:</strong> Go-live FAMBRAS — julho/2026</span>
@@ -205,26 +205,27 @@
 <h2 style="color: var(--accent);">0. Atualizações desde a publicação inicial</h2>
 <blockquote>Esta seção registra a evolução do roadmap após sua publicação inicial. Conteúdo das seções 1-9 abaixo permanece válido salvo onde explicitamente atualizado.</blockquote>
 
-<h3>2026-05-12 (mesmo dia da publicação) — Sprint imediata 12-18/mai entregue em horas, não dias</h3>
+<h3>2026-05-12 (mesmo dia da publicação) — Sprint inicial em produção</h3>
 
-<p>Compromisso original era ter a emissão manual de certificado disponível <strong>até 18/mai</strong>. Na prática, <strong>5 dos 8 entregáveis ficaram em produção no mesmo dia</strong> da publicação do roadmap:</p>
+<p>Compromisso original era ter a emissão manual de certificado disponível <strong>até 18/mai</strong>. Na prática, <strong>a base funcional ficou em produção no mesmo dia</strong> da publicação:</p>
 
 <table>
 <thead><tr><th>Entregável</th><th>Status</th></tr></thead>
 <tbody>
-<tr><td>Schema <code>issuance_mode</code> no banco</td><td><span class="badge badge-ok">deployed + migration confirmada em prod via SQL</span></td></tr>
+<tr><td>Schema <code>issuance_mode</code> no banco</td><td><span class="badge badge-ok">deployed + migration confirmada em prod no dia seguinte via SQL</span></td></tr>
 <tr><td>Endpoint backend <code>POST /certificates/manual-emit</code></td><td><span class="badge badge-ok">deployed</span></td></tr>
 <tr><td>Tela <code>/qualidade/emissao-manual-certificado</code> (role Qualidade)</td><td><span class="badge badge-ok">deployed</span></td></tr>
 <tr><td>Página pública de verificação QR Code</td><td><span class="badge badge-ok">já existia, confirmada</span></td></tr>
-<tr><td>15 selos de acreditadores reais integrados (ENAS, OIC, BPJPH, MUIS, MS, GAC + 9 países)</td><td><span class="badge badge-ok">deployed</span></td></tr>
 </tbody>
 </table>
 
+<h3>2026-05-13 — Selos FAMBRAS integrados + 4 hotfixes pós uso real do PO</h3>
+
 <div class="callout">
-<strong>Destrava de risco crítico:</strong> Elaine (Qualidade FAMBRAS) entregou os selos antes do prazo de 14/mai, em arquivo único (<code>logos.png</code>). Foram recortados via script automatizado em 15 PNGs individuais — incluindo descoberta positiva: o selo que mapeamos como "OIC/SMIIC" é o <strong>oficial do Halal Accreditation Agency</strong> (não placeholder).
+<strong>Selos entregues antes do prazo:</strong> Elaine (Qualidade FAMBRAS) enviou os 15 selos em arquivo único (<code>logos.png</code>) — antes do prazo de 14/mai. Foram recortados via script automatizado em 15 PNGs individuais. <strong>Descoberta positiva:</strong> o selo que mapeamos como "OIC/SMIIC" é o <strong>oficial do Halal Accreditation Agency</strong> (não placeholder). Resultado: 15 selos no catálogo (ENAS, OIC, BPJPH, MUIS, MS, GAC e mais 9 países) + tela manual com 17 opções de template no dropdown.
 </div>
 
-<h4>Hotfixes aplicados durante o dia (descobertos em uso real do PO)</h4>
+<h4>4 hotfixes corrigidos no mesmo dia (descobertos em uso real do PO)</h4>
 <ul>
   <li>Link no menu lateral para acessar a tela manual (ausente após o primeiro deploy — corrigido em &lt; 30min)</li>
   <li>Bug crítico de acesso ao PDF/QR no S3 (bucket privado, links públicos retornavam <em>AccessDenied</em>) — resolvido com URLs assinadas temporárias</li>
@@ -237,7 +238,7 @@
   <li>Módulo de <strong>Contratos</strong> (<code>/juridico/contratos</code>) também armazena PDFs no mesmo bucket privado e usa links diretos — se foram emitidos com a URL legada, vão dar <em>AccessDenied</em> até receberem o mesmo tratamento. Tratar em sprint separada do jurídico.</li>
 </ul>
 
-<h4>Pendências para semana de 13-18/mai</h4>
+<h4>Pendências operacionais para 14-18/mai</h4>
 <ul>
   <li>Smoke pessoal do PO com 4 gabaritos diferentes (sanity check antes da FAMBRAS validar)</li>
   <li>Janela de validação visual com a FAMBRAS abre <strong>15/mai</strong></li>

@@ -1,7 +1,7 @@
 # Roadmap Técnico — Ecossistema Halal Ecohalal
 
 **Data publicação inicial:** 2026-05-12 (manhã)
-**Última atualização:** 2026-05-12 (fim do dia)
+**Última atualização:** 2026-05-13
 **Audiência:** time técnico Ecohalal (uso interno; complementa
 [ROADMAP-DIRETORIA-2026-05-12.md](ROADMAP-DIRETORIA-2026-05-12.md))
 **Horizonte:** mai/2026 → mai/2027 com âncora em **jul/2026 (go-live FAMBRAS)**
@@ -15,28 +15,31 @@ decisão+UX+integração, não código.
 
 > Esta seção registra tudo que foi modificado no roadmap após a publicação inicial. Seções 1-10 abaixo continuam válidas exceto onde explicitamente atualizadas.
 
-### 2026-05-12 — Sprint emissão manual de certificado (C1-C8) entregue + S3 endurecido
+### 2026-05-12 — Publicação do roadmap + sprint inicial em produção
 
-#### Entregáveis em produção (commits em `release`)
+| ID | Repo | Commit(s) | Data | Descrição |
+|---|---|---|---|---|
+| C3 | `halalsphere-backend` | `26665501` + merge `3e361b38` | 2026-05-12 | Schema `Certificate.issuanceMode = workflow \| manual` + migration `20260512100000_add_certificate_issuance_mode`. AUTO_MIGRATE rodou normalmente em prod (confirmado em 13/mai via 3 queries SQL: coluna, enum, `_prisma_migrations`). |
+| C2 | `halalsphere-backend` | (mesmo commit) | 2026-05-12 | `POST /certificates/manual-emit` com `@Roles('qualidade', 'admin')`. Transação atômica cria Certification synthetic + Scope + Brands + Products + Certificate + History. Reusa `CertificatePdfService.generateAndStore()` para PDF + QR. |
+| C1 | `halalsphere-frontend` | `9e1f7a20` + merge `c68cfcbb` | 2026-05-12 | Página `/qualidade/emissao-manual-certificado` em 7 seções. RHF + zod + TanStack mutation. Success view com link PDF/QR/verify. |
+| C6 | — | (já existia) | — | `/verify/:certNumber` confirmado funcional (componente `VerifyCertificate.tsx`, endpoint `@Public` `GET /certificates/verify/:number`). |
 
-| ID | Repo | Commit(s) | Descrição |
-|---|---|---|---|
-| C3 | `halalsphere-backend` | `cfabfda3..3e361b38` | Schema `Certificate.issuanceMode = workflow \| manual` + migration `20260512100000_add_certificate_issuance_mode`. AUTO_MIGRATE rodou normalmente em prod (confirmado via 3 queries SQL: coluna, enum, `_prisma_migrations`). |
-| C2 | `halalsphere-backend` | (mesmo commit) | `POST /certificates/manual-emit` com `@Roles('qualidade', 'admin')`. Transação atômica cria Certification synthetic + Scope + Brands + Products + Certificate + History. Reusa `CertificatePdfService.generateAndStore()` para PDF + QR. |
-| C1 | `halalsphere-frontend` | `14d62e2f..c68cfcbb` | Página `/qualidade/emissao-manual-certificado` em 7 seções. RHF + zod + TanStack mutation. Success view com link PDF/QR/verify. |
-| C5 | `halalsphere-backend` | `3e361b38..3ef7c684` | 15 selos cortados de `halalsphere-docs/CERTIFICATES/logos.png` (1719×2675, 5×3 grid) via `scripts/crop-seals.ts` (sharp). Resolve TODOs históricos: enas, oic, kepkaban, muis, ms agora apontam para PNGs reais. **Descoberta**: o que parecia "Turkey/GIMDES" é na verdade o selo oficial *Halal Accreditation Agency* com texto "OIC/SMIIC 2:2019 ACCREDITED 2023-039". `ALL_SEALS_REGISTRY` exporta os 16 selos (FAMBRAS + 15). 9 novas variantes em `MARKET_VARIANT_CONFIGS` (SAUDI, SAUDI_SASO, QATAR, OMAN, KUWAIT, SINGAPORE_HALAL, IMANOR, THAILAND, UAE_MINISTRY). |
-| C5 | `halalsphere-frontend` | `c68cfcbb..b2134e2d` | Tela manual passa de 7 para 17 templates no dropdown de acreditação. |
-| C6 | — | (já existia) | `/verify/:certNumber` confirmado funcional (componente `VerifyCertificate.tsx`, endpoint `@Public` `GET /certificates/verify/:number`). |
+### 2026-05-13 — Selos FAMBRAS + 4 hotfixes pós uso real
 
-#### Hotfixes pós-deploy (mesmo dia, mesmo ciclo de release)
+| ID | Repo | Commit | Data | Descrição |
+|---|---|---|---|---|
+| C5 | `halalsphere-backend` | `368dbe46` + merge `3ef7c684` | 2026-05-13 | 15 selos cortados de `halalsphere-docs/CERTIFICATES/logos.png` (1719×2675, 5×3 grid) via `scripts/crop-seals.ts` (sharp). Resolve TODOs históricos: enas, oic, kepkaban, muis, ms agora apontam para PNGs reais. **Descoberta**: o que parecia "Turkey/GIMDES" é na verdade o selo oficial *Halal Accreditation Agency* com texto "OIC/SMIIC 2:2019 ACCREDITED 2023-039". `ALL_SEALS_REGISTRY` exporta os 16 selos (FAMBRAS + 15). 9 novas variantes em `MARKET_VARIANT_CONFIGS`. |
+| C5 | `halalsphere-frontend` | `70724120` + merge `b2134e2d` | 2026-05-13 | Tela manual passa de 7 para 17 templates no dropdown de acreditação. |
 
-| ID | Repo | Commit | Descrição |
-|---|---|---|---|
-| Hotfix-1 | `halalsphere-frontend` | `b2134e2d..92050efa` | Sidebar + MobileMenu ganham link "Emitir Certificado (manual)" com ícone `FilePlus`, role `qualidade` (após Dashboard Qualidade) e admin (seção Geral). Bug: rota existia mas não havia link de navegação. |
-| Hotfix-2 | `halalsphere-backend` | `3ef7c684..8437f6b0` | **Bug S3 AccessDenied no PDF/QR**: bucket `repo-production-halalsphere-docs` é privado (correto) mas backend devolvia URL pública direta sem assinatura. Refactor: `uploadToS3` agora retorna `s3://bucket/key` (URI canônico, persistido no DB). Novo helper `presignS3Uri(stored, options)` gera presigned URL fresca (TTL 15min) a cada consumo. Aceita também URLs `https://bucket.s3.*.amazonaws.com/key` legadas (extrai bucket+key, regenera assinatura) — sem migration de dados. |
-| Hotfix-3 | `halalsphere-backend` | `8437f6b0..87865853` | Endpoint dedicado **`GET /certificates/:id/download-url?asset=pdf\|qr`** retorna `{ url, expiresIn, filename }`. NÃO regenera o PDF — só o link. Idempotente; pode ser chamado infinitas vezes. Auth `@Roles('empresa', 'analista', 'gestor', 'admin', 'auditor', 'comercial', 'juridico', 'gestor_auditoria', 'qualidade')`. Resolve a dúvida do PO: "preciso poder baixar D+10, D+30, sem regerar o PDF". |
-| Hotfix-3 | `halalsphere-frontend` | `92050efa..1f45b716` | `certificateService.getDownloadUrl(id, asset)` no service. Tela manual emission success view usa o novo endpoint. |
-| Hotfix-4 | `halalsphere-frontend` | `1f45b716..19a08f3b` | Telas legadas `CertificationDetails.tsx` (card "Certificados") e `Certificate.tsx` (img QR + handleDownload) migradas para o novo endpoint. **Causa raiz** do bug em prod do PO: essas telas usavam `cert.pdfUrl` / `cert.qrCodeUrl` direto do banco como `href` ou `src`, e após o hotfix do S3 esses campos contêm `s3://...` URI (não browser-friendly). |
+#### Hotfixes do dia 13/mai (descobertos pelo PO em uso real)
+
+| ID | Repo | Commit | Data | Descrição |
+|---|---|---|---|---|
+| Hotfix-1 | `halalsphere-frontend` | `92050efa` | 2026-05-13 | Sidebar + MobileMenu ganham link "Emitir Certificado (manual)" com ícone `FilePlus`, role `qualidade` (após Dashboard Qualidade) e admin (seção Geral). Bug: rota existia mas não havia link de navegação. |
+| Hotfix-2 | `halalsphere-backend` | `8437f6b0` | 2026-05-13 | **Bug S3 AccessDenied no PDF/QR**: bucket `repo-production-halalsphere-docs` é privado (correto) mas backend devolvia URL pública direta sem assinatura. Refactor: `uploadToS3` agora retorna `s3://bucket/key` (URI canônico, persistido no DB). Novo helper `presignS3Uri(stored, options)` gera presigned URL fresca (TTL 15min) a cada consumo. Aceita também URLs `https://bucket.s3.*.amazonaws.com/key` legadas (extrai bucket+key, regenera assinatura) — sem migration de dados. |
+| Hotfix-3 | `halalsphere-backend` | `87865853` | 2026-05-13 | Endpoint dedicado **`GET /certificates/:id/download-url?asset=pdf\|qr`** retorna `{ url, expiresIn, filename }`. NÃO regenera o PDF — só o link. Idempotente; pode ser chamado infinitas vezes. Auth `@Roles('empresa', 'analista', 'gestor', 'admin', 'auditor', 'comercial', 'juridico', 'gestor_auditoria', 'qualidade')`. Resolve a dúvida do PO: "preciso poder baixar D+10, D+30, sem regerar o PDF". |
+| Hotfix-3 | `halalsphere-frontend` | `1f45b716` | 2026-05-13 | `certificateService.getDownloadUrl(id, asset)` no service. Tela manual emission success view usa o novo endpoint. |
+| Hotfix-4 | `halalsphere-frontend` | `19a08f3b` | 2026-05-13 | Telas legadas `CertificationDetails.tsx` (card "Certificados") e `Certificate.tsx` (img QR + handleDownload) migradas para o novo endpoint. **Causa raiz** do bug em prod do PO: essas telas usavam `cert.pdfUrl` / `cert.qrCodeUrl` direto do banco como `href` ou `src`, e após o hotfix do S3 esses campos contêm `s3://...` URI (não browser-friendly). |
 
 #### Decisões arquiteturais novas
 

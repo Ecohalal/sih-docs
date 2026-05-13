@@ -1,7 +1,7 @@
 # Roadmap Ecossistema Halal Ecohalal — Versão Diretoria
 
 **Data publicação inicial:** 2026-05-12 (manhã)
-**Última atualização:** 2026-05-12 (fim do dia)
+**Última atualização:** 2026-05-13
 **Autor:** Renato Ribeiro (Ecohalal)
 **Audiência primária:** Diretoria Ecohalal
 **Audiência secundária:** FAMBRAS Halal (com mesmo conteúdo, sem necessidade de redação paralela)
@@ -13,21 +13,22 @@
 
 > Esta seção registra a evolução do roadmap após sua publicação inicial. Conteúdo das seções 1-9 abaixo permanece válido salvo onde explicitamente atualizado.
 
-### 2026-05-12 (mesmo dia da publicação) — Sprint imediata 12-18/mai entregue em horas, não dias
+### 2026-05-12 (mesmo dia da publicação) — Sprint inicial em produção
 
-Compromisso original era ter a emissão manual de certificado disponível **até 18/mai**. Na prática, **5 dos 8 entregáveis ficaram em produção no mesmo dia** da publicação do roadmap:
+Compromisso original era ter a emissão manual de certificado disponível **até 18/mai**. Na prática, **a base funcional ficou em produção no mesmo dia** da publicação:
 
 | Entregável | Status |
 |---|---|
-| Schema `issuance_mode` no banco | ✅ deployed + migration confirmada em prod via SQL |
+| Schema `issuance_mode` no banco | ✅ deployed + migration confirmada em prod via SQL no dia seguinte |
 | Endpoint backend `POST /certificates/manual-emit` | ✅ deployed |
 | Tela `/qualidade/emissao-manual-certificado` (role Qualidade) | ✅ deployed |
 | Página pública de verificação QR Code | ✅ já existia, confirmada |
-| 15 selos de acreditadores reais integrados (ENAS, OIC, BPJPH, MUIS, MS, GAC, e mais 9 países) | ✅ deployed |
 
-**Destrava de risco crítico:** Elaine (Qualidade FAMBRAS) entregou os selos antes do prazo de 14/mai, em arquivo único (`logos.png`). Foram recortados via script automatizado em 15 PNGs individuais — incluindo descoberta positiva: o selo que mapeamos como "OIC/SMIIC" é o **oficial do Halal Accreditation Agency** (não placeholder).
+### 2026-05-13 — Selos FAMBRAS integrados + 4 hotfixes pós uso real do PO
 
-**Hotfixes aplicados durante o dia** (descobertos em uso real do PO):
+**Selos entregues antes do prazo:** Elaine (Qualidade FAMBRAS) enviou os 15 selos em arquivo único (`logos.png`) — antes do prazo de 14/mai. Foram recortados via script automatizado em 15 PNGs individuais. **Descoberta positiva:** o selo que mapeamos como "OIC/SMIIC" é o **oficial do Halal Accreditation Agency** (não placeholder). Resultado: 15 selos no catálogo (ENAS, OIC, BPJPH, MUIS, MS, GAC e mais 9 países) + tela manual com 17 opções de template no dropdown.
+
+**4 hotfixes corrigidos no mesmo dia** (descobertos em uso real do PO):
 - Link no menu lateral para acessar a tela manual (ausente após o primeiro deploy — corrigido em < 30min)
 - Bug crítico de acesso ao PDF/QR no S3 (bucket privado, links públicos retornavam *AccessDenied*) — resolvido com URLs assinadas temporárias
 - Endpoint dedicado para baixar PDF a qualquer momento — cliente clica, sistema gera link fresco em milissegundos, **PDF original permanece imutável no S3** indefinidamente
@@ -36,7 +37,7 @@ Compromisso original era ter a emissão manual de certificado disponível **até
 **Pendências conhecidas (fora do escopo da sprint atual):**
 - Módulo de **Contratos** (`/juridico/contratos`) também armazena PDFs no mesmo bucket privado e usa links diretos — se foram emitidos com a URL legada, vão dar *AccessDenied* até receberem o mesmo tratamento. Tratar em sprint separada do jurídico.
 
-**Pendências para semana de 13-18/mai:**
+**Pendências operacionais para 14-18/mai:**
 - Smoke pessoal do PO com 4 gabaritos diferentes (sanity check antes da FAMBRAS validar)
 - Janela de validação visual com a FAMBRAS abre **15/mai**
 - Treinamento da operadora Qualidade FAMBRAS em **18/mai**
