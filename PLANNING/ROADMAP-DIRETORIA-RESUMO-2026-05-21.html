@@ -507,6 +507,14 @@
 
     <tr class="row-soon">
       <td class="num">34</td>
+      <td class="name key">Plataforma de BI — 3 dashboards integrados</td>
+      <td class="desc">Plataforma de BI cobrindo as 3 bases do ecossistema: (a) Sys Halal — volume, destinos e sazonalidade dos certificados de embarque; (b) GC — prazos, fluxos, escopos e abrangência das certificações por empresa; (c) SIH — abate, produção, reclamações e não-conformidades.</td>
+      <td class="who">Diretoria + gestão Ecohalal + gestão FAMBRAS</td>
+      <td class="date date-soon">S3-4 jul/26</td>
+    </tr>
+
+    <tr class="row-soon">
+      <td class="num">35</td>
       <td class="name">GC — Programa de Certificação (3 modos)</td>
       <td class="desc">Painel-mãe com 3 visões: Executivo (KPIs), Operacional (tabela densa) e por Colaborador (carga ponderada).</td>
       <td class="who">Gestores + Controladoria + analistas</td>
@@ -514,7 +522,7 @@
     </tr>
 
     <tr class="row-soon">
-      <td class="num">35</td>
+      <td class="num">36</td>
       <td class="name">GC — IA para matérias-primas</td>
       <td class="desc">Uso de integração com IA para avaliação automática de criticidade, origem animal e espécie de MP.</td>
       <td class="who">Analistas FAMBRAS</td>
@@ -522,17 +530,27 @@
     </tr>
 
     <tr class="row-soon">
-      <td class="num">36</td>
+      <td class="num">37</td>
       <td class="name key">Estabilização e treinamento operacional</td>
       <td class="desc">Smoke final em produção, treinamento dos 3 perfis e acompanhamento pós-virada. Buffer antes do go-live.</td>
       <td class="who">FAMBRAS + Ecohalal</td>
       <td class="date date-soon">S1-2 ago/26</td>
     </tr>
 
+    <tr class="group-header"><td colspan="5">Backlog técnico — entregue</td></tr>
+
+    <tr class="row-done">
+      <td class="num">38</td>
+      <td class="name">Espelhamento FAMBRAS (FM 7.8.x)</td>
+      <td class="desc">ETL para migração de 1023 certificados legados FAMBRAS de 2 listas oficiais (FM 7.8.1 industrial + FM 7.8.2 frigorífico) para a base GC com issuanceMode=mirror. 562 empresas + 575 plantas migradas em produção.</td>
+      <td class="who">Ecohalal técnico + Qualidade FAMBRAS</td>
+      <td class="date date-done">mai/26 ✓</td>
+    </tr>
+
     <tr class="group-header"><td colspan="5">Pós Go-live — set/2026 em diante</td></tr>
 
     <tr class="row-future">
-      <td class="num">37</td>
+      <td class="num">39</td>
       <td class="name">Sys Halal alinhado com GC</td>
       <td class="desc">Sys Halal passa a consumir Empresa, Planta e Certificado direto da GC; deixa de manter cadastro próprio.</td>
       <td class="who">Despachantes + clientes (transparente)</td>
@@ -540,7 +558,7 @@
     </tr>
 
     <tr class="row-future">
-      <td class="num">38</td>
+      <td class="num">40</td>
       <td class="name key">Validação Cruzada de 4 Portas (ativação)</td>
       <td class="desc">Sys Halal valida lote antes de emitir cert de embarque consultando 4 fontes (empresa, certificado, escopo, evidência operacional SIH). Diferencial competitivo.</td>
       <td class="who">Sistema — protege clientes e Ecohalal</td>
@@ -548,7 +566,7 @@
     </tr>
 
     <tr class="row-future">
-      <td class="num">39</td>
+      <td class="num">41</td>
       <td class="name">SIH — POC de IA em documentos</td>
       <td class="desc">Extração estruturada de PDFs (certificados, CSI, BL, fatura) via integração com IA; reduz digitação manual.</td>
       <td class="who">Operadores da SIH</td>
@@ -556,7 +574,15 @@
     </tr>
 
     <tr class="row-future">
-      <td class="num">40</td>
+      <td class="num">42</td>
+      <td class="name">SIH — Rastreabilidade de colaboradores (integração ponto FAMBRAS)</td>
+      <td class="desc">Integração do SIH com o sistema de ponto da FAMBRAS para rastrear automaticamente os colaboradores da Supervisão Halal envolvidos na produção dos dias dos relatórios. Hoje o relatório já registra supervisor e degoladores; com a integração a lista de envolvidos passa a ser populada do ponto.</td>
+      <td class="who">Supervisão FAMBRAS + RH FAMBRAS</td>
+      <td class="date date-future">out–dez/26</td>
+    </tr>
+
+    <tr class="row-future">
+      <td class="num">43</td>
       <td class="name">GC — Onda 3 (HAS revisor + auditoria não-anunciada)</td>
       <td class="desc">Revisor HAS em 2 estágios, workflow de auditoria não-anunciada (D-90/D-15/D-5), alerta de imparcialidade (3 anos).</td>
       <td class="who">Analistas + auditores + gestão</td>
@@ -564,7 +590,7 @@
     </tr>
 
     <tr class="row-future">
-      <td class="num">41</td>
+      <td class="num">44</td>
       <td class="name key">Escala e expansão — Multi-tenant + API pública</td>
       <td class="desc">GC com múltiplas certificadoras isoladas; integração HAKSIS/SiHalal/MOIAT; API pública de validação cruzada como serviço.</td>
       <td class="who">Outras certificadoras halal + parceiros</td>

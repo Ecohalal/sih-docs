@@ -41,8 +41,8 @@ gantt
     #26 FM 9.3 unificado mobile                  :       g26,  2026-06-15, 2026-06-30
     #27 Inbox analista + Hub docs IT 7.12        :       g27,  2026-06-22, 2026-06-30
     #33 Editor planilha MP (Airtable-like)       :       g33,  2026-07-08, 2026-07-21
-    #34 Programa Certificação (3 modos)          :       g34,  2026-07-15, 2026-07-31
-    #35 IA matérias-primas                       :       g35,  2026-07-22, 2026-07-31
+    #35 Programa Certificação (3 modos)          :       g35,  2026-07-15, 2026-07-31
+    #36 IA matérias-primas                       :       g36,  2026-07-22, 2026-07-31
 
     section Supervisão Industrial Halal
     #10 Fase A.2 (20 tipos FM) + Infra AWS       :done,  s10,  2026-03-01, 2026-03-31
@@ -52,25 +52,29 @@ gantt
     #18 Lote de hotfixes pós-teste preliminar    :done,  s18,  2026-05-15, 2026-05-21
     #21 Sprint 5 final (Desossa + cert externo)  :active, s21, 2026-05-22, 2026-05-31
     #22 Piloto controlado (até 4 empresas)       :       s22,  2026-06-01, 2026-06-30
-    #40 POC IA em documentos                     :       s40,  2026-08-01, 2026-10-31
+    #41 POC IA em documentos                     :       s41,  2026-08-01, 2026-10-31
+    #42 Rastreabilidade colaboradores (ponto)    :       s42,  2026-10-01, 2026-12-31
 
     section Sys Halal
     #19 Em produção desde ago/2025               :done,  y19,  2025-08-01, 2026-04-30
     #23 API v2 (integração externa)              :active, y23, 2026-05-22, 2026-08-31
-    #38 Sys Halal alinhado com GC                :       y38,  2026-09-01, 2026-09-30
-    #39 Validação Cruzada de 4 Portas            :       y39,  2026-09-01, 2026-10-31
+    #39 Sys Halal alinhado com GC                :       y39,  2026-09-01, 2026-09-30
+    #40 Validação Cruzada de 4 Portas            :       y40,  2026-09-01, 2026-10-31
+
+    section Analytics & BI
+    #34 Plataforma de BI (3 dashboards)          :       bi01, 2026-07-15, 2026-07-31
 
     section Migração & Treinamento
-    #37 Espelhamento FAMBRAS (FM 7.8.x)          :done,  m37,  2026-05-01, 2026-05-21
+    #38 Espelhamento FAMBRAS (FM 7.8.x)          :done,  m38,  2026-05-01, 2026-05-21
     #29 Validação visual com FAMBRAS             :done,  m29,  2026-05-15, 2026-05-17
     #30 Treinamento FAMBRAS (hands-on)           :done, milestone, m30, 2026-05-20, 0d
     #32 Migração piloto IFF (ETL)                :       m32,  2026-07-01, 2026-07-14
-    #36 Estabilização + treinamento operacional  :       m36,  2026-08-01, 2026-08-14
+    #37 Estabilização + treinamento operacional  :       m37,  2026-08-01, 2026-08-14
     #31 Go-live FAMBRAS                          :crit, milestone, m31, 2026-08-15, 0d
 
     section Pós Go-live
-    #41 Onda 3 (HAS + auditoria não-anunciada)   :       p41,  2026-11-01, 2027-01-31
-    #42 Multi-tenant + API pública               :       p42,  2027-02-01, 2027-05-31
+    #43 Onda 3 (HAS + auditoria não-anunciada)   :       p43,  2026-11-01, 2027-01-31
+    #44 Multi-tenant + API pública               :       p44,  2027-02-01, 2027-05-31
 ```
 
 ---
