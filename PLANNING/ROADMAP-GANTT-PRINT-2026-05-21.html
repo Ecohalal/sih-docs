@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Roadmap Ecohalal — Gantt 2026 — Print 21/mai</title>
+<style>
+  @page {
+    size: A4 landscape;
+    margin: 8mm 10mm;
+  }
+  :root {
+    --primary: #0f5d4f;
+    --primary-light: #e6f2ef;
+    --accent: #c9882d;
+    --text: #1a1a1a;
+    --muted: #555;
+    --border: #c8c8c8;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    color: var(--text);
+    background: white;
+  }
+
+  .page {
+    width: 100%;
+    min-height: 190mm;
+    page-break-after: always;
+    padding: 4mm 0 0;
+    display: flex;
+    flex-direction: column;
+  }
+  .page:last-child {
+    page-break-after: auto;
+  }
+
+  header.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 8pt;
+    border-bottom: 2.5pt solid var(--primary);
+    padding-bottom: 4pt;
+    margin-bottom: 6pt;
+  }
+  header.page-header .title {
+    font-size: 12pt;
+    font-weight: 700;
+    color: var(--primary);
+  }
+  header.page-header .section-name {
+    font-size: 10pt;
+    color: var(--muted);
+    margin-top: 1pt;
+  }
+  header.page-header .meta {
+    text-align: right;
+    font-size: 7.5pt;
+    color: var(--muted);
+    line-height: 1.4;
+  }
+
+  /* Mermaid container — força preencher o restante da página sem extrapolar */
+  .mermaid {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  .mermaid svg {
+    max-width: 100% !important;
+    max-height: 100% !important;
+    width: auto !important;
+    height: auto !important;
+  }
+
+  /* Cover page */
+  .cover {
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 30mm 20mm;
+  }
+  .cover h1 {
+    color: var(--primary);
+    font-size: 24pt;
+    margin: 0 0 6pt;
+    line-height: 1.2;
+  }
+  .cover .subtitle {
+    font-size: 13pt;
+    color: var(--muted);
+    margin-bottom: 18pt;
+  }
+  .cover .meta-block {
+    font-size: 11pt;
+    color: var(--text);
+    line-height: 1.7;
+    border-top: 1pt solid var(--border);
+    border-bottom: 1pt solid var(--border);
+    padding: 10pt 0;
+    margin: 12pt auto;
+    max-width: 180mm;
+  }
+  .cover .meta-block strong { color: var(--primary); }
+  .cover .legend-block {
+    margin-top: 18pt;
+    font-size: 9.5pt;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+  .cover .legend-block .item {
+    display: inline-block;
+    margin: 0 8pt;
+  }
+  .cover .footer {
+    margin-top: auto;
+    font-size: 8pt;
+    color: var(--muted);
+  }
+
+  @media screen {
+    body { background: #efeae0; padding: 12pt; }
+    .page {
+      background: white;
+      width: 297mm;
+      min-height: 210mm;
+      margin: 0 auto 12pt;
+      padding: 12mm;
+      box-shadow: 0 2pt 8pt rgba(0,0,0,0.1);
+    }
+  }
+
+  @media print {
+    *,
+    *::before,
+    *::after {
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+      color-adjust: exact !important;
+    }
+    body { background: white; }
+    .page { box-shadow: none; }
+    /* evita Mermaid extrapolar a página em impressão */
+    .mermaid svg {
+      max-height: 175mm !important;
+    }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============================================================ -->
+<!-- COVER -->
+<div class="page cover">
+  <h1>Roadmap Ecossistema Halal Ecohalal</h1>
+  <div class="subtitle">Visão Gantt · Diretoria</div>
+  <div class="meta-block">
+    <div><strong>Atualizado:</strong> 2026-05-21</div>
+    <div><strong>Horizonte:</strong> fev/2026 → mai/2027</div>
+    <div><strong>Marco principal:</strong> Go-live FAMBRAS em agosto/2026</div>
+    <div><strong>Itens totais:</strong> 41 entregas (numeração pula o #13)</div>
+  </div>
+  <div class="legend-block">
+    <strong>Páginas:</strong>
+    <span class="item">1. Visão consolidada</span>
+    <span class="item">2. Gestão de Certificações</span>
+    <span class="item">3. Supervisão Industrial Halal</span>
+    <span class="item">4. Sys Halal</span>
+    <span class="item">5. Migração &amp; Treinamento</span>
+    <span class="item">6. Pós Go-live</span>
+  </div>
+  <div class="footer">Ecohalal Soluções · documento interno</div>
+</div>
+
+<!-- ============================================================ -->
+<!-- VISÃO CONSOLIDADA -->
+<div class="page">
+  <header class="page-header">
+    <div>
+      <div class="title">Roadmap Ecohalal — Visão consolidada</div>
+      <div class="section-name">Todas as frentes · fev/2026 → mai/2027</div>
+    </div>
+    <div class="meta">
+      <div><strong>1</strong> / 6</div>
+      <div>2026-05-21</div>
+    </div>
+  </header>
+  <div class="mermaid">
+gantt
+    dateFormat YYYY-MM-DD
+    axisFormat %b/%y
+
+    section Gestão de Certificações
+    #1 Aggregate root + UI FAMBRAS premium       :done,  g01,  2026-02-01, 2026-02-28
+    #2 Workflow completo de certificação digital :done,  g02,  2026-03-01, 2026-04-30
+    #6 Engine de PDFs (árabe + multi-país)       :done,  g06,  2026-03-01, 2026-04-30
+    #11 Cadastro multi-país                      :done,  g11,  2026-05-01, 2026-05-15
+    #12 Modelo de dados FAMBRAS (Onda 1+)        :done,  g12,  2026-05-01, 2026-05-15
+    #14 Emissão Manual de Certificado            :done,  g14,  2026-05-08, 2026-05-21
+    #20 Camada de serviço Onda 1+                :active, g20, 2026-05-21, 2026-05-31
+    #24 Wizard 5 passos                          :       g24,  2026-06-01, 2026-06-14
+    #33 Editor planilha MP                       :       g33,  2026-07-08, 2026-07-21
+    #35 IA matérias-primas                       :       g35,  2026-07-22, 2026-07-31
+
+    section Supervisão Industrial Halal
+    #10 Fase A.2 + Infra AWS                     :done,  s10,  2026-03-01, 2026-03-31
+    #8 Sprints 1–5                               :done,  s08,  2026-04-01, 2026-04-30
+    #17 Controladoria com duplo check            :done,  s17,  2026-05-01, 2026-05-15
+    #18 Lote de hotfixes (Nilsa)                 :done,  s18,  2026-05-15, 2026-05-21
+    #21 Sprint 5 final (Desossa)                 :active, s21, 2026-05-22, 2026-05-31
+    #22 Piloto controlado (até 4 empresas)       :       s22,  2026-06-01, 2026-06-30
+    #40 POC IA em documentos                     :       s40,  2026-08-01, 2026-10-31
+
+    section Sys Halal
+    #19 Em produção desde ago/2025               :done,  y19,  2025-08-01, 2026-04-30
+    #23 API v2                                   :active, y23, 2026-05-22, 2026-08-31
+    #38 Alinhado com GC                          :       y38,  2026-09-01, 2026-09-30
+    #39 Validação Cruzada 4 Portas               :       y39,  2026-09-01, 2026-10-31
+
+    section Migração e Treinamento
+    #37 Espelhamento FAMBRAS                     :done,  m37,  2026-05-01, 2026-05-21
+    #29 Validação visual                         :done,  m29,  2026-05-15, 2026-05-17
+    #30 Treinamento FAMBRAS                      :done, milestone, m30, 2026-05-20, 0d
+    #32 Migração piloto IFF                      :       m32,  2026-07-01, 2026-07-14
+    #36 Estabilização operacional                :       m36,  2026-08-01, 2026-08-14
+    #31 Go-live FAMBRAS                          :crit, milestone, m31, 2026-08-15, 0d
+
+    section Pós Go-live
+    #41 Onda 3 (HAS + auditoria)                 :       p41,  2026-11-01, 2027-01-31
+    #42 Multi-tenant + API pública               :       p42,  2027-02-01, 2027-05-31
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- GC -->
+<div class="page">
+  <header class="page-header">
+    <div>
+      <div class="title">Gestão de Certificações</div>
+      <div class="section-name">21 entregas · fev/2026 → jul/2026</div>
+    </div>
+    <div class="meta">
+      <div><strong>2</strong> / 6</div>
+      <div>2026-05-21</div>
+    </div>
+  </header>
+  <div class="mermaid">
+gantt
+    dateFormat YYYY-MM-DD
+    axisFormat %b/%y
+
+    section Base operacional
+    #1 Aggregate root + UI FAMBRAS premium       :done, g01, 2026-02-01, 2026-02-28
+    #7 Onboarding + gestão usuários              :done, g07, 2026-03-01, 2026-03-31
+
+    section Workflow e auditoria
+    #2 Workflow completo de certificação         :done, g02, 2026-03-01, 2026-04-30
+    #3 Auditoria FAMBRAS (Epics A–C)             :done, g03, 2026-03-01, 2026-03-31
+    #4 Modelo dual GSO/SMIIC + IA pré-auditoria  :done, g04, 2026-03-01, 2026-04-30
+    #5 Reclamações + selo + tipif. (D–G)         :done, g05, 2026-03-01, 2026-04-30
+    #6 Engine de PDFs (árabe + multi-país)       :done, g06, 2026-03-01, 2026-04-30
+
+    section Onda 1+ FAMBRAS
+    #11 Cadastro multi-país                      :done, g11, 2026-05-01, 2026-05-15
+    #12 Modelo de dados FAMBRAS (Onda 1+)        :done, g12, 2026-05-01, 2026-05-15
+    #14 Emissão Manual de Certificado            :done, g14, 2026-05-08, 2026-05-21
+    #15 Catálogo de 15 selos                     :done, g15, 2026-05-08, 2026-05-17
+    #16 Verificação pública QR                   :done, g16, 2026-05-08, 2026-05-17
+    #20 Camada de serviço Onda 1+                :active, g20, 2026-05-21, 2026-05-31
+
+    section Junho
+    #28 Catálogo de Laboratórios                 :       g28, 2026-06-01, 2026-06-07
+    #24 Wizard de solicitação (5 passos)         :       g24, 2026-06-01, 2026-06-14
+    #25 Hub de alteração de escopo               :       g25, 2026-06-08, 2026-06-21
+    #26 FM 9.3 unificado mobile                  :       g26, 2026-06-15, 2026-06-30
+    #27 Inbox analista + Hub docs                :       g27, 2026-06-22, 2026-06-30
+
+    section Pré go-live (julho)
+    #33 Editor planilha MP (Airtable-like)       :       g33, 2026-07-08, 2026-07-21
+    #34 Programa Certificação (3 modos)          :       g34, 2026-07-15, 2026-07-31
+    #35 IA matérias-primas                       :       g35, 2026-07-22, 2026-07-31
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SIH -->
+<div class="page">
+  <header class="page-header">
+    <div>
+      <div class="title">Supervisão Industrial Halal</div>
+      <div class="section-name">8 entregas · mar/2026 → out/2026</div>
+    </div>
+    <div class="meta">
+      <div><strong>3</strong> / 6</div>
+      <div>2026-05-21</div>
+    </div>
+  </header>
+  <div class="mermaid">
+gantt
+    dateFormat YYYY-MM-DD
+    axisFormat %b/%y
+
+    section Base e Sprints
+    #10 Fase A.2 (20 tipos FM) + Infra AWS       :done, s10, 2026-03-01, 2026-03-31
+    #8 Sprints 1–5 (duplo check + colaboradores) :done, s08, 2026-04-01, 2026-04-30
+    #9 Módulo Inventário (Carne + Lotes)         :done, s09, 2026-04-01, 2026-04-30
+
+    section Operação FAMBRAS
+    #17 Controladoria com duplo check            :done, s17, 2026-05-01, 2026-05-15
+    #18 Lote de hotfixes pós-teste (Nilsa)       :done, s18, 2026-05-15, 2026-05-21
+
+    section Em curso e próximas
+    #21 Sprint 5 final (Desossa + cert externo)  :active, s21, 2026-05-22, 2026-05-31
+    #22 Piloto controlado (até 4 empresas)       :       s22, 2026-06-01, 2026-06-30
+
+    section Pós go-live
+    #40 POC IA em documentos                     :       s40, 2026-08-01, 2026-10-31
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- Sys Halal -->
+<div class="page">
+  <header class="page-header">
+    <div>
+      <div class="title">Sys Halal</div>
+      <div class="section-name">4 entregas · ago/2025 → out/2026</div>
+    </div>
+    <div class="meta">
+      <div><strong>4</strong> / 6</div>
+      <div>2026-05-21</div>
+    </div>
+  </header>
+  <div class="mermaid">
+gantt
+    dateFormat YYYY-MM-DD
+    axisFormat %b/%y
+
+    section Em produção
+    #19 Em produção desde ago/2025               :done, y19, 2025-08-01, 2026-04-30
+
+    section Evolução em curso
+    #23 API v2 (integração externa)              :active, y23, 2026-05-22, 2026-08-31
+
+    section Pós go-live
+    #38 Sys Halal alinhado com GC                :       y38, 2026-09-01, 2026-09-30
+    #39 Validação Cruzada de 4 Portas            :       y39, 2026-09-01, 2026-10-31
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- Migração & Treinamento -->
+<div class="page">
+  <header class="page-header">
+    <div>
+      <div class="title">Migração &amp; Treinamento</div>
+      <div class="section-name">6 marcos · mai/2026 → ago/2026</div>
+    </div>
+    <div class="meta">
+      <div><strong>5</strong> / 6</div>
+      <div>2026-05-21</div>
+    </div>
+  </header>
+  <div class="mermaid">
+gantt
+    dateFormat YYYY-MM-DD
+    axisFormat %b/%y
+
+    section Maio (já concluído)
+    #37 Espelhamento FAMBRAS (FM 7.8.x)          :done, m37, 2026-05-01, 2026-05-21
+    #29 Validação visual com FAMBRAS             :done, m29, 2026-05-15, 2026-05-17
+    #30 Treinamento FAMBRAS (hands-on)           :done, milestone, m30, 2026-05-20, 0d
+
+    section Julho — Migração piloto
+    #32 Migração piloto IFF (ETL)                :       m32, 2026-07-01, 2026-07-14
+
+    section Agosto — Go-live
+    #36 Estabilização + treinamento operacional  :       m36, 2026-08-01, 2026-08-14
+    #31 Go-live FAMBRAS                          :crit, milestone, m31, 2026-08-15, 0d
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- Pós Go-live -->
+<div class="page">
+  <header class="page-header">
+    <div>
+      <div class="title">Pós Go-live</div>
+      <div class="section-name">2 entregas · nov/2026 → mai/2027</div>
+    </div>
+    <div class="meta">
+      <div><strong>6</strong> / 6</div>
+      <div>2026-05-21</div>
+    </div>
+  </header>
+  <div class="mermaid">
+gantt
+    dateFormat YYYY-MM-DD
+    axisFormat %b/%y
+
+    section Onda 3
+    #41 Onda 3 (HAS + auditoria não-anunciada)   :       p41, 2026-11-01, 2027-01-31
+
+    section Escala e expansão
+    #42 Multi-tenant + API pública               :       p42, 2027-02-01, 2027-05-31
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script>
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'default',
+    securityLevel: 'loose',
+    gantt: {
+      fontSize: 11,
+      sectionFontSize: 12,
+      barHeight: 16,
+      barGap: 4,
+      topPadding: 30,
+      leftPadding: 140,
+      gridLineStartPadding: 40,
+      useMaxWidth: true,
+    },
+  });
+</script>
+</body>
+</html>
