@@ -10,7 +10,6 @@ Quando o roadmap público mudar, este Gantt deve ser atualizado no mesmo ciclo.
 
 > **Numeração:** o prefixo `#N` em cada tarefa corresponde ao número global do item
 > na lista pública. O número **13 é propositalmente pulado** (decisão do cliente).
-> Para imprimir em PDF sem cortes de paginação, abra `ROADMAP-GANTT-PRINT-2026-05-21.html`.
 
 ---
 
@@ -90,12 +89,10 @@ gantt
 2. Quando uma entrega de uma seção for concluída, mude `:` (vazio) → `:active` → `:done`.
 3. Mantenha as cores das seções alinhadas com o roadmap público (Gestão de Certificações, Supervisão Industrial Halal, Sys Halal, Migração & Treinamento, Pós Go-live).
 4. O Mermaid é renderizado nativamente pelo GitHub, GitLab e VS Code (extensão Mermaid).
-5. Para imprimir em PDF, use a página HTML dedicada `ROADMAP-GANTT-PRINT-2026-05-21.html`.
 
 ## Fonte de verdade
 
 - **Conteúdo textual:** `halalsphere-backend/src/roadmap/roadmap-content.ts` (servido em `/public/roadmap`).
 - **Gantt visual:** este arquivo.
-- **Gantt em PDF:** `ROADMAP-GANTT-PRINT-2026-05-21.html` (Mermaid + print CSS A4 paisagem).
 
-Para divergências entre os dois primeiros, o textual prevalece.
+Para divergências entre os dois, o textual prevalece.
