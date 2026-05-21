@@ -1,6 +1,6 @@
 # Roadmap Ecohalal — Gantt 2026
 
-**Última atualização:** 2026-05-18
+**Última atualização:** 2026-05-21
 **Horizonte:** fev/2026 → mai/2027
 **Go-live FAMBRAS:** agosto/2026 (Gestão de Certificações + Supervisão Industrial Halal em operação plena)
 
@@ -29,7 +29,7 @@ gantt
     Cadastro multi-país + Onda 1+ schema      :done,  gc08,  2026-05-01, 2026-05-15
     Emissão Manual + Catálogo de 15 selos     :done,  gc09,  2026-05-08, 2026-05-17
     Verificação pública QR (página dedicada)  :done,  gc10,  2026-05-08, 2026-05-17
-    Service layer Onda 1+ (hooks)             :active, gc11, 2026-05-19, 2026-05-31
+    Service layer Onda 1+ (hooks)             :active, gc11, 2026-05-21, 2026-05-31
     Wizard solicitação 5 passos               :       gc12,  2026-06-01, 2026-06-14
     Hub de alteração de escopo                :       gc13,  2026-06-08, 2026-06-21
     FM 9.3 unificado mobile                   :       gc14,  2026-06-15, 2026-06-30
@@ -43,8 +43,9 @@ gantt
     Sprints 1–5 (duplo check + colaboradores) :done,  sih01, 2026-04-01, 2026-04-30
     Módulo Inventário (Carne + Lotes)         :done,  sih02, 2026-04-01, 2026-04-30
     Fase A.2 (20 tipos FM) + Infra AWS        :done,  sih03, 2026-03-01, 2026-03-31
-    Lote de hotfixes pós-teste preliminar     :done,  sih04, 2026-05-15, 2026-05-18
-    Sprint 5 final (Desossa + TASK-11 cert)   :active, sih05, 2026-05-19, 2026-05-31
+    Lote de hotfixes pós-teste preliminar     :done,  sih04, 2026-05-15, 2026-05-21
+    Sprint 5 final (Desossa + TASK-11 cert)   :active, sih05, 2026-05-22, 2026-05-31
+    Piloto controlado (até 4 empresas)        :       sih_p, 2026-06-01, 2026-06-30
     Auto-popular endereços + UX               :       sih06, 2026-06-01, 2026-06-07
     Route guards + queryClient clear          :       sih07, 2026-06-01, 2026-06-07
     POC IA documentos (Claude)                :       sih08, 2026-08-01, 2026-10-31
@@ -57,7 +58,7 @@ gantt
 
     section Migração & Treinamento
     Validação visual com FAMBRAS              :done,  m01,   2026-05-15, 2026-05-17
-    Treinamento FAMBRAS (emissão manual)      :milestone, m02, 2026-05-20, 0d
+    Treinamento FAMBRAS (emissão manual)      :done, milestone, m02, 2026-05-20, 0d
     Migração piloto IFF (ETL)                 :       m03,   2026-07-01, 2026-07-14
     Seed HomologationProfile FAMBRAS          :       m04,   2026-07-01, 2026-07-07
     Estabilização + treinamento operacional   :       m05,   2026-08-01, 2026-08-14
@@ -88,7 +89,7 @@ gantt
     Workflow digital completo       :done, w1, 2026-03-01, 2026-04-30
     Cadastro multi-país             :done, w2, 2026-05-01, 2026-05-10
     Onda 1+ schema FAMBRAS          :done, w3, 2026-05-01, 2026-05-15
-    Service layer Onda 1+           :active, w4, 2026-05-19, 2026-05-31
+    Service layer Onda 1+           :active, w4, 2026-05-21, 2026-05-31
     Wizard 5 passos ramificado      :       w5, 2026-06-01, 2026-06-14
     Hub alteração de escopo         :       w6, 2026-06-08, 2026-06-21
 
@@ -110,7 +111,7 @@ gantt
     Editor planilha MP              :       p2, 2026-07-08, 2026-07-21
     Programa Cert (3 modos)         :       p3, 2026-07-15, 2026-07-31
     IA matérias-primas              :       p4, 2026-07-22, 2026-07-31
-    Treinamento FAMBRAS             :milestone, p5, 2026-05-20, 0d
+    Treinamento FAMBRAS             :done, milestone, p5, 2026-05-20, 0d
     Go-live                         :crit, milestone, p6, 2026-08-15, 0d
 ```
 
@@ -132,7 +133,8 @@ gantt
     Sprint 3 (Transferências)         :done, ss3, 2026-04-15, 2026-04-22
     Sprint 4 (Notificações + anexos)  :done, ss4, 2026-04-22, 2026-04-29
     Sprint 5 (Cert Sys Halal)         :done, ss5, 2026-04-29, 2026-05-05
-    Sprint 5 final (Desossa)        :active, ss6, 2026-05-19, 2026-05-31
+    Sprint 5 final (Desossa)        :active, ss6, 2026-05-22, 2026-05-31
+    Piloto controlado (ate 4 emp)   :       ssp, 2026-06-01, 2026-06-30
 
     section Inventário (Epic 07)
     Fatias 1+2 (Carne + Lotes)      :done, sin1, 2026-04-01, 2026-04-30
@@ -141,7 +143,7 @@ gantt
     Fatia 5 (Import Excel)          :       sin4, 2026-07-15, 2026-07-31
 
     section Estabilização
-    Hotfixes pós-teste preliminar   :done, st1, 2026-05-15, 2026-05-18
+    Hotfixes pós-teste preliminar   :done, st1, 2026-05-15, 2026-05-21
     Bugs SES + sessão + cache PWA   :       st2, 2026-05-26, 2026-05-31
     UX final + treinamento ops      :       st3, 2026-08-01, 2026-08-14
     Go-live FAMBRAS                 :crit, milestone, st4, 2026-08-15, 0d
