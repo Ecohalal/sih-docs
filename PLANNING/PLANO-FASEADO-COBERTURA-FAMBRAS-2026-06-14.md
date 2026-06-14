@@ -60,21 +60,31 @@ FASE 5  Cadastros de base: catálogo de produtos + MP/fornecedores (FAM-0017)
 
 ## FASE 0 — Fundação: código sanitário flexível
 
-**Objetivo.** Trocar `Plant.sifCode` (obrigatório, único, só BR) por um modelo
-de código sanitário flexível alinhado ao GC/HalalSphere — habilita plantas sem
-SIF (indústria química, curtume não-exportador), origem não-SIF (curtume na
-gelatina) e o import de colaboradores industriais.
+> **DECISÃO DO PO (14/jun): SIH é só BR a princípio → enum ENXUTO (opção A).**
+> A troca `sifCode → sanitaryCode` **NÃO é sobre internacionalização** — resolve
+> um problema BRASILEIRO: nem toda planta BR tem SIF (Kin Master = indústria
+> química; curtume não-exportador; origem de curtume na gelatina). Por isso o
+> enum carrega só os tipos BR; multi-país fica para depois (expandir é trivial
+> via `ADD VALUE IF NOT EXISTS`). Integração futura com o GC mapeia `SIF↔SIF`
+> sem conversão.
 
-**Dependências.** Nenhuma. (Decisão de alinhar com GC já discutida.)
+**Objetivo.** Trocar `Plant.sifCode` (obrigatório, único) por código sanitário
+**nullable e tipado** — habilita plantas BR sem SIF (indústria química, curtume
+não-exportador), origem não-SIF (curtume na gelatina) e o import de
+colaboradores industriais.
 
-**Schema (Prisma).**
+**Dependências.** Nenhuma.
+
+**Schema (Prisma) — enum enxuto BR.**
 ```prisma
 enum SanitaryCodeType {
-  SIF SIE SIM SISBI           // Brasil
-  ESTABLECIMIENTO_PY IVO_PY ESTABLECIMIENTO_AR ESTABLECIMIENTO_UY
-  SENASAG INVIMA SAG SENASA_PE
-  USDA_PLANT CFIA_PLANT SAGARPA_MX EU_PLANT_NUMBER UK_FSA_PLANT
-  GENERIC INTERNAL NAO_APLICAVEL   // genéricos / sem fiscalização (curtume, química)
+  SIF            // Serviço de Inspeção Federal (dominante)
+  SIE            // Serviço de Inspeção Estadual
+  SIM            // Serviço de Inspeção Municipal
+  SISBI          // Sistema Brasileiro de Inspeção (equivalência federal)
+  INTERNAL       // sem registro oficial (química, curtume interno, GTS)
+  NAO_APLICAVEL  // origem sem fiscalização sanitária
+  // multi-país (PY/AR/CO/USA/EU...) só quando/se o SIH sair do Brasil
 }
 
 model Plant {
@@ -86,6 +96,8 @@ model Plant {
   @@unique([sanitaryCode, sanitaryCodeType])
 }
 ```
+> "GTS" do Curtume Jangadas: gravar como `INTERNAL` (código no `sanitaryCode`)
+> ou `internalCode`, a confirmar com a FAMBRAS.
 
 **Migração de dados.**
 1. Migration aditiva: cria `sanitaryCode`, `sanitaryCodeType`, `internalCode`.
@@ -391,7 +403,7 @@ todo o sistema.
 | Quebrar piloto em andamento | Tudo aditivo + feature flags + fallback manual |
 | Imutabilidade do documento emitido | Snapshot da composição na assinatura/emissão |
 | Alcance do `sifCode` (42 arquivos) | Fase 0 em 2 sub-passos; dropar coluna só no fim |
-| Divergência com o GC (certificado final) | Alinhar enums (`SanitaryCodeType`) com HalalSphere desde a Fase 0 |
+| Divergência com o GC na integração futura | Enum enxuto BR mapeia `SIF↔SIF` direto; expandir multi-país é trivial (`ADD VALUE`) se/quando o SIH sair do Brasil |
 | Checklist de deploy esquecido | Gate obrigatório (migrations, swagger, Zod v4, tsc -b) por fase |
 
 ---
@@ -416,8 +428,8 @@ todo o sistema.
 
 ## 12. Pendências de decisão do PO antes de iniciar
 
-1. **Confirmar alinhamento `SanitaryCodeType` com o GC** (copiar enum do
-   HalalSphere) — Fase 0.
+1. ~~Confirmar alinhamento `SanitaryCodeType` com o GC~~ **RESOLVIDO 14/jun:**
+   SIH só BR → enum enxuto (opção A), sem multi-país. Ver Fase 0.
 2. **Origem da carga no vínculo:** vincular por **relatório de produção**
    (decidido) — confirmar se também vincular ao **inventário de carne**
    (FM 7.1.5.1) quando a carne vem de estoque, não de produção direta.
