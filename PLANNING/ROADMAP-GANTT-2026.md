@@ -50,8 +50,14 @@ gantt
     #9 Módulo Inventário (Carne + Lotes)         :done,  s09,  2026-04-01, 2026-04-30
     #17 Controladoria com duplo check            :done,  s17,  2026-05-01, 2026-05-15
     #18 Lote de hotfixes pós-teste preliminar    :done,  s18,  2026-05-15, 2026-05-21
-    #21 Sprint 5 final (Desossa + cert externo)  :active, s21, 2026-05-22, 2026-05-31
-    #22 Piloto controlado (até 4 empresas)       :       s22,  2026-06-01, 2026-06-30
+    #21 Sprint 5 final (Desossa + cert externo)  :done,  s21,  2026-05-22, 2026-06-04
+    Estrutura documental origem-prod-embarque    :done,  s45,  2026-06-11, 2026-06-14
+    Catálogo de Produtos Halal                   :done,  s46,  2026-06-15, 2026-06-15
+    Evidência destino + cadastros base + acesso  :done,  s47,  2026-06-15, 2026-06-16
+    #22 Piloto controlado (até 4 empresas)       :active, s22, 2026-06-01, 2026-06-30
+    Ocorrências + Registro Diário FM 7.1.6.1/20  :active, s48, 2026-06-16, 2026-07-15
+    Refinamentos operacionais do piloto          :active, s49, 2026-06-16, 2026-07-15
+    Cadastro MP-Fornecedores (FAM-0017)          :       s50,  2026-07-01, 2026-07-31
     #41 POC IA em documentos                     :       s41,  2026-08-01, 2026-10-31
     #42 Rastreabilidade colaboradores (ponto)    :       s42,  2026-10-01, 2026-12-31
 
