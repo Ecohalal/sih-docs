@@ -1,6 +1,6 @@
 # Roadmap Ecohalal — Gantt 2026
 
-**Última atualização:** 2026-06-18
+**Última atualização:** 2026-06-21
 **Horizonte:** fev/2026 → mai/2027
 **Go-live FAMBRAS:** agosto/2026 (Gestão de Certificações + Supervisão Industrial Halal em operação plena)
 
@@ -55,7 +55,7 @@ gantt
     Catálogo de Produtos Halal                   :done,  s46,  2026-06-15, 2026-06-15
     Evidência destino + cadastros base + acesso  :done,  s47,  2026-06-15, 2026-06-16
     #22 Piloto controlado (até 4 empresas)       :active, s22, 2026-06-01, 2026-06-30
-    Ocorrências + Registro Diário FM 7.1.6.1/20  :active, s48, 2026-06-16, 2026-07-15
+    NC + Ocorrência Aves FM 7.1.6.1/20.1         :done,  s48, 2026-06-16, 2026-06-16
     Refinamentos operacionais do piloto          :active, s49, 2026-06-16, 2026-07-15
     Cadastro MP-Fornecedores (FAM-0017)          :       s50,  2026-07-01, 2026-07-31
     #41 POC IA em documentos                     :       s41,  2026-08-01, 2026-10-31
