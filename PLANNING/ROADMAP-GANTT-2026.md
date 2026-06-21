@@ -1,6 +1,6 @@
 # Roadmap Ecohalal — Gantt 2026
 
-**Última atualização:** 2026-05-21
+**Última atualização:** 2026-06-18
 **Horizonte:** fev/2026 → mai/2027
 **Go-live FAMBRAS:** agosto/2026 (Gestão de Certificações + Supervisão Industrial Halal em operação plena)
 
