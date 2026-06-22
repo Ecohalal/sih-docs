@@ -1,9 +1,208 @@
 # Unificação do domínio público de validação de certificados halal
 
 **Status:** Proposta para reunião técnica — aguarda decisão
-**Data:** 2026-05-18
+**Data:** 2026-05-18 · *atualizado 2026-06-18 (premissa de não-titularidade + runbook AWS)*
 **Domínio-alvo:** `cert.fambrashalal.com.br`
 **Sistemas envolvidos:** SysHalal, HalalSphere/GC, SIH
+
+---
+
+## 0. Premissa de titularidade do domínio (adendo 2026-06-18)
+
+**Premissa do PO:** a EcoHalal **não tem a titularidade** de `fambrashalal.com.br`
+(o domínio é registrado pela FAMBRAS). A EcoHalal tem apenas o **uso** já
+existente: o QR Code dos certificados do SysHalal aponta para
+`cert.fambrashalal.com.br/certificadovalidate/...`.
+
+### 0.1 "Titularidade" trava menos do que parece
+
+Para servir o GC em `cert.fambrashalal.com.br/verify/...` **não é necessário ser
+dono do domínio**. É necessário controle sobre três recursos *separados* — e só
+um deles é "titularidade":
+
+| Recurso | Quem controla | Necessário p/ a feature? |
+|---|---|---|
+| Registro do domínio `fambrashalal.com.br` | FAMBRAS (registrador) | ❌ Não |
+| Zona DNS (responde por `cert.fambrashalal.com.br`) | operador de DNS da FAMBRAS | ⚠️ Só uma vez, se criar hostname novo |
+| Certificado TLS (ACM) válido p/ o hostname | quem emitiu o cert | ⚠️ Já existe p/ `cert.*` |
+| **Distribuição CloudFront / origem** | **provavelmente a EcoHalal** | ✅ **É aqui que mora a solução** |
+
+### 0.2 Virada de chave
+
+**SysHalal é um sistema da própria EcoHalal** (`syshalal-api`/`syshalal-web` são
+repos internos) e já serve `cert.fambrashalal.com.br/certificadovalidate/...` há
+anos. Logo, com altíssima probabilidade **a EcoHalal já opera a distribuição
+CloudFront por trás desse hostname**, e a FAMBRAS apenas apontou o DNS (CNAME)
+para ela e validou o TLS uma vez. Se confirmado, adicionar o behavior
+`/verify/*` é **100% interno à EcoHalal — sem pedir nada novo à FAMBRAS** —
+porque o DNS já aponta e o TLS já cobre o hostname.
+
+**Pergunta decisiva (gargalo único):** *a EcoHalal opera a distribuição
+CloudFront e detém o cert ACM de `cert.fambrashalal.com.br` hoje?* Ver runbook de
+verificação na **seção 10**.
+
+### 0.3 Espectro de opções por cooperação exigida da FAMBRAS
+
+| Cenário | Quem opera `cert.*` | Cooperação FAMBRAS | Hostname | Acoplamento | Veredito |
+|---|---|---|---|---|---|
+| **1** | EcoHalal | **Zero** | `cert.*` (exato) | Nenhum | ✅ **Ideal** — é a Opção A abaixo |
+| **2a** | terceiro | 1 mudança de config no operador | `cert.*` (exato) | Médio (depende do terceiro p/ mudanças futuras) | OK se 1 inviável |
+| **2b** | terceiro / indisponível | 1 CNAME + 1 validação ACM (one-time) | `validar.fambrashalal.com.br` ou `gc.fambrashalal.com.br` (irmão, **mesmo domínio registrado**) | Baixo — EcoHalal 100% autônoma depois | ✅ Melhor fallback |
+| **2c** | terceiro | rota de proxy no SysHalal | `cert.*` (exato) | Alto (runtime SysHalal→GC) | ❌ Fere coexistência |
+
+**Nota sobre 2b:** não é o hostname literal `cert.fambrashalal.com.br`, mas é o
+**mesmo domínio registrado** `fambrashalal.com.br`. Organismos internacionais
+avaliam o domínio registrado, não o label do subdomínio — a credibilidade se
+mantém. É o melhor equilíbrio entre "mesmo domínio" e mínimo acoplamento
+operacional, caso o cenário 1 não se confirme e o 2a tenha atrito.
+
+**Recomendação atualizada:** confirmar a pergunta decisiva (seção 10) →
+se EcoHalal opera, executar **Opção A** (nada a negociar) → se não, preferir
+**2a**, fallback **2b**, evitar **2c**.
+
+### 0.4 Achado de stack (2026-06-18): SysHalal é ECS/ALB, provavelmente SEM CloudFront
+
+Inspeção dos repos `syshalal-web`/`syshalal-api`:
+- `syshalal-web` é **Next.js 14 SSR em container** (`next.config.mjs` → `output: 'standalone'`; `Dockerfile` → `CMD ["node","server.js"]`).
+- Pipeline (`codepipeline/buildspec-fambrashalal.yml`) faz `docker build → push ECR → imagedefinitions.json` (container `fambrashalal-cert-web`) — artefato típico de **deploy ECS**.
+- **Não há** `aws s3 cp` nem `cloudfront create-invalidation` em nenhum buildspec do SysHalal (ao contrário do `halalsphere-frontend`, que tem ambos). Nada no SysHalal toca S3/CloudFront.
+
+**Conclusão provável:** borda = **Route53 → ALB (HTTPS:443, ACM regional) → ECS Fargate**, sem CloudFront. A confirmar pelo alvo do CNAME (seção 10, Passo 1): `.elb.amazonaws.com` = ALB puro; `.cloudfront.net` = há CloudFront.
+
+**Impacto na Opção A:** a Opção A (adicionar behavior `/verify/*`) pressupõe CloudFront
+existente. **Se a borda for ALB puro, a Opção A não se aplica diretamente** — um
+**ALB não serve SPA de S3** (targets só ECS/EC2/IP/Lambda). Reordenação das opções
+sob ALB-puro:
+
+| Opção (ALB-puro) | Envolve | Toca borda viva SysHalal? | Esforço/risco |
+|---|---|---|---|
+| **2b — subdomínio irmão delegado** (`validar.fambrashalal.com.br` → CloudFront próprio EcoHalal + S3) | 1 CNAME + 1 validação ACM (one-time) FAMBRAS; EcoHalal monta CloudFront+S3+ACM us-east-1 só do verify GC | **Não** | **Baixo** ✅ recomendado |
+| CloudFront na frente de `cert.*` | nova distribuição 2 origens (ALB+S3) + cutover DNS + ACM p/ us-east-1 + WAF/headers | **Sim** (cutover em domínio de terceiro) | Médio + risco |
+| Regra ALB → verify GC container/Lambda | empacotar verify GC como container/Lambda + target group + regra `/verify/*` | **Sim** | Médio-alto + acoplamento |
+| 2c — proxy no Next do SysHalal | rota `/verify/[id]` no app SysHalal | host idêntico, acopla runtime | ❌ fere coexistência |
+
+**Recomendação se ALB-puro confirmado:** preferir **2b** (subdomínio irmão delegado,
+CloudFront próprio da EcoHalal) — deixa SysHalal 100% intocado, autonomia total,
+mesmo domínio registrado. Só forçar o host literal `cert.fambrashalal.com.br` se
+houver exigência formal (custo = cutover de borda em domínio de terceiro).
+
+### 0.5 TOPOLOGIA CONFIRMADA via console AWS (2026-06-18) → decisão: Caminho B (regra ALB)
+
+Console AWS confirmou (prints do PO):
+
+```
+cert.fambrashalal.com.br ──(A record)──► ALB  ecohalal-fambrashalal-web
+   conta 767397935861 · us-east-1 · vpc-0d47cab0d440d5de5 (CIDR 10.10.20.0/23) · internet-facing
+   listener HTTPS:443  ── TLS  *.fambrashalal.com.br  (cert WILDCARD instalado NA ALB)
+      └─ default → TG fambrashalal-cert-web-tg (target type IP)
+                    → 10.10.20.229:3000 + 10.10.20.87:3000  (ECS Fargate, Next SSR)
+   listener HTTP:80 → redirect 301 → HTTPS
+```
+
+**Três destravamentos decisivos:**
+1. **A ALB é da própria EcoHalal** (conta 767397935861, nome `ecohalal-*`). Controle total — adicionar regra de listener é interno, sem terceiros.
+2. **Cert wildcard `*.fambrashalal.com.br` JÁ instalado na ALB.** EcoHalal já serve qualquer `*.fambrashalal.com.br` com TLS válido — **sem nova validação ACM, sem pedir nada à FAMBRAS.**
+3. **Sem CloudFront, sem necessidade de cutover de DNS** (`cert.*` já aponta pra essa ALB).
+
+→ Caem as ressalvas do Caminho A/2b. **Decisão: Caminho B** — unificar adicionando
+regra de listener na ALB que a EcoHalal já opera. CloudFront sai de cena (traria
+cutover p/ ganho de cache que página de baixo tráfego não precisa). NestJS+SPA
+proxy descartado (a ALB já é o reverse proxy que oculta origem).
+
+#### Plano Caminho B
+
+Conceito:
+```
+ALB ecohalal-fambrashalal-web · HTTPS:443 (wildcard cobre)
+  ├─ regra prio 10   /verify/*                       → TG gc-verify-tg (novo: container nginx+SPA verify GC)
+  └─ default         /certificadovalidate/* + resto  → TG fambrashalal-cert-web-tg (SysHalal, INTOCADO)
+```
+Regra `/verify/*` acima do default não afeta `/certificadovalidate/*` nem o SysHalal. Reversível (deletar a regra).
+
+**Recursos AWS novos** (conta 767397935861, us-east-1, mesma VPC `vpc-0d47cab0d440d5de5`):
+- ECR `gc-verify-web` (nginx servindo build do verify GC).
+- ECS service `gc-verify` no mesmo cluster, Fargate, 2 tasks (HA), subnets privadas já usadas.
+- Target group `gc-verify-tg` tipo **IP**, porta 80, health check `/verify/`.
+- 1 regra de listener HTTPS:443: `path /verify/*` → forward `gc-verify-tg`.
+
+**Mudanças por repo:**
+- `halalsphere-frontend`: `vite.config` `base: '/verify/'` + `<BrowserRouter basename="/verify">`; API base relativa `/verify/api`. Adicionar `Dockerfile`(nginx) + `nginx.conf` (estático + SPA fallback p/ `/verify/index.html` + **proxy `/verify/api/* → API GC server-side**). Buildspec espelhando o do `syshalal-web` (push ECR `gc-verify-web`).
+- `halalsphere-backend`: parametrizar `qrcode-generator.ts` por env `QR_VERIFICATION_BASE_URL`; prod = `https://cert.fambrashalal.com.br/verify`.
+- `gestaodecertificacoes.*/verify`: **NÃO precisa de redirect 301.** O GC **não tem PDFs antigos em circulação** (base de prod zerada 28/mai; os "~1023 certs" eram dados de espelhamento, não documentos emitidos). `cert.*/verify` serve **apenas certificados novos do GC, emitidos a partir do go-live**.
+
+**Repositórios: nenhum repo Git novo.** Tudo cabe nos existentes:
+- `halalsphere-backend` (existente) → env `QR_VERIFICATION_BASE_URL`.
+- `halalsphere-frontend` (existente) → reaproveita `VerifyCertificate.tsx`; só adiciona `Dockerfile`+`nginx.conf`+buildspec (novo alvo de entrega = container, além do deploy S3/CloudFront atual). Mesma fonte da verdade, sem duplicação.
+- `gc-verify-web` é **repositório ECR** (imagem Docker, recurso AWS) — **não** é repo Git.
+
+> **Consideração opcional (não obrigatória agora):** a tela de verify é **pública**;
+> empacotá-la junto com o SPA autenticado faz a imagem carregar o bundle do app inteiro
+> (mesmo a ALB roteando só `/verify/*`). Se no futuro quiserem **isolar a superfície
+> pública** da privada por segurança, aí sim um build/repo dedicado só do verify se
+> justifica. Para o mínimo ajuste de agora, reaproveitar o `halalsphere-frontend` é o
+> caminho — evolução para build isolado depois é sem retrabalho.
+
+**Ocultar URL interna:** `nginx.conf` faz proxy de `/verify/api/*` → API GC no lado
+servidor; browser só vê `cert.fambrashalal.com.br`. Same-origin elimina CORS. Stack
+SPA do GC reaproveitada inteira.
+
+**Esforço:** ~2-3 dias. **Custo:** 1 container Fargate pequeno. **Risco:** baixo, reversível.
+
+**SIH (jul/2026):** entra como 4ª regra `/sih-verify/*` (ou path próprio) no mesmo listener — mesmo padrão.
+
+#### Garantia: SysHalal (`/certificadovalidate/*`) continua sem outage
+
+**Como a ALB roteia:** regras do listener são avaliadas por prioridade; a **primeira
+que casa** vence; se nenhuma casa, aplica a **ação default**. Hoje o HTTPS:443 tem só
+a default → SysHalal (`fambrashalal-cert-web-tg`). Adicionamos uma regra
+`path-pattern /verify/*` → `gc-verify-tg`. Resultado:
+- `/certificadovalidate/...` **não casa** `/verify/*` → cai na default → **SysHalal, idêntico a hoje**.
+- `/verify/...` → GC. Qualquer outro path → default → SysHalal.
+
+A regra é **aditiva e disjunta**: só captura `/verify/*`, nunca toca o tráfego do SysHalal.
+
+**Por que não há outage:**
+- Adicionar regra de listener é **operação online** da ALB — não reinicia listener, não dropa conexões, não drena targets.
+- **Sem mudança de DNS** (`cert.*` segue na mesma ALB) → zero propagação.
+- **Sem mudança de cert** (wildcard `*.fambrashalal.com.br` já cobre) → zero disrupção TLS.
+- Falha no serviço novo do GC afeta **só `/verify/*`**; `/certificadovalidate/*` fica blindado.
+- **Reversível:** deletar a regra restaura exatamente o estado de hoje.
+
+**Regras de ouro na execução (condições para a garantia valer):**
+1. **Só ADICIONAR** a regra `/verify/*`. **NUNCA** editar a ação default, o certificado, nem o protocolo/porta do listener — é aí que se quebraria o SysHalal.
+2. Condição da regra **específica**: `/verify/*` (e `/verify/api/*` se houver). Nada genérico que pegue outros paths.
+3. Validar a regra em path de teste **antes** de qualquer QR real apontar pra ela.
+
+#### TODO — Caminho B (sequência de execução; pré-go-live, requer autorização)
+
+**Fase 0 — pré-requisitos / confirmações**
+- [ ] Confirmar autorização explícita do PO para mexer na ALB de prod (escrita em prod).
+- [ ] Identificar o cluster ECS e a task definition do `syshalal-web` (mesmo cluster/VPC reaproveitados pelo `gc-verify`).
+- [ ] Confirmar URL interna da API do GC que o nginx vai proxiar em `/verify/api/*`.
+
+**Fase 1 — backend GC (isolado, baixo risco)**
+- [ ] Parametrizar `qrcode-generator.ts` para ler `QR_VERIFICATION_BASE_URL` (default mantém valor atual p/ não quebrar staging).
+- [ ] Definir env de prod `QR_VERIFICATION_BASE_URL=https://cert.fambrashalal.com.br/verify` (na task definition do backend GC).
+- [ ] Validar: novo cert gerado tem QR apontando pra `cert.*/verify/{n}` (mesmo que ainda 404 até a Fase 3).
+
+**Fase 2 — frontend GC servível em subpath + container**
+- [ ] `vite.config`: `base: '/verify/'`.
+- [ ] `App.tsx`: `<BrowserRouter basename="/verify">`.
+- [ ] API base do SPA → caminho relativo `/verify/api`.
+- [ ] Criar `Dockerfile` (nginx) + `nginx.conf`: servir estático, **SPA fallback** p/ `/verify/index.html`, **proxy `/verify/api/* → API GC** (server-side, oculta origem).
+- [ ] Criar buildspec espelhando o do `syshalal-web` (push p/ ECR `gc-verify-web`).
+
+**Fase 3 — infra AWS (aditiva)**
+- [ ] Criar ECR `gc-verify-web`.
+- [ ] Criar ECS service `gc-verify` (Fargate, 2 tasks, mesma VPC/subnets).
+- [ ] Criar target group `gc-verify-tg` (tipo IP, porta 80, health check `/verify/`).
+- [ ] **Adicionar** regra de listener HTTPS:443 `path /verify/*` → `gc-verify-tg` (NÃO tocar default/cert/listener).
+
+**Fase 4 — validação E2E**
+- [ ] `curl https://cert.fambrashalal.com.br/verify/{num-teste}` → 200, SPA hidrata, chama API via `/verify/api`, mostra dados.
+- [ ] Confirmar `/certificadovalidate/{n}` do SysHalal **inalterado** (scan real + curl).
+- [ ] Scan real iPhone+Android de um cert GC novo.
+- [ ] Documentar estado anterior da regra (p/ rollback = deletar a regra).
 
 ---
 
@@ -35,10 +234,10 @@ qualquer outra      → 404 unificado
 
 ### 2.2 PDFs em circulação que NÃO podem quebrar
 
-- **SysHalal**: milhares de PDFs apontando para `cert.fambrashalal.com.br/certificadovalidate/...` há anos.
-- **GC**: **1023 certificados** espelhados em prod desde 2026-05-14, todos apontando para `gestaodecertificacoes.ecohalal.solutions/verify/...`.
+- **SysHalal**: milhares de PDFs apontando para `cert.fambrashalal.com.br/certificadovalidate/...` há anos. **Essa URL precisa continuar funcionando** (e continua — mesmo host).
+- **GC**: ⚠️ **CORREÇÃO 2026-06-18 (PO):** o GC **NÃO tem PDFs antigos em circulação**. A base de prod foi zerada em 28/mai; os "1023 certs espelhados" eram dados de espelhamento e **os certificados que estão na base hoje são de teste**. Documentos emitidos são imutáveis e nunca são regenerados; certificados legados importados mantêm o QR próprio que já possuem (outra ação) e **não passam a validar pelo GC**. ⇒ **Nenhuma URL legada do GC a cobrir; sem redirect 301.** `cert.*/verify` serve só certificados novos do GC (pós go-live).
 
-A solução tem que cobrir as duas URLs legadas.
+A solução só precisa cobrir a URL legada do **SysHalal** (já coberta por identidade de host).
 
 ### 2.3 Telas têm UX totalmente diferente
 
@@ -58,7 +257,7 @@ Backend SysHalal (3 pontos):
 
 ### 2.5 Infra atual (inferida)
 
-- **syshalal-web**: containerizado (Docker + ECR). Provável **ECS Fargate atrás de ALB + CloudFront** (necessário p/ HTTPS no domínio + Next SSR). **Confirmar com infra.**
+- **syshalal-web**: containerizado (Docker + ECR), Next SSR `output: standalone`. Padrão de deploy ECS (`imagedefinitions.json`). Borda **provavelmente ALB-puro (ACM regional), SEM CloudFront** — ver seção 0.4. ALB faz HTTPS sozinho; CloudFront NÃO é necessário p/ TLS. **Confirmar pelo alvo do CNAME (seção 10, Passo 1).**
 - **halalsphere-frontend**: SPA estático, build `aws s3 cp dist s3://... && cloudfront invalidation`. **S3 + CloudFront clássico.**
 
 ---
@@ -297,3 +496,96 @@ Confirmações com time de infra:
 ---
 
 **Próximo passo:** levar para reunião técnica, responder às 9 perguntas em aberto, decidir entre A e B, escalonar implementação.
+
+---
+
+## 10. Runbook — verificar CloudFront e ACM de `cert.fambrashalal.com.br` (adendo 2026-06-18)
+
+Objetivo: responder à **pergunta decisiva** (seção 0.2) — *a EcoHalal opera a
+distribuição CloudFront e detém o cert ACM desse hostname?* 10-15 min.
+
+### Passo 0 — Pré-requisito: saber em qual conta AWS olhar
+A EcoHalal pode ter mais de uma conta AWS. A distribuição que serve o SysHalal
+está na conta onde o SysHalal foi deployado. Em dúvida, comece pela conta de
+produção do SysHalal/HalalSphere.
+
+> ⚠️ CloudFront e ACM-para-CloudFront são **globais**, mas o ACM precisa estar na
+> região **us-east-1 (N. Virginia)** para ser usável pelo CloudFront. Sempre
+> selecione `us-east-1` ao procurar o certificado.
+
+### Passo 1 — Resolver o DNS (não precisa de login AWS; faça primeiro)
+No PowerShell:
+```powershell
+Resolve-DnsName cert.fambrashalal.com.br -Type CNAME
+Resolve-DnsName cert.fambrashalal.com.br -Type A
+```
+Ou no Bash:
+```bash
+dig +short cert.fambrashalal.com.br
+dig +short CNAME cert.fambrashalal.com.br
+```
+**Interpretação (o alvo do CNAME revela a topologia):**
+- Termina em **`.cloudfront.net`** (ex.: `d1234abcd.cloudfront.net`) → servido por **CloudFront**. Anote a etiqueta `dXXXX.cloudfront.net` e siga os Passos 3-5 (achar distribuição + ACM). Opção A viável.
+- Termina em **`.elb.amazonaws.com`** (ex.: `syshalal-alb-123.us-east-1.elb.amazonaws.com`) → **ALB puro, SEM CloudFront** (cenário da seção 0.4). Opção A NÃO se aplica direto (ALB não serve S3). Ir para a tabela ALB-puro da seção 0.4 → recomendado **2b** (subdomínio irmão). Para confirmar o ALB no console: EC2 → Load Balancers → achar o de DNS = esse alvo; o ACM dele estará no **listener HTTPS:443**, na **região do ALB** (não us-east-1).
+- Resolve direto p/ IPs fixos / outro CDN → mapear topologia real antes de decidir.
+
+### Passo 2 — Login no Console AWS
+Entrar em https://console.aws.amazon.com com uma conta/role que tenha pelo menos
+permissão de leitura de CloudFront e ACM (`cloudfront:List*`, `cloudfront:Get*`,
+`acm:List*`, `acm:Describe*`). Role read-only já basta.
+
+### Passo 3 — Achar a distribuição CloudFront
+1. Console → serviço **CloudFront** → **Distributions**.
+2. Procure a distribuição cujo **Domain name** = o `dXXXX.cloudfront.net` do Passo 1,
+   **ou** cujo campo **Alternate domain names (CNAMEs)** contenha
+   `cert.fambrashalal.com.br`.
+3. **Se encontrar → a EcoHalal (essa conta) opera a distribuição = Cenário 1 ✅.**
+   **Se NÃO encontrar em nenhuma conta sua → terceiro opera = Cenário 2.**
+
+Por CLI (alternativa ao console):
+```powershell
+aws cloudfront list-distributions `
+  --query "DistributionList.Items[?contains(Aliases.Items, 'cert.fambrashalal.com.br')].{Id:Id,Domain:DomainName,Aliases:Aliases.Items}" `
+  --output json
+```
+
+### Passo 4 — Inspecionar a distribuição (se encontrada)
+Abrir a distribuição e anotar, para o plano da Opção A:
+- **Aba General → Settings:**
+  - *Alternate domain names (CNAMEs):* deve listar `cert.fambrashalal.com.br`.
+  - *Custom SSL certificate:* clique — leva ao ACM (ver Passo 5). Anote o ARN.
+- **Aba Origins:** quais origens existem hoje (provavelmente o ALB/ECS do
+  syshalal-web). Para a Opção A vamos **adicionar** uma origem S3 do
+  `halalsphere-frontend` — confirme que ainda não existe.
+- **Aba Behaviors:** confirme que existe `/certificadovalidate/*` (ou Default `*`)
+  apontando para o SysHalal. O novo behavior `/verify/*` será adicionado aqui —
+  confirme que `/verify/*` ainda **não** existe.
+
+### Passo 5 — Confirmar o certificado ACM
+1. Console → **Certificate Manager (ACM)** → **trocar a região para `us-east-1`**
+   (canto superior direito) — CloudFront só enxerga certs dessa região.
+2. Procurar o certificado cujo **Domain** seja `cert.fambrashalal.com.br` ou um
+   wildcard `*.fambrashalal.com.br`.
+3. Verificar:
+   - **Status = Issued** (válido).
+   - **In use by:** deve referenciar a distribuição do Passo 3.
+   - **Domains:** cobre `cert.fambrashalal.com.br`.
+4. **Se o cert está nesta conta e Issued → a EcoHalal controla o TLS = reforça Cenário 1 ✅.**
+
+Por CLI:
+```powershell
+aws acm list-certificates --region us-east-1 `
+  --query "CertificateSummaryList[?contains(DomainName, 'fambrashalal')]" --output json
+```
+
+### Passo 6 — Conclusão (qual cenário?)
+| Achado | Cenário | Próxima ação |
+|---|---|---|
+| Distribuição **e** ACM nas contas da EcoHalal | **1** | Executar Opção A (seção 6). Nada a pedir à FAMBRAS. |
+| DNS aponta p/ CloudFront, mas **não** acha distribuição em nenhuma conta sua | **2** | Identificar o operador (perguntar à FAMBRAS quem hospeda o SysHalal público). Seguir 2a → fallback 2b. |
+| DNS **não** é CloudFront | revisar | Mapear topologia real antes de decidir. |
+
+### Passo 7 — Registrar a resposta
+Anotar no campo **Pergunta #1** da seção 7 deste doc: conta AWS, ID da
+distribuição, ARN do ACM, e o cenário confirmado. Isso destrava o roadmap da
+seção 6.
