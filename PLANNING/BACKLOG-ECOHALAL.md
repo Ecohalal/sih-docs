@@ -10,13 +10,13 @@
 > concluir e cite a fonte (handoff/memória). Itens pré-preenchidos da memória vêm
 > marcados _(da memória — confirmar)_ quando não validados nesta consolidação.
 >
-> Última consolidação: **30/jun/2026** (incorpora reunião FAMBRAS 22/jun: cert layout/regras + usuários + dossiê + Apêndice de auditoria desta sessão).
+> Última consolidação: **30/jun/2026** (incorpora reunião FAMBRAS 22/jun: cert layout/regras + usuários + dossiê + Apêndice de auditoria; **sessão emissão manual FM 7.7.2 Rev 05 + cabeçalho −10% → [2.5.1](#251-emissão-manual-fm-772-rev-05--cabeçalho-10-sessão-30jun)**).
 
 ---
 
 ## Índice
 - **SIH** — [1.1 Suporte Gabriel/Seara](#11-suporte-gabrielseara-25jun) · [1.2 Embarque multi-origem](#12-embarque-multi-origem--vínculos) · [1.3 SIH⇄GC consumir MP](#13-sih⇄gc-consumir-mp-homologada) · [1.4 QA Nilsa (sessão 19-22/mai)](#14-qa-nilsa-sih--sessão-19-22mai-3-rodadas)
-- **GC** — [2.1 FAM-0017](#21-fam-0017-homologação-mp) · [2.2 Seed cadastro/cert/escopo](#22-seed-cadastrocertescopo-fm-78x) · [2.3 Integração GC→SIH](#23-integração-gcsih-endpoint) · [2.4 Reconciliação/limpeza](#24-reconciliação--sqls-limpeza) · [2.5 Emissão manual cert — layout/regras (22/jun)](#25-emissão-manual-de-certificado--layoutregras-reunião-22jun)
+- **GC** — [2.1 FAM-0017](#21-fam-0017-homologação-mp) · [2.2 Seed cadastro/cert/escopo](#22-seed-cadastrocertescopo-fm-78x) · [2.3 Integração GC→SIH](#23-integração-gcsih-endpoint) · [2.4 Reconciliação/limpeza](#24-reconciliação--sqls-limpeza) · [2.5 Emissão manual cert — layout/regras (22/jun)](#25-emissão-manual-de-certificado--layoutregras-reunião-22jun) · [2.5.1 Emissão manual FM 7.7.2 + cabeçalho −10% (30/jun)](#251-emissão-manual-fm-772-rev-05--cabeçalho-10-sessão-30jun)
 - **Cross** — [4.1 Usuários FAMBRAS](#41-usuários-fambras-criar)
 - **SysHalal** — [3.1 Fixes / exportação](#31-fixes--exportação)
 - **Apêndice — Auditoria 30/jun (esta sessão)** — [A.1 SIH código residual](#a1-sih--código-residual-a-confirmar) · [A.2 SIH operacional](#a2-sih--operacional-residual) · [A.3 GC bloqueios externos](#a3-gc--bloqueios-fora-deste-backlog) · [A.4 SysHalal Caminho B](#a4-syshalal--infra-qr-verify) · [A.5 Cross dados FAMBRAS](#a5-cross--dados-fambras-aguardando-entrega)
@@ -168,6 +168,43 @@ QR `cert.fambrashalal.com.br/verify` confirmado OK.
 - [ ] Gabaritos atualizados **recebidos (Mariana)** — base real ~4–7 modelos, resto variação. _(confirmar nº recebido vs frigorífico completo)_
 
 **📌 Nota:** prod sendo tratada como **homologação** por ora (FAMBRAS gera "sujeira", limpeza depois).
+
+### 2.5.1 Emissão manual FM 7.7.2 Rev 05 + cabeçalho −10% (sessão 30/jun)
+> Fonte: esta sessão. Base de comparação: `C:\HalalSphere\Modelos para comparação\` (cert FAMBRAS real × emitido GC).
+> Commits **backend** `33b5b3ba` + `10e58856`; **frontend** `1df3bddf`. Migration `20260615140000_manual_cert_code_and_overrides`
+> **VALIDADA em PROD** (`scope_products.code` + `certificates.requirements_override`).
+
+**✅ Deployado (release)**
+- Datas **Certified since** e **Initial certification cycle date** agora aceitam valor **manual (opcional)** na emissão — PDF
+  prefere o salvo; deriva quando vazio. Resolve o gap de certs migrados/históricos (caso real: 2017/2023 saindo como data de emissão).
+- Coluna **Code** (código FAMBRAS) por produto — schema + DTO + service + ambos renderers (EN+AR) + form + import CSV.
+- **Override** manual de DT / linhas de normas / rótulo "Product type" (`requirementsOverride`) p/ casos onde o mapeamento automático diverge.
+- Fix endereço — rua vazia não gera mais `"- – Cidade – Estado"`.
+- Fallback **BPJPH** com texto completo (`KEPKABAN 20:2023 / PEPRES 6:2023 / KEPKABAN 78:2023`).
+- **Cabeçalho FM 7.7.2 −10%** (título "HALAL CERTIFICATE" + árabe + logo redondo FAMBRAS, centralizados) → elimina o overlap do
+  selo **ENAS** no combo **GAC_ENAS** (2 selos empilhados). Validado no cert real `ASDFASEVAWSEC` (render local com bg novo, sem tocar PROD/S3).
+
+**🔧 Operacional / validação**
+- [ ] Validar deploy AWS + tela de emissão manual com os campos novos (datas, Code por produto, seção "Ajustes avançados"/override).
+- [ ] Confirmar em PROD um cert no **novo cabeçalho** após o deploy. A folga ENAS ficou **justa** — se quiser respiro maior,
+  aumentar a redução do título p/ ~13-15% **ou** deslocar os selos ~10pt à direita no código.
+- [ ] **Regenerar (forçar)** os certs **já emitidos** que devam exibir o novo cabeçalho — asset estático só vale p/ regerados; novos já saem certos.
+- [ ] Reconciliar `release → develop` (GC) — ver [2.4](#24-reconciliação--sqls-limpeza).
+
+**❓ Decisão / follow-up**
+- [ ] **Product type em inglês:** entregue como **override manual** (`categoryDisplayOverride`) — NÃO traduzi todo o
+  `category-display-map` p/ EN (risco de chutar o texto oficial FAMBRAS por categoria; só o "K" está confirmado:
+  "Category K – Production of (Bio) Chemicals"). Se a FAMBRAS quiser EN automático em **todas** as categorias, **precisamos dos textos oficiais por categoria**.
+- [ ] **DT 7.1 × 7.4 (categoria K):** mapeamento já refina K→7.1 com subcategoria K-01/K-02; sem subcategoria, default 7.4. Na
+  emissão manual o `dtCodesOverride` cobre. Decidir se o form deve permitir **escolher subcategoria** ou se o override basta.
+- [ ] **Catálogo `CertificationStandardByMarket`:** popular o texto oficial das normas (BPJPH e demais) via DBeaver, p/ que
+  marcar a norma renderize sozinho **sem** override manual. Cruza com **FM 41X** (validação quatro-mãos da [2.5](#25-emissão-manual-de-certificado--layoutregras-reunião-22jun)).
+
+**📌 Notas de reconciliação**
+- A decisão inicial desta sessão de **"manter ambas"** (Code + Packing size) foi **superada** pela reconciliação de gabaritos
+  (NC 22/jun, `b9102bd9`): ambos os renderers FM 7.7.2 ficaram com **4 colunas** `Nº | Product Name | Code | Product Brand` (sem Packing).
+  Code preservado; sem divergência EN×AR.
+- **Landscape FM 7.7.1** (`bg-approval-landscape.png`): **não tocado** — Renato confirmou que não tinha o overlap (N/A, registrado p/ rastreio).
 
 ---
 
