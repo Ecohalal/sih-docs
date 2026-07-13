@@ -11,6 +11,8 @@
 > marcados _(da memória — confirmar)_ quando não validados nesta consolidação.
 >
 > Última consolidação: **30/jun/2026** (incorpora reunião FAMBRAS 22/jun: cert layout/regras + usuários + dossiê + Apêndice de auditoria; **sessão emissão manual FM 7.7.2 Rev 05 + cabeçalho −10% → [2.5.1](#251-emissão-manual-fm-772-rev-05--cabeçalho-10-sessão-30jun)**). **+ Auditoria git dos 6 repos (30/jun): reconciliações release→develop/development TODAS feitas; código 1.3 e endpoint 2.3 já em prod; A1/A2 embarque no backend → [🎯 Plano de Ataque](#-plano-de-ataque--priorizado-consolidação-30jun-via-auditoria-git-dos-3-sistemas).**
+>
+> **Atualização 13/jul (sessão UX/identidade GC):** ✅ menu agrupado por domínio funcional (todos os perfis, desktop+mobile) + link morto `/comite` removido; ✅ **Imprimir do certificado** → PDF real (regras tipo/categoria/selos) + fix **CORS** (URL presigned + `window.open`) + nome do signatário corrigido (Mohamed Hussein El Zoghbi); ✅ `analista` liberado no `/generate-pdf`; ✅ **rebrand HalalSphere → "Gestão de Certificações" / "Fambras Halal by Ecohalal"** em e-mails/SMS/notificações/PDFs/Excel (só resta `main.ts` interno). Tudo em `release`, deploy+validação OK. Detalhe: `halalsphere-docs/PLANNING/HANDOFF-SESSAO-2026-07-13.md`. **Aberto:** cor dos e-mails teal→azul Ecohalal (opcional).
 
 ---
 
