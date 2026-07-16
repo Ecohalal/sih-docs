@@ -40,6 +40,7 @@
 | **sih-backend** | `release` | 0 | **4** → development | 13/jul (recuperação de senha) |
 | **sih-frontend** | `release` | 0 | **4** → development | 13/jul (telas de senha) |
 | **syshalal-api** | 🚩 `carta-correcao-brf-kuwait` | 🚩 **3** | 2 → develop | **30/jun** |
+| **syshalal-external-api** | `staging` | 0 | **release 3 atrás de staging** | 06/jul `6d2c2e7` (rotas /integration p/ SIH — staging apenas, NÃO em prod) |
 | **syshalal-web** | `release` | 0 | 0 | 22/jun |
 | halalsphere-docs | `main` | 0 | — | 16/jul |
 | sih-docs | `main` | 0 | — | 16/jul |
@@ -68,7 +69,7 @@
 
 ## 3. 🟥 DESTRAVA JÁ — pronto, esperando 1 ação
 
-1. 🔧 **[SIH] `GC_INTEGRATION_API_KEY` na task def `sih-api-task`** — **sem isso a tela "MP Homologada (GC)", já em prod, dá 503.** Reusar a chave de `production.SERVICE_API_KEYS_HALALSPHERE_API` → criar secret `production.GC_INTEGRATION_API_KEY_SHI_API` → nova revisão da task def → IAM `secretsmanager:GetSecretValue` → Update service. **[Renato/AWS]**
+1. 🔧 **[SIH] `GC_INTEGRATION_API_KEY` na task def `sih-api-task`** — ⚠️ **PROVAVELMENTE JÁ FEITO (re-verificar antes de executar):** validado em prod em **02/jul** — screenshot Renato `/gc-raw-materials` Rolândia 19/19 aprovados + boot log `Integracao GC configurada` + secret `production.GC_INTEGRATION_API_KEY_SHI_API` criado; revisões :95/:96 (06/jul) herdaram as envs. Item veio de handoff de 28-29/jun. **Checagem de 30s:** CloudWatch log group `/aws/ecs/sih-api-loggroup`, filtro `Integracao` no boot da task atual. Se OK, riscar. **[Renato/AWS]**
 2. 🚩 **[SysHalal] Resolver o WIP de `syshalal-api`** — commitar ou descartar (§1). **[Renato decide]**
 3. 🔧 **[GC] Validar em prod o pacote de 16/jul** — `.K.`/normas (muda **número do certificado**), PDF protegido, busca por SIF, guard-rail. **[Renato]**
 4. 🔧 **Reconciliar `release`→base** — GC back 3 · GC front 7 · SIH back 4 · SIH front 4 · syshalal-api 2. **[Claude, com OK]**
@@ -82,6 +83,12 @@
 - ✅ *(16/jul)* `CERTIFICATE_PDF_UNLOCK_KEY` na task def do GC.
 - 🔧 Validar: `.K.` bovino×aves · OIC/SMIIC **01/2019** · **993** só em abate · PDF protegido (abre livre, não copia, imprime) · busca por SIF · guard-rail (CV+HII bloqueia) · **Edição de escopo F1** (roteiro de 5 passos no handoff 13/jul).
 - 🔧 **SIH:** validar recuperação de senha E2E · confirmar **SES fora do sandbox** (se em sandbox, o fluxo quebra em campo) · confirmar migration `20260713120000_password_reset_token` aplicada · validar "Ver PDF" (`d7e9eaa`).
+- 🔧 **SIH · espelho GC→SIH (deployado 03-05/jul, NUNCA validado):** abrir planta Rolândia → card do espelho no bloco "Origem da Certificação Halal" (nome canônico + certs vigentes) · badge de cert no destino da transferência. Código: GC `b4337037` + SIH back `0450f78` + SIH front `f76cc8d`, todos em release/prod.
+- 🔧 **SysHalal `/integration` (trilha SIH↔SysHalal, spec `SYSHALAL-INTEGRATION-ENDPOINT-SIH-SPEC-2026-07-06`):**
+  (i) **SSM staging** `syshalal-external-api-staging.json`: adicionar `SERVICE_API_KEYS` (chave nova p/ o SIH) + `SERVICE_PDF_USER_OWNER/TOKEN` (usuário API do ambiente staging) → **restart do serviço** (configEnv lê SSM só no boot) → passar a chave ao Claude p/ teste;
+  (ii) ❓ **destino do `api_sih`** em prod: manter ativo como credencial interna do PDF (sugestão Claude — o download de PDF faz login real no syshalal-api) × criar usuário interno novo · **rotacionar o token** (transitou em texto plano em sessão de 06/jul);
+  (iii) rollout prod (após teste staging): SSM prod + merge `staging→release` do syshalal-external-api (staging=`6d2c2e7`) + secret `production.SYSHALAL_INTEGRATION_API_KEY_SIH_API` na task def `sih-api-task`;
+  (iv) validação final: buscar **`2607FU7I2`** (grupo ≠ BRF) na UI do SIH → verde; `2607PHJWS` de regressão.
 - ⚠️ **Rotacionar a senha do GC (Aurora)** — compartilhada em sessão anterior, em arquivo temp. Pendente desde 10/jul.
 - 🔧 Rodar **import IND** em prod (`prisma/import-plantas-ind.ts`, `79b2935`+`91f08fc`) — 23 plantas + vínculos de supervisor.
 - 🔧 SQLs de limpeza de teste no DBeaver (4 arquivos em `halalsphere-backend/prisma/`).
@@ -111,6 +118,12 @@
 **GC · FAM-0017:** 🧩 **F4 — FK opcional `ScopeSupplier`/`SupplierHomologation` + RevisionLog** (*prioridade sobre F5/F6* — acreditabilidade ISO 17065) · F5 UI U7 `/homologacao-mp` · F6 import das 29 planilhas · seeds S1 (~40 certificadoras) e S2 (231 intermediários) → DBeaver quando curados.
 
 **SIH:** 🧩 Regenerar swagger das rotas `auth` (já tem `{proxy+}`, não exige resource nova) · 🧩 acoplar MP aprovada à validação de produção/abate (❓ PO) · 🧩 embarque multi-origem **A/B/C** (backend A1 `3114c02` + A2 `47a52dd` já em prod; falta UI N-origens, datas como faixa, vínculo no controlador) · 🧩 NC FM 7.1.6.1 UI · 🧩 catálogo produtos 5A-2 (❓ aguarda .xlsx) · 🧩 destino no PDF de transferência.
+
+**SIH↔SysHalal · integração sem escopo de grupo (código PRONTO, rollout pendente — ver §4.1):**
+- ✅ external-api rotas `/integration/{certified,certified_status,certified_pdf}` c/ x-api-key: `25c96a6` (develop `89c6e7e` · staging `6d2c2e7` · **release NÃO — não está em prod**).
+- ✅ sih-backend modo dual (`SYSHALAL_INTEGRATION_API_KEY` → /integration; senão legado): `439d4ea` (release, pushado).
+- 🧩 [Claude] testes staging quando SSM configurado: certs de **2 grupos** + regressão `/certified` legado (parceiro continua escopado).
+- Domínio de arquivos (fora da Trilha D declarada — anti-colisão): `syshalal-external-api/*` · `sih-backend/src/halal-cert/` · `sih-frontend/src/{components/shared/HalalCertField.tsx, services/halal-cert.service.ts}`.
 
 **SIH · QA Nilsa (mai/2026 — o mais stale; confirmar em prod antes de codar):** M2.6/M3.8/M4.13/M5.10/M7.4 (mensagens ausentes) · M11.7 card Supervisores clicável · M11.8 export Analytics · tooltip KPI · sweep de Selects `disabled`→texto plano (só Planta convertida).
 
