@@ -1,6 +1,21 @@
 # SPEC — Endpoint de integração na SysHalal External API (consumo pelo SIH)
 
-> **Data:** 2026-07-06 · **Status:** PLANO — aguardando discussão com Renato (manhã)
+> **⚠️ ESTADO VIVO = `BACKLOG-ECOHALAL.md` §4 (regime 16/jul).** Esta spec é referência
+> TÉCNICA (desenho, decisões, fases). A seção 5 abaixo é retrato de 06/jul.
+> **Onde parou (16/jul, por git):** F1 `25c96a6` em develop `89c6e7e` + staging `6d2c2e7`
+> — **release NÃO (não está em prod)**; F2 sih-backend `439d4ea` em release, PUSHADO.
+> **Próximo passo (nesta ordem):** ① Renato: SSM `syshalal-external-api-staging.json`
+> += `SERVICE_API_KEYS` (chave nova p/ SIH) + `SERVICE_PDF_USER_OWNER/TOKEN` (usuário API
+> do staging) → restart do serviço (configEnv lê SSM só no boot) → passar a chave ao Claude.
+> ② Claude: testes staging — `GET /integration/certified?certificate-number=<cert grupo A>`
+> e `<cert grupo B>` com `x-api-key` (ambos devem vir), `/integration/certified_pdf`
+> (base64 vem), e regressão `GET /certified` com user-token de parceiro (continua escopado).
+> ③ Renato decide destino do `api_sih` (interna × novo usuário) + rotaciona o token.
+> ④ Prod: SSM prod + merge staging→release + secret
+> `production.SYSHALAL_INTEGRATION_API_KEY_SIH_API` na task def `sih-api-task`.
+> ⑤ Validação: `2607FU7I2` verde na UI do SIH + `2607PHJWS` de regressão.
+
+> **Data:** 2026-07-06 · **Status original:** PLANO — aguardando discussão com Renato (manhã)
 > **Decisão de contexto (Renato, 06/jul ~01h40):** Opção 3 escolhida — rota de integração
 > dedicada com api-key própria, fora do modelo usuário/grupo. Opção 1 (vincular api_sih a
 > todos os grupos) inviável: 100+ grupos. Opção 2 (flag global no usuário) desvia do padrão.
