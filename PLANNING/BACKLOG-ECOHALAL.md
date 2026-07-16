@@ -72,7 +72,7 @@
 1. 🔧 **[SIH] `GC_INTEGRATION_API_KEY` na task def `sih-api-task`** — ⚠️ **PROVAVELMENTE JÁ FEITO (re-verificar antes de executar):** validado em prod em **02/jul** — screenshot Renato `/gc-raw-materials` Rolândia 19/19 aprovados + boot log `Integracao GC configurada` + secret `production.GC_INTEGRATION_API_KEY_SHI_API` criado; revisões :95/:96 (06/jul) herdaram as envs. Item veio de handoff de 28-29/jun. **Checagem de 30s:** CloudWatch log group `/aws/ecs/sih-api-loggroup`, filtro `Integracao` no boot da task atual. Se OK, riscar. **[Renato/AWS]**
 2. 🚩 **[SysHalal] Resolver o WIP de `syshalal-api`** — commitar ou descartar (§1). **[Renato decide]**
 3. 🔧 **[GC] Validar em prod o pacote de 16/jul** — `.K.`/normas (muda **número do certificado**), PDF protegido, busca por SIF, guard-rail. **[Renato]**
-4. 🔧 **Reconciliar `release`→base** — GC back 3 · GC front 7 · SIH back 4 · SIH front 4 · syshalal-api 2. **[Claude, com OK]**
+4. ✅ *(16/jul)* **Reconciliar `release`→base** — FEITO em GC back+front (`develop`) e SIH back+front (`development`, remote `ecohalal`); todos com `ahead=0`. **Resta só `syshalal-api` (2)** — travado pelo WIP solto do item 2. **[Claude]**
 5. 🔧 **Criar 4 usuários FAMBRAS** — GC: Mariana + Elaine · SIH: Karoline (com K) + Osama. **100% destravado, e-mails em mãos.**
 
 ---
@@ -98,11 +98,11 @@
 
 ### 4.2 Claude — código
 **GC · Trilha A (emissão):**
-- 🧩 **#3 multi-CATEGORIA — base `####` por categoria/template** (Minerva: 1430 Habilitação × 1431 Único). Hoje `manualEmit` só faz multi por norma OU por produto, com base única. ❓ depende de confirmação FAMBRAS.
+- ⏬ **#3 multi-CATEGORIA — REBAIXADO (decisão 16/jul: vale o §5.8).** O caso já é atendido **manualmente via `Clonar`** (2 emissões → bases próprias naturalmente) + **guard-rail de categorias** (`e1f92785`). O split automático por categoria (base `####` própria, Minerva 1430×1431) é **automação/conveniência, não correção** → sai do caminho crítico. Se voltar, lembrar: **não rodar em paralelo com `marketScopes`** (§2). Resto útil e barato: **avisar o operador para usar Clonar** quando selecionar categorias de templates diferentes.
 - 🧩 **`marketScopes` na emissão manual** — não existe no form/DTO; sem ele o PDF usa fallback em vez do catálogo. ❓ depende de FAMBRAS.
 - 🧩 **F3 — nº do certificado = nº do CONTRATO** (Lina). ⏸ *só depois de validar o `.K.`* — as duas mexem na numeração.
 - 🧩 **F2 — draft→aprovar→travar + audit trail** (ISO 17065). ❓ depende de PO. Toca trilhas A e C.
-- 🧹 **Deletar `base-template.renderer.ts`** — código morto, sem consumidor, ainda com caminho de `userPassword`; foi a origem da divergência entre renderers.
+- ✅ *(16/jul)* **`base-template.renderer.ts` deletado** — `353a0b79` (⚠️ **commit local em `release`, push pendente do OK do Renato**). Zero consumidores confirmado por grep (a classe só aparecia na própria declaração); carregava caminho de `userPassword` e foi a origem da divergência entre renderers.
 - 🧩 `main.ts` — último "HalalSphere" interno (Swagger title + log de boot). Baixa.
 - ⏸ **Parkeados:** parser xlsx (aguarda arquivo de escopo real da Lina) · emissão assíncrona (rebaixada — o "timeout dos 151" era shadow-copy do OneDrive, não escala) · DSM/IFF cert-de-produto (atrás da digitalização do escopo da indústria).
 
@@ -149,7 +149,7 @@
 5. **Cert sempre ABRE sem senha** (autenticidade via QR). Bloqueia-se **cópia**, nunca abertura. `CERTIFICATE_PDF_UNLOCK_KEY` **não é senha de abertura** — é o *owner password*, só destrava restrições.
 6. **Bilíngue EN+AR** em 100% dos certs. **Datas date-only = UTC.**
 7. **Idioma extra = certificado adicional** separado (não coluna).
-8. **Multi-categoria = certificados separados** via Clonar.
+8. **Multi-categoria = certificados separados** via Clonar. **Reconfirmado 16/jul** contra o "#3 base por categoria" da reunião de 14/jul: o fluxo é **manual (Clonar)**, não split automático — o #3 foi **rebaixado** (§4.2). Clonar + guard-rail (`e1f92785`) já cobrem o caso.
 
 **Normas (14/jul)**
 9. **`.K.` coexiste** com a numeração IT 4.2 · Cert Único = **1 cert por norma-grupo** · **single também leva `.K.`**.
