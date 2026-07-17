@@ -99,7 +99,11 @@
 ### 4.2 Claude — código
 **GC · Trilha A (emissão):**
 - ✅ **#3 multi-CATEGORIA — FECHADO (16/jul), nada a fazer.** Decisão: vale o **§5.8** (Clonar manual). O aviso ao operador **já existe** no guard-rail `e1f92785` (`ManualCertificateEmission.tsx`): templates diferentes (7.7.1×7.7.2) **bloqueia** com *"Emita certificados separados usando 'Clonar de um certificado'"*; mesmo template com tipos diferentes **avisa**. O split automático (base `####` por categoria, Minerva 1430×1431) foi **descartado** — é automação, não correção. Se um dia voltar: **não rodar em paralelo com `marketScopes`** (§2).
-- 🧩 **`marketScopes` na emissão manual** — não existe no form/DTO; sem ele o PDF usa fallback em vez do catálogo. ❓ depende de FAMBRAS.
+- ✅ *(16/jul)* **#9 `marketScopes` na emissão manual — FEITO ponta a ponta** (decisão do Renato de seguir). Seção 6 "Emissão e mercados" ganhou **Mercados de destino**; marcar destinos grava `MarketScope(país × normas do grupo)` → `extractRequirements` passa a resolver as normas pelo **CATÁLOGO** (FM 4.1.X, §5.11) em vez do fallback genérico. Ex.: **Indonésia** lista 8 normas; **Brasil (Mercado Interno)** sai **só com a DT** (antes imprimia norma indevidamente).
+  - Hashes: back `847006e6` (DTO + persistência) + `d2ec0623` (blindagem `@IsIn`, ISO2 inválido virava 500) · front `ea8e76fa`. **Pushados em `release`.**
+  - **Sem destino marcado = comportamento atual** (fallback) → zero regressão.
+  - 🚩 **Gap conhecido:** só os **12 países com mapeamento 1:1 verificado** (BR, SA, AE, BH, KW, OM, QA, YE, ID, MY, SG, TR). Os agrupamentos **"Demais países da <região>"** (Américas/Europa/África/Ásia/Oceania) **ficaram de fora** — exigem seletor de país completo; não foi chutado país "representante" (seria dado errado no `MarketScope`). Ao adicionar, estender também o `@IsIn` do DTO.
+  - 🔧 **[Renato] Validar:** emitir cert marcando **Indonésia** (deve listar as 8 normas) e outro marcando **Brasil** (deve sair só a DT).
 - ❓ **F3 — nº do certificado = nº do CONTRATO** (Lina). Sequenciamento destravado (`.K.` validado, §3.3), **mas o requisito não fecha** — escopado em 16/jul:
   - `Contract.contractNumber` **existe** (unique, FK `certificationId`) e o schema diz *"mesmo número da proposta aceita (**IT 4.2**)"* → encaixa com o `.K.` (base = nº do contrato + `.K.` da norma = padrão Minerva `1430.1`/`1430.2`).
   - 🚩 **Bloqueio 1:** a **emissão manual não tem contrato** (cria `Certification` synthetic pulando proposta→contrato) → sem fonte para o número. Operador digita? Passa a exigir contrato?
