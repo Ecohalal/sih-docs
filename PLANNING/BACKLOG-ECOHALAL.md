@@ -43,7 +43,7 @@
 | **syshalal-external-api** | `staging` | 0 | **release 3 atrás de staging** | 06/jul `6d2c2e7` (rotas /integration p/ SIH — staging apenas, NÃO em prod) |
 | **syshalal-web** | `release` | 0 | 0 | 22/jun |
 | halalsphere-docs | `main` | 0 | — | 16/jul |
-| sih-docs | `main` | 0 | — | 16/jul |
+| sih-docs | `main` | 0 ✅ *(17/jul)* | — | 17/jul `f4223ca` |
 
 🚩 **`syshalal-api` é o ponto de atenção:** parado em branch de feature desde **30/jun** com 3 arquivos soltos (`package.json`, `pnpm-lock.yaml`, template draft `Industrializados_SIS_2020_DRAFT.html`). Tem **8 branches** vivas (4 hotfix + 2 feature). SysHalal é o **único sistema com usuários reais** — WIP solto ali é o de maior risco. **Ação: commitar ou descartar.**
 
@@ -150,6 +150,8 @@
 
 **SIH · QA Nilsa (mai/2026 — o mais stale; confirmar em prod antes de codar):** M2.6/M3.8/M4.13/M5.10/M7.4 (mensagens ausentes) · M11.7 card Supervisores clicável · M11.8 export Analytics · tooltip KPI · sweep de Selects `disabled`→texto plano (só Planta convertida).
 
+**SysHalal · tela de validação:** 🧩 **erros de hidratação React #418/#422** — *(trazido para o §4 em 17/jul pela regra §0.5; estava só no handoff de 23/jun e escapou da extração)*. **Adiado pelo Renato** na época, nunca fechado. Ocorre na tela `certificadovalidate/[id]` do `syshalal-web`. Suspeita registrada: **skew de cache pós-deploy** → testar **hard refresh** primeiro; se persistir, reproduzir em `next dev` para ter a mensagem não-minificada (suspeita secundária: i18next em SSR). **Não é regressão** dos fixes de 23/jun (`#516`/`#517`) — a UI nova só renderiza pós-fetch. ⚠️ Toca a **Trilha E** (SysHalal), hoje travada pelo WIP solto (§1/§3.2) — **não iniciar antes de resolver o WIP**.
+
 ### 4.3 FAMBRAS — decisões e entregas
 **❓ Decisões de norma (as 3 mais quentes — Soha):**
 1. **Mercados nacionais (BPJPH/MUIS/MS) devem derivar GSO?** O alinhamento de 08/jul diz que são baseados em GSO e o sistema **já os trata como GSO** (nomenclatura de categoria + `gsoAuditMode`, *"Default to GSO rules"*) — só a derivação de `standard` não reflete. Se sim, "Sem norma acreditada" quase desaparece.
@@ -214,6 +216,7 @@
 | 7 commits de 16/jul (emissão) | **Nenhum doc os mencionava** antes desta consolidação. |
 | §4.2: *"`353a0b79` commit local em `release`, push pendente do OK"* | **Já estava em `origin/release`** — `git branch -r --contains` confirma. Corrigido 17/jul. |
 | §5.16: *"SIH **não cadastra planta**"* | **O SIH tem `model Plant` próprio** (39 plantas) e **toda a operação pendura nele** (abate/produção/embarque/NC/supervisor/inventário/escala); a UI **permite cadastrar**. A integração é **read-through de uma via, SEM sync** (o `TASK-07` do schema do SIH diz que o sync GC→SIH é **planejado, não feito**). O §5.16 descreve o **alvo**, não o estado. ⇒ enquanto não houver sync, **os dois cadastros divergem em silêncio** e a junção `SIF+CNPJ` quebra sem avisar. *(Achado 17/jul, cruzando os 2 bancos — foi o que motivou o fallback CNPJ-only.)* |
+| §1: *"`sih-docs` — WIP solto **0**"* | Havia **16 caminhos não-rastreados**. Entre eles, **specs que o próprio mestre referencia**: `ITEM-A-B-C-MULTI-ORIGEM-SPEC` + `ITEM-A2` (base do "embarque multi-origem A/B/C" do §4.2/SIH) — o mestre apontava para arquivo **inexistente em git**. Também `ROADMAP-DIRETORIA-2026-07-14` e 20,8 MB de planilhas FM 7.4.2.7 em `Reuniões/` (fonte do F6/N5b/N5c). **Corrigido 17/jul:** 15 docs versionados (`1db4442`); `Reuniões/` → `.gitignore` (`f4223ca`, decisão do Renato: binário pesado segue a política de fontes externas do §8). *(Lição: a auditoria de 16/jul cobriu os repos de **código**; os de **docs** passaram batido — e o mestre vive num deles.)* |
 
 ---
 
