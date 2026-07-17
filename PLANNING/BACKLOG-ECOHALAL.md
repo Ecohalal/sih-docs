@@ -65,6 +65,8 @@
 
 **Bancos (mesmo cluster Aurora — fácil confundir):** `db_ecohalal_halalsphere` = **GC** (DBeaver: `postgres`) · `db_ecohalal_sih` = **SIH** · SysHalal (DBeaver: `HALAL PROD`). Junção GC↔SIH = **`SIF + CNPJ`** (SIH não tem model Company).
 
+🕳️ **Buraco do §2 (achado 17/jul):** as tabelas de dados estão declaradas só sob a **Trilha B (GC)** — **o banco do SIH (`db_ecohalal_sih`) não pertence a nenhuma trilha**. Em 17/jul a Trilha B escreveu em `db_ecohalal_sih.plants` (5 linhas: 3 chaves completadas + Minerva Casing + Ecotrace) **com OK do Renato**, mas sem domínio declarado. **Definir o dono** antes da próxima escrita — candidato natural: Trilha D (SIH), já que o código do SIH é dela.
+
 ---
 
 ## 3. 🟥 DESTRAVA JÁ — pronto, esperando 1 ação
@@ -90,6 +92,7 @@
   (iii) rollout prod (após teste staging): SSM prod + merge `staging→release` do syshalal-external-api (staging=`6d2c2e7`) + secret `production.SYSHALAL_INTEGRATION_API_KEY_SIH_API` na task def `sih-api-task`;
   (iv) validação final: buscar **`2607FU7I2`** (grupo ≠ BRF) na UI do SIH → verde; `2607PHJWS` de regressão.
 - ⚠️ **Rotacionar a senha do GC (Aurora)** — compartilhada em sessão anterior, em arquivo temp. Pendente desde 10/jul.
+- ⚠️ **Rotacionar a senha do SIH (`db_ecohalal_sih`)** — *(novo 17/jul)* transitou em texto plano no scratchpad (`db-conn-sih.json`) para o cruzamento GC↔SIH. Mesmo cluster Aurora do GC, user `db_ecohalal_sih_user`.
 - 🔧 Rodar **import IND** em prod (`prisma/import-plantas-ind.ts`, `79b2935`+`91f08fc`) — 23 plantas + vínculos de supervisor.
 - 🔧 SQLs de limpeza de teste no DBeaver (4 arquivos em `halalsphere-backend/prisma/`).
 - 🔧 `capabilities=processamento` das 4 Seara (admin Lina) — confirmar quais.
@@ -117,12 +120,18 @@
 **GC · Trilha B (normalização):**
 - ✅ *(17/jul)* **Fallback CNPJ-only — FEITO nas DUAS pontas.** Planta sem SIF (químico/casing: Kin Master ×2, Minerva Casing = `NAO_APLICAVEL`) não casava por definição; agora casa por CNPJ.
   - **GC** `853ed242` (**pushado** em `release`, CI/CD disparado): `resolvePlant` — com SIF mantém SIF+CNPJ e devolve null se não casar (**divergência real não se mascara**); sem SIF cai para CNPJ **só se INEQUÍVOCO** (2+ plantas sem SIF no mesmo CNPJ → null, não chuta). Beneficia os 2 endpoints (`raw-materials/by-plant` + `plant-summary`). Rota existente → **sem regen de API GW**.
-  - **SIH** `6daeff9` (**`release` LOCAL, push pendente do OK**) — Trilha D tocada com OK do Renato (§0.3): o guard exigia `sanitaryCode` E `cnpj` e **derrubava a chamada dentro do SIH**, antes de sair; agora só CNPJ é obrigatório e o SIF vai vazio.
+  - **SIH** `6daeff9` (**pushado** em `ecohalal/release`) — Trilha D tocada com OK do Renato (§0.3): o guard exigia `sanitaryCode` E `cnpj` e **derrubava a chamada dentro do SIH**, antes de sair; agora só CNPJ é obrigatório e o SIF vai vazio.
+  - Reconciliado release→base: GC `a8f375b4` (develop) · SIH `0e42e70` (development) → **ahead=0** (§1, §3.4).
   - Validado contra prod: Kin Master e Minerva Casing resolvem 1:1; Rolândia (com SIF) não entra no fallback = **zero regressão**. tsc ok nos 2 repos.
   - 🔧 **[Renato] Validar pós-deploy:** abrir Kin Master/Minerva Casing no SIH → espelho e MP devem aparecer (antes davam "falta SIF e CNPJ").
+- ✅ *(12/jul)* **Fix do import de produtos** — `BulkImportProductsDialog` (`parseAoa`/`parseCsv`) assumia ordem posicional sem cabeçalho e gravava a coluna "Nº" como nome (origem dos produtos numéricos). Agora **exige o cabeçalho do modelo** (sem ele: erro claro + 0 linhas, Aplicar desabilitado), **rejeita nome numérico** e tem **cap de 500** linhas. `3c620550` (release) + reconciliado develop `2a53b7ad`. *(não constava no §4 — trazido pela regra §0.5)*
+- ✅ *(12/jul)* **Correções de dado no SIH** (`db_ecohalal_sih.plants`, sem hash — é dado): 3 chaves completadas **a partir do GC master** (BRF Nova Mutum +CNPJ `01838723049487` · Minerva Jose Bonifacio +CNPJ `67620377000386` · Curtume Jangadas +SIF `3471`) → **31→34 de 39** casando · **Minerva Casing**: removido **SIF 451 ERRADO** (451 é da Minerva principal `…0386`) · **Ecotrace Teste**: `isActive=false` (**tinha 1 registro → desativada, não deletada**).
 - 🧩 Reenriquecer AR/PY/estrangeiras via SysHalal por CUIT/RUC.
-- 🧩 Cadastrar no GC: Padoca Maricota + Kin Master Passo Fundo (`…0296`) · merge do dup Kin Master no SIH (**migrar, não deletar** — tem operação).
+- 🧩 Cadastrar no GC: Padoca Maricota + Kin Master Passo Fundo (`…0296`) · merge do dup Kin Master no SIH (**migrar, não deletar** — tem operação: 1 relatório + 1 origem-MP).
 - 🧩 Lotes MP **N5b** (OUTROS) · **N5c** (GRUPO JBS consolidado) · INTERMEDIÁRIAS — das 28 planilhas FAM-0017 só Rolândia + N5 carregados.
+- ❓ **`scope_brands`: rebuild total (opção b)?** O parse extrai 6.356 marcas mas com **ruído** — o 4º campo do FM é "comercial×marca" ambíguo (ADM = 21 nomes-de-produto × Forno de Minas = 6 marcas reais). Feito só o mínimo (opção c): 12 numéricas apagadas + 109 scopes do seed populados + 7 listas multi-marca splitadas → 2.699. **Rebuild total injetaria ~4 mil nomes-de-produto como marca** → decisão do Renato.
+- 🧩 **`_ScopeProductBrands` (marca por produto) está VAZIO** — só há marca por escopo; produto↔marca nunca foi linkado.
+- 🧩 **Badge UI da flag "validado FAMBRAS"** = `approved_by_id IS NOT NULL` nos `raw_material_masters` (hoje é derivável, não visível). Baixa.
 - ⚠️ **Dívida:** os scripts de carga vivem no **scratchpad (efêmero, não versionado)** — as cargas de dado têm número antes/depois, mas **nenhum hash**. Se precisar rastreabilidade, é aqui.
 
 **GC · Trilha C (escopo):** 🧩 **Fase 2** — campos gerais (datas, norma, observações), `industrialCategories` M2M, ~~market scopes~~. Número segue **travado**.
@@ -148,6 +157,10 @@
 3. **GSO+OIC juntos → template GCC → só o selo GAC** (o OIC não sai). Coerente com "SMIIC só Turquia" — confirmar.
 
 **❓ Outras decisões:** #3 base por categoria (Minerva 1430×1431) · #9 múltiplos mercados · draft→aprovação existe? · N2b de-para de **14 categorias** · 3 SIFs duplicados (585 FRIGOMARCA×PANTANAL · 4699 LAR×AGROARACA · 2620 FALCAO×BMG) · dedup Hexus×Vidara · REVIEW histórico (7 casos) · overlap couro 7.1.4.5×7.1.4.9 · 5 decisões Fase 5B FAM-0017 (Lina) · certs vencidos-mas-ativos (ex. Gelita).
+
+**📋 Correção na FONTE (relatório pronto — `halalsphere-docs/PLANNING/RELATORIO-ESCOPO-CORRECAO-FAMBRAS-2026-07-12.xlsx`, `7f565b7`):** *(novo 17/jul)* **3 produtos** cujo nome é **código DSM na própria planilha FM** (`8001 D/P`, `8008 C/U`) · **30 marcas** que são produto/embalagem/lista no lugar da marca. O parser refinado recuperou **312 dos 315** casos automaticamente (315→3); o resíduo é dado ausente/trocado no FM, só a FAMBRAS resolve.
+
+**❓ Curadoria do catálogo de MP (N5 v2):** *(novo 17/jul)* catálogo refeito → **335 masters, 0 nome numérico** (v1 tinha 56 numéricos + blobs de fórmula). **7 famílias ficaram em `pending`** aguardando a FAMBRAS decidir a fusão (ex.: `Ácido Cítrico` × `Ácido Cítrico Anidro` × `Acidulante Ácido Cítrico Pó`) — **não fundi no automático porque em halal a forma/origem importa** (cítrico sintético × microbiano difere). Propostas em `scratchpad/n5v2-merge-propostas.txt`. Também: **7 `company_raw_materials` em `awaiting_matching`** cujo "nome" é **fórmula inteira** ("Açúcar cristal, açúcar mascavo, sal, especiarias…") = receita de produto final, não MP → corrigir na origem.
 
 **📦 Entregas aguardadas:** logos/assinatura em **alta resolução** · lista "certificada desde" · **textos oficiais EN por categoria** (só "K" confirmado) · arquivo de **escopo real** da Lina (destrava o parser xlsx) · .xlsx do catálogo de produtos (destrava 5A-2) · CSVs FM 7.8.1/7.8.2 · certificado real **preenchido** de referência (A2 layout datas EN/AR) · logo Indonésia (Elaine consulta acreditadora) · **aprovar itens de MP** na tela de review (sem isso `approvedOnly=true` volta vazio) · lançar dados reais no FM 20.1 · lista oficial plantas+CNPJ · criticidade halal · códigos reais dos 322 `N5-*` · 16 estrangeiras sem endereço (fonte externa) · Starmilk/Econata (fora do SIGSIF).
 
@@ -199,6 +212,8 @@
 | Backlog 30/jun: *"reconciliação release→develop TODAS feitas"* | Hoje: **3 · 7 · 4 · 4 · 2** pendentes. |
 | Backlog 2.1: "front per-Company aberto" × Plano de Ataque: "entregue 28-29/jun" | Contradição interna do próprio doc — **resolver ao tocar FAM-0017**. |
 | 7 commits de 16/jul (emissão) | **Nenhum doc os mencionava** antes desta consolidação. |
+| §4.2: *"`353a0b79` commit local em `release`, push pendente do OK"* | **Já estava em `origin/release`** — `git branch -r --contains` confirma. Corrigido 17/jul. |
+| §5.16: *"SIH **não cadastra planta**"* | **O SIH tem `model Plant` próprio** (39 plantas) e **toda a operação pendura nele** (abate/produção/embarque/NC/supervisor/inventário/escala); a UI **permite cadastrar**. A integração é **read-through de uma via, SEM sync** (o `TASK-07` do schema do SIH diz que o sync GC→SIH é **planejado, não feito**). O §5.16 descreve o **alvo**, não o estado. ⇒ enquanto não houver sync, **os dois cadastros divergem em silêncio** e a junção `SIF+CNPJ` quebra sem avisar. *(Achado 17/jul, cruzando os 2 bancos — foi o que motivou o fallback CNPJ-only.)* |
 
 ---
 
