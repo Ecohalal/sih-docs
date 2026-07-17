@@ -1,0 +1,1058 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Roadmap Ecossistema Halal Ecohalal — Diretoria — 2026-07-14</title>
+    <style>
+      :root {
+        --primary: #118add;
+        --primary-light: #e4f0fb;
+        --accent: #c9882d;
+        --text: #1a1a1a;
+        --muted: #555;
+        --border: #d8d8d8;
+        --bg: #fafafa;
+        --card: #ffffff;
+        --critical: #b8332a;
+        --warning: #b76a00;
+        --ok: #2e7d4f;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          "Helvetica Neue", Arial, sans-serif;
+        line-height: 1.55;
+        color: var(--text);
+        background: var(--bg);
+        margin: 0;
+        padding: 2rem 1rem;
+      }
+      .container {
+        max-width: 960px;
+        margin: 0 auto;
+      }
+      header.doc-header {
+        background: var(--card);
+        border-left: 5px solid var(--primary);
+        padding: 1.5rem 2rem;
+        margin-bottom: 2rem;
+        border-radius: 4px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+      }
+      header.doc-header h1 {
+        margin: 0 0 0.5rem;
+        font-size: 1.65rem;
+        color: var(--primary);
+        font-weight: 600;
+      }
+      header.doc-header .meta {
+        color: var(--muted);
+        font-size: 0.92rem;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem 1.5rem;
+      }
+      header.doc-header .meta strong {
+        color: var(--text);
+      }
+      nav.toc {
+        background: var(--card);
+        padding: 1rem 1.5rem;
+        border-radius: 4px;
+        border: 1px solid var(--border);
+        margin-bottom: 2rem;
+        font-size: 0.93rem;
+      }
+      nav.toc h2 {
+        margin: 0 0 0.5rem;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--muted);
+        font-weight: 600;
+        border: none;
+        padding: 0;
+      }
+      nav.toc ol {
+        margin: 0;
+        padding-left: 1.5rem;
+      }
+      nav.toc li {
+        margin: 0.15rem 0;
+      }
+      nav.toc a {
+        color: var(--primary);
+        text-decoration: none;
+      }
+      nav.toc a:hover {
+        text-decoration: underline;
+      }
+      section {
+        background: var(--card);
+        padding: 1.5rem 2rem;
+        margin-bottom: 1.5rem;
+        border-radius: 4px;
+        border: 1px solid var(--border);
+      }
+      h2 {
+        color: var(--primary);
+        border-bottom: 2px solid var(--primary-light);
+        padding-bottom: 0.4rem;
+        margin-top: 0;
+        font-size: 1.3rem;
+      }
+      h3 {
+        color: var(--text);
+        margin-top: 1.5rem;
+        font-size: 1.08rem;
+      }
+      h4 {
+        font-size: 0.98rem;
+        color: var(--muted);
+        margin-bottom: 0.4rem;
+      }
+      p {
+        margin: 0.6rem 0;
+      }
+      ul,
+      ol {
+        margin: 0.6rem 0;
+        padding-left: 1.5rem;
+      }
+      li {
+        margin: 0.25rem 0;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 1rem 0;
+        font-size: 0.92rem;
+      }
+      th,
+      td {
+        padding: 0.55rem 0.7rem;
+        text-align: left;
+        border: 1px solid var(--border);
+        vertical-align: top;
+      }
+      th {
+        background: var(--primary-light);
+        color: var(--primary);
+        font-weight: 600;
+        font-size: 0.88rem;
+        text-transform: uppercase;
+        letter-spacing: 0.02em;
+      }
+      tr:nth-child(even) td {
+        background: #f7f7f5;
+      }
+      code {
+        font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+        background: #f0f0ed;
+        padding: 0.1rem 0.35rem;
+        border-radius: 3px;
+        font-size: 0.88em;
+      }
+      .badge {
+        display: inline-block;
+        padding: 0.15rem 0.5rem;
+        border-radius: 3px;
+        font-size: 0.78rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+      }
+      .badge-critical {
+        background: #fce4e2;
+        color: var(--critical);
+      }
+      .badge-warning {
+        background: #fff0d6;
+        color: var(--warning);
+      }
+      .badge-ok {
+        background: #e0f3e8;
+        color: var(--ok);
+      }
+      .badge-info {
+        background: var(--primary-light);
+        color: var(--primary);
+      }
+      .callout {
+        border-left: 4px solid var(--accent);
+        background: #fdf7ec;
+        padding: 0.8rem 1rem;
+        margin: 1rem 0;
+        border-radius: 0 3px 3px 0;
+      }
+      .callout strong {
+        color: var(--accent);
+      }
+      .callout-critical {
+        border-left-color: var(--critical);
+        background: #fdf0ee;
+      }
+      .callout-critical strong {
+        color: var(--critical);
+      }
+      .callout-info {
+        border-left-color: var(--primary);
+        background: var(--primary-light);
+      }
+      .callout-info strong {
+        color: var(--primary);
+      }
+      blockquote {
+        border-left: 3px solid var(--border);
+        margin: 1rem 0;
+        padding: 0.3rem 1rem;
+        color: var(--muted);
+        font-style: italic;
+      }
+      footer.doc-footer {
+        text-align: center;
+        color: var(--muted);
+        font-size: 0.85rem;
+        padding: 2rem 0 1rem;
+      }
+      @media print {
+        body {
+          padding: 0;
+          background: white;
+        }
+        section,
+        header.doc-header,
+        nav.toc {
+          box-shadow: none;
+          border: none;
+          padding: 0.5rem 0;
+        }
+        nav.toc {
+          page-break-after: always;
+        }
+        section {
+          page-break-inside: avoid;
+        }
+        h2 {
+          page-break-after: avoid;
+        }
+        table {
+          page-break-inside: avoid;
+          font-size: 0.85rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header class="doc-header">
+        <h1>Roadmap Ecossistema Halal Ecohalal — Versão Diretoria</h1>
+        <div class="meta">
+          <span><strong>Publicação inicial:</strong> 2026-05-12</span>
+          <span><strong>Última atualização:</strong> 2026-07-14</span>
+          <span><strong>Autor:</strong> Renato Ribeiro (Ecohalal)</span>
+          <span><strong>Horizonte:</strong> jul/2026 → jul/2027</span>
+          <span><strong>Âncora:</strong> Go-live FAMBRAS — agosto/2026</span>
+        </div>
+      </header>
+
+      <nav class="toc">
+        <h2>Índice</h2>
+        <ol>
+          <li><a href="#sec-0">Atualizações desde a publicação inicial</a></li>
+          <li><a href="#sec-1">Sumário executivo</a></li>
+          <li><a href="#sec-2">Visão: 3 sistemas, 1 jornada</a></li>
+          <li>
+            <a href="#sec-3">Tese estratégica: validação cruzada de 4 portas</a>
+          </li>
+          <li><a href="#sec-4">Estado atual (julho/2026)</a></li>
+          <li><a href="#sec-5">Roadmap por fase</a></li>
+          <li><a href="#sec-6">Riscos e mitigações</a></li>
+          <li><a href="#sec-7">Por que esse plano fecha em agosto</a></li>
+          <li><a href="#sec-8">Próximos passos imediatos</a></li>
+          <li><a href="#sec-9">Anexos relacionados</a></li>
+        </ol>
+      </nav>
+
+      <section id="sec-0" style="border-left: 5px solid var(--accent)">
+        <h2 style="color: var(--accent)">
+          0. Atualizações desde a publicação inicial
+        </h2>
+        <blockquote>
+          Esta seção registra a evolução do roadmap após sua publicação inicial.
+          As demais seções já refletem o retrato de julho/2026.
+        </blockquote>
+
+        <div class="callout callout-info">
+          <strong>Nota de versão (14/jul/2026):</strong> esta é a revisão de
+          julho do roadmap publicado em maio/2026. A âncora de entrega moveu de
+          julho para <strong>agosto/2026</strong> (go-live FAMBRAS), refletindo a
+          decisão de entrar em produção com a base limpa e o ciclo de
+          certificação completo.
+        </div>
+
+        <h3>2026-05-12 a 2026-05-21 — Emissão manual de certificado + selos em produção</h3>
+        <p>
+          A ponte operacional prometida entrou no ar já no dia da publicação. Ao
+          longo de maio: schema <code>issuance_mode</code>, endpoint de emissão
+          manual, tela da Qualidade e página pública de verificação por QR Code em
+          produção. <strong>15 selos FAMBRAS</strong> integrados ao catálogo
+          (ENAS, OIC, BPJPH, MUIS, MS, GAC + 9 países). 4 hotfixes pós uso real do
+          PO (link no menu, acesso a PDF/QR no S3 com URL assinada, endpoint
+          dedicado de download com PDF imutável, telas legadas).
+        </p>
+
+        <h3>2026-05-28 — Reset das bases de produção para go-live limpo (marco de decisão)</h3>
+        <p>
+          Decisão estratégica:
+          <strong>entrar em produção com base limpa</strong>, não com dados de
+          teste acumulados. As bases de produção de
+          <strong>Gestão de Certificações</strong> e
+          <strong>Supervisão Industrial Halal</strong> foram zeradas (18 tabelas
+          na Supervisão; base da Gestão resetada preservando 22 tabelas de
+          configuração). A FAMBRAS recadastra via UI a partir do pré-cadastro
+          migrado.
+        </p>
+        <p>
+          Em seguida foi ingerido o <strong>pré-cadastro ETL</strong> oriundo do
+          SysHalal + formulários FM: <strong>150 grupos / 299 empresas / 268
+          plantas</strong>. A partir daí, GC e SIH passam a ser tratados como
+          <span class="badge badge-warning">pré-go-live</span> — só o
+          <strong>SysHalal</strong> segue em produção real.
+        </p>
+
+        <h3>Junho/2026 — Piloto controlado da Supervisão Industrial Halal + endurecimento</h3>
+        <ul>
+          <li>
+            <strong>Piloto controlado com dados reais</strong> (até 4 empresas),
+            com extensão até meados de julho.
+          </li>
+          <li>
+            Novos formulários digitalizados:
+            <strong>transferência de pele bovina (FM 7.1.4.7)</strong> e
+            <strong>coleta de amostra (FM 7.6.1)</strong>; ocorrências/NC (FM
+            7.1.6.1).
+          </li>
+          <li>
+            <strong>Cadastro de 9 unidades FAMBRAS</strong> em produção (8 JBS
+            Couros + Acquion).
+          </li>
+          <li>
+            Histórico de acessos enriquecido; vínculo supervisor ↔ plantas (M:N);
+            segmentação In Natura × Industrializados.
+          </li>
+          <li>
+            Análise do <strong>dossiê de exportação in natura</strong> (embarque =
+            cabeça; 3 gaps mapeados).
+          </li>
+        </ul>
+
+        <h3>Junho–Julho/2026 — Integração Gestão de Certificações ↔ Supervisão Industrial Halal</h3>
+        <ul>
+          <li>
+            <strong>A Supervisão passa a consumir da Gestão de Certificações</strong>
+            (matérias-primas homologadas, read-only) via API
+            <code>/integration/raw-materials/by-plant</code> — chave natural SIF +
+            CNPJ. <span class="badge badge-ok">em produção desde 29/jun</span> —
+            primeiro elo real do ecossistema integrado.
+          </li>
+          <li>
+            Especificado o endpoint de integração
+            <strong>SysHalal → Supervisão</strong> (x-api-key), fechando o desenho
+            da malha de integração entre os 3 sistemas.
+          </li>
+        </ul>
+
+        <h3>Julho/2026 — Carga massiva de dados reais na Gestão de Certificações</h3>
+        <p>
+          Preparação de dados para o go-live (todos via SQL controlado em
+          produção, schema por migration):
+        </p>
+        <table>
+          <thead>
+            <tr>
+              <th>Carga</th>
+              <th>Volume</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Cadastro + certificados + escopo (N0–N5)</td>
+              <td>550 grupos / 813 plantas / 1.253 certificados / ~14,8 mil produtos</td>
+            </tr>
+            <tr>
+              <td>Matérias-primas homologadas (N5)</td>
+              <td>504 MPs / 869 itens / 26 plantas</td>
+            </tr>
+            <tr>
+              <td>Normalização de cadastros (10/jul, em produção)</td>
+              <td>
+                UF 399 → 19 ruins; re-sourcing de produtos 14.817 → 16.524 (nomes
+                numéricos 358 → 0); seed de 118 cadastros ausentes. Fontes:
+                SysHalal + SIGSIF + Receita Federal + FM 7.8.x.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>Julho/2026 — Emissão manual madura + edição de escopo + governança</h3>
+        <ul>
+          <li>
+            <strong>Emissão manual</strong> amadurecida em 2 reuniões FAMBRAS:
+            comboboxes sem truncar clientes grandes (JBS/Minerva/BRF), paginação
+            por altura do formulário 7.7.2, modo-teste de impressão, exportação
+            Excel em 2 abas, selos ENAS condicionados ao mercado, colunas
+            dinâmicas e rascunho.
+          </li>
+          <li>
+            <strong>Trava de data na emissão manual</strong>
+            <span class="badge badge-ok">09/jul, em produção</span>.
+          </li>
+          <li>
+            <strong>Edição de escopo do certificado (Fase 1, 13/jul):</strong>
+            analista corrige produtos/marcas do espelho na tela de detalhe, com
+            auditoria transacional e número travado.
+          </li>
+          <li>
+            <strong>Recuperação de senha self-service na Supervisão</strong>
+            (13/jul).
+          </li>
+          <li>
+            <strong>Rebrand para a marca azul EcoHalal</strong>
+            (<code>#118add</code>) e padronização da nomenclatura de e-mails/PDFs
+            para "Gestão de Certificações — Fambras Halal by Ecohalal".
+          </li>
+        </ul>
+
+        <h4>Impacto no roadmap</h4>
+        <ul>
+          <li>
+            Toda a base de dados de produção da Gestão de Certificações está
+            <strong>carregada, normalizada e conferida</strong> — a FAMBRAS entra
+            no go-live com o histórico real já dentro do sistema.
+          </li>
+          <li>
+            A <strong>primeira integração real do ecossistema</strong> (Supervisão
+            consumindo MP da Gestão) já está em produção — a tese das 4 portas tem
+            o primeiro elo funcionando.
+          </li>
+          <li>
+            A âncora de entrega consolidou-se em
+            <strong>agosto/2026</strong> (go-live FAMBRAS).
+          </li>
+        </ul>
+      </section>
+
+      <section id="sec-1">
+        <h2>1. Sumário executivo</h2>
+        <p>
+          A Ecohalal opera um ecossistema de <strong>3 sistemas</strong> que
+          cobrem a jornada completa do cliente certificado halal — da pré-venda à
+          exportação do lote. Hoje <strong>um deles (Sys Halal) está em produção
+          real</strong> com clientes e dados vivos; os outros dois
+          (<strong>Gestão de Certificações</strong> e <strong>Supervisão
+          Industrial Halal</strong>) estão
+          <span class="badge badge-warning">pré-go-live</span> — deployados em
+          infraestrutura de produção, com as bases zeradas em maio para uma
+          entrada limpa e já recarregadas com o histórico real da FAMBRAS. Os
+          próximos 12 meses consolidam o ecossistema em torno de uma tese
+          estratégica que <strong>nenhum concorrente global possui</strong> hoje:
+          a <strong>validação cruzada de 4 portas</strong> entre certificadora,
+          operação industrial e exportação.
+        </p>
+
+        <h4>Compromissos críticos</h4>
+        <ul>
+          <li>
+            <strong>Agosto/2026</strong> — <strong>Go-live FAMBRAS</strong> com
+            Supervisão Industrial Halal (operação) + Gestão de Certificações
+            (certificação) completos, sobre a base real já carregada.
+          </li>
+          <li>
+            <strong>Setembro/2026</strong> — Sys Halal alinhado com Gestão de
+            Certificações (operação cruzada, porta 4 ativa).
+          </li>
+          <li>
+            <strong>Maio–Julho/2027</strong> — Ecossistema consolidado com camadas
+            de IA, ondas operacionais estabilizadas, integração externa com
+            acreditadores quando relevante.
+          </li>
+        </ul>
+
+        <h4>O que já está de pé (julho/2026)</h4>
+        <ul>
+          <li>
+            Emissão manual de certificado em produção, com QR Code novo, 15 selos e
+            todos os gabaritos.
+          </li>
+          <li>
+            Base de dados real da Gestão de Certificações carregada e normalizada
+            (550 grupos / 813 plantas / 1.253 certificados / ~16,5 mil produtos /
+            504 MPs homologadas).
+          </li>
+          <li>
+            Supervisão Industrial Halal em <strong>piloto controlado</strong> com
+            dados reais e <strong>primeira integração real</strong> consumindo
+            matérias-primas homologadas da Gestão de Certificações.
+          </li>
+        </ul>
+
+        <div class="callout">
+          <strong>Por que esse roadmap é executável:</strong> o desenvolvimento é
+          conduzido por uma equipe pequena (um líder técnico + automação massiva
+          com IA generativa). Esse modelo já entregou, em uma única sessão, 17 PRs
+          de schema completos da Onda 1+ FAMBRAS, validou sprints inteiras da
+          Supervisão em produção em uma única tarde e executou cargas de dados
+          reais de dezenas de milhares de registros com normalização cruzada de 4
+          fontes. O gargalo real é decisão de produto e validação com cliente, não
+          código.
+        </div>
+      </section>
+
+      <section id="sec-2">
+        <h2>2. Visão: 3 sistemas, 1 jornada</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Sistema</th>
+              <th>Papel na jornada</th>
+              <th>Quem usa</th>
+              <th>Estado hoje</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Gestão de Certificações</strong></td>
+              <td>
+                Pré-mercado e ciclo de certificação: solicitação → proposta →
+                contrato → auditoria → comitê → emissão de certificado de
+                habilitação → manutenção/renovação
+              </td>
+              <td>
+                EcoHalal interna (analistas, auditores, comitê, jurídico,
+                qualidade) + cliente certificado
+              </td>
+              <td>
+                <span class="badge badge-warning">pré-go-live</span> — infra de
+                produção no ar, base real carregada e normalizada; emissão manual
+                já em produção; go-live pleno em agosto/2026
+              </td>
+            </tr>
+            <tr>
+              <td><strong>Supervisão Industrial Halal</strong></td>
+              <td>
+                Operação diária do supervisor halal em campo: relatórios de abate,
+                produção, embarque, NCs, inventário, duplo check Controladoria
+              </td>
+              <td>
+                FAMBRAS (supervisores em campo, controladoria, gestão)
+              </td>
+              <td>
+                <span class="badge badge-warning">piloto controlado</span> com
+                dados reais; consome MP homologada da Gestão de Certificações em
+                produção; go-live pleno em agosto/2026
+              </td>
+            </tr>
+            <tr>
+              <td><strong>Sys Halal</strong></td>
+              <td>
+                Emissão de certificado de exportação por lote, integração com
+                dados oficiais e públicos
+              </td>
+              <td>Despachantes + clientes para emissão de certificado de embarque</td>
+              <td>
+                <span class="badge badge-ok">em produção</span> desde 2025, com
+                dados reais; API de integração externa (v2) em curso
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h4>Decisão arquitetural confirmada (mai/2026, em operação desde jun/2026)</h4>
+        <ul>
+          <li>
+            Gestão de Certificações é o <strong>master</strong> de cadastro de
+            Empresa, Planta, Certificado de habilitação, escopo e contratos.
+          </li>
+          <li>
+            Supervisão Industrial Halal <strong>consome</strong> da Gestão de
+            Certificações (matérias-primas homologadas já em produção) e do Sys
+            Halal via API.
+          </li>
+          <li>
+            Sys Halal e Gestão de Certificações
+            <strong>coexistem em paralelo</strong>, com propósitos distintos
+            (exportação por embarque vs. certificação de estabelecimento). Não há
+            fusão; há integração.
+          </li>
+        </ul>
+      </section>
+
+      <section id="sec-3">
+        <h2>3. Tese estratégica: validação cruzada de 4 portas</h2>
+        <p>
+          Para o Sys Halal emitir um certificado de exportação por lote, hoje o
+          mercado mundial valida apenas 3 portas:
+        </p>
+        <ol>
+          <li><strong>Empresa habilitada</strong> (cadastro)</li>
+          <li><strong>Certificado de habilitação válido</strong> (vigência)</li>
+          <li>
+            <strong>Produto no escopo</strong> (o escopo da habilitação cobre o
+            que está sendo emitido)
+          </li>
+        </ol>
+        <p>A Ecohalal adiciona a <strong>4ª porta — evidência operacional</strong>:</p>
+        <ol start="4">
+          <li>
+            <strong>Lote tem rastreabilidade no chão de fábrica</strong> (datas de
+            abate/produção, supervisor halal responsável, volumes, NCs do período)
+            — extraída diretamente da Supervisão Industrial Halal.
+          </li>
+        </ol>
+
+        <h4>Por que isso é diferencial</h4>
+        <p>
+          Casos documentados de fraude halal no mercado global (adulteração de QR
+          Code, mistura de lotes, certificado de papel divergente da operação
+          real) acontecem exatamente porque as portas 1–3 são auditáveis em papel,
+          mas a porta 4 não está ligada digitalmente. O ecossistema da Ecohalal
+          <strong>fecha esse vão</strong> integrando Supervisão Industrial Halal
+          (operação real) ↔ Gestão de Certificações (papel/escopo) ↔ Sys Halal
+          (emissão).
+        </p>
+
+        <div class="callout callout-info">
+          <strong>Primeiro elo já em produção:</strong> desde junho/2026 a
+          Supervisão consome matérias-primas homologadas da Gestão de
+          Certificações — a base técnica da porta 4 está construída e validada. A
+          ativação plena (validação lote a lote na emissão) entra em
+          <strong>setembro/2026</strong>, após o go-live FAMBRAS.
+        </div>
+      </section>
+
+      <section id="sec-4">
+        <h2>4. Estado atual (julho/2026)</h2>
+
+        <h3>4.1 Gestão de Certificações</h3>
+        <ul>
+          <li>
+            <strong>Refactor multi-país</strong> em produção — modelo Empresa +
+            Planta + país de destino + norma de acreditação correto desde o dia 1.
+          </li>
+          <li>
+            <strong>Base de dados real carregada e normalizada</strong> (jul/2026):
+            550 grupos / 813 plantas / 1.253 certificados / ~16,5 mil produtos de
+            escopo / 504 matérias-primas homologadas — cruzando SysHalal + SIGSIF +
+            Receita Federal + formulários FM.
+          </li>
+          <li>
+            <strong>Emissão manual em produção</strong>, madura após 2 rodadas de
+            validação com a FAMBRAS.
+          </li>
+          <li>
+            <strong>Edição de escopo do certificado (Fase 1)</strong> entregue,
+            com auditoria transacional e número travado.
+          </li>
+          <li><strong>Marca azul EcoHalal</strong> e nomenclatura de e-mails/PDFs padronizadas.</li>
+          <li>
+            <strong>Falta para o go-live pleno:</strong> telas operacionais
+            restantes da Onda 1+ (wizard de solicitação, hub de alteração de
+            escopo, inbox do analista), aditivo contratual e a validação de aceite
+            da FAMBRAS sobre a base carregada.
+          </li>
+        </ul>
+
+        <h3>4.2 Supervisão Industrial Halal</h3>
+        <ul>
+          <li>
+            <strong>Piloto controlado com dados reais</strong> (até 4 empresas),
+            estendido até meados de julho.
+          </li>
+          <li>
+            <strong>Duplo check</strong> (supervisor assina → controladoria
+            aprova/rejeita) com motivo obrigatório, reabertura e histórico
+            completo; perfil Controladoria com permissões restritas.
+          </li>
+          <li>
+            Segmentação In Natura × Industrializados; transferências com origem +
+            destino; formulários de couro/pele bovina, coleta de amostra,
+            ocorrências/NC.
+          </li>
+          <li>
+            <strong>Consome MP homologada da Gestão de Certificações em
+            produção</strong> (primeiro elo real do ecossistema).
+          </li>
+          <li><strong>Recuperação de senha self-service</strong> entregue (13/jul).</li>
+          <li>
+            <strong>Falta para o go-live pleno:</strong> conclusão do dossiê de
+            exportação in natura (vínculo embarque ⇄ produção), ajustes de UX
+            pós-piloto e treinamento formal FAMBRAS.
+          </li>
+        </ul>
+
+        <h3>4.3 Sys Halal</h3>
+        <ul>
+          <li>
+            <span class="badge badge-ok">em produção</span> com dados reais
+            (certificados de exportação/embarque da FAMBRAS).
+          </li>
+          <li>
+            <strong>Em curso:</strong> nova versão da API de integração externa
+            (v2) — hoje detalhes de produto, datas de abate e de processamento
+            ficam empilhados em campos de texto livre; a base já tem colunas
+            segregadas, falta a API e o importador de TXT evoluírem. Entrega
+            gradual até agosto/2026.
+          </li>
+          <li>
+            <strong>Alinhamento com a Gestão de Certificações (TASK-S0)</strong> —
+            Sys Halal deixa de ter cadastro próprio de empresa/planta e passa a
+            consumir da Gestão de Certificações. Programado para
+            <strong>depois</strong> do go-live FAMBRAS (ago/2026).
+          </li>
+        </ul>
+      </section>
+
+      <section id="sec-5">
+        <h2>5. Roadmap por fase</h2>
+
+        <h3>5.1 Julho/2026 — Maturação pré-go-live (em curso)</h3>
+        <p><strong>Objetivo:</strong> chegar em agosto com a base real conferida, emissão sólida e escopo governável.</p>
+        <table>
+          <thead>
+            <tr>
+              <th>Sistema</th>
+              <th>Entregável</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Gestão de Certificações</td>
+              <td>Carga + normalização da base real (cadastro, certificados, escopo, MP)</td>
+              <td><span class="badge badge-ok">em produção</span></td>
+            </tr>
+            <tr>
+              <td>Gestão de Certificações</td>
+              <td>Emissão manual madura (2 rodadas FAMBRAS) + trava de data</td>
+              <td><span class="badge badge-ok">em produção</span></td>
+            </tr>
+            <tr>
+              <td>Gestão de Certificações</td>
+              <td>Edição de escopo do certificado (Fase 1) com auditoria</td>
+              <td><span class="badge badge-ok">entregue</span></td>
+            </tr>
+            <tr>
+              <td>Gestão de Certificações</td>
+              <td>Rebrand azul + nomenclatura de e-mails/PDFs</td>
+              <td><span class="badge badge-ok">em produção</span></td>
+            </tr>
+            <tr>
+              <td>Supervisão Industrial Halal</td>
+              <td>Integração consumindo MP homologada da Gestão de Certificações</td>
+              <td><span class="badge badge-ok">em produção</span></td>
+            </tr>
+            <tr>
+              <td>Supervisão Industrial Halal</td>
+              <td>Recuperação de senha self-service</td>
+              <td><span class="badge badge-ok">entregue</span></td>
+            </tr>
+            <tr>
+              <td>Supervisão Industrial Halal</td>
+              <td>Piloto controlado com dados reais (até 4 empresas)</td>
+              <td><span class="badge badge-warning">em andamento</span></td>
+            </tr>
+            <tr>
+              <td>Sys Halal</td>
+              <td>API de integração externa v2 — desenvolvimento gradual</td>
+              <td><span class="badge badge-warning">em andamento</span></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>5.2 Agosto/2026 — Go-live FAMBRAS (entrega-âncora)</h3>
+        <p>
+          <strong>Objetivo:</strong> FAMBRAS opera produção integral em Gestão de
+          Certificações + Supervisão Industrial Halal, sobre a base real já
+          carregada; treinamento e acompanhamento.
+        </p>
+        <table>
+          <thead>
+            <tr>
+              <th>Frente</th>
+              <th>Entregável</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Implantação</td>
+              <td>Aceite da FAMBRAS sobre a base carregada (cadastro, certificados, escopo, MP)</td>
+            </tr>
+            <tr>
+              <td>Implantação</td>
+              <td>Treinamento FAMBRAS (perfis: cliente, analista, gestão, controladoria)</td>
+            </tr>
+            <tr>
+              <td>Gestão de Certificações</td>
+              <td>Telas operacionais restantes da Onda 1+ (wizard de solicitação, hub de escopo, inbox do analista)</td>
+            </tr>
+            <tr>
+              <td>Gestão de Certificações</td>
+              <td>Aditivo contratual com PDF + editor de planilha MP/fornecedores</td>
+            </tr>
+            <tr>
+              <td>Supervisão Industrial Halal</td>
+              <td>Dossiê de exportação in natura (vínculo embarque ⇄ produção) + smoke final</td>
+            </tr>
+            <tr>
+              <td>Sys Halal</td>
+              <td>API de integração externa v2 entregue</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="callout">
+          <strong>Marco:</strong> ao fim de agosto, FAMBRAS está em produção com o
+          fluxo de certificação (solicitação → emissão) digital na Gestão de
+          Certificações e o fluxo operacional (relatórios, NCs, inventário, duplo
+          check) digital na Supervisão Industrial Halal.
+        </div>
+
+        <h3>5.3 Setembro/2026 — Alinhamento Sys Halal + porta 4</h3>
+        <p><strong>Objetivo:</strong> ativar a tese estratégica de validação cruzada, lote a lote.</p>
+        <table>
+          <thead>
+            <tr>
+              <th>Sistema</th>
+              <th>Entregável</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Sys Halal</td>
+              <td>TASK-S0: consumir cadastro de Empresa/Planta/Certificado da Gestão de Certificações via API</td>
+            </tr>
+            <tr>
+              <td>Integração</td>
+              <td>API de validação cruzada consumida pelo Sys Halal antes de emitir cert de embarque</td>
+            </tr>
+            <tr>
+              <td>Integração</td>
+              <td>Supervisão Industrial Halal expõe evidência operacional por lote (porta 4)</td>
+            </tr>
+            <tr>
+              <td>Gestão de Certificações</td>
+              <td>Programa de Certificação refinado (mapa de auditores, balanceamento)</td>
+            </tr>
+            <tr>
+              <td>Gestão de Certificações</td>
+              <td>Auditoria não-anunciada + imparcialidade do auditor (alerta após 3 anos)</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>5.4 Outubro–Dezembro/2026 — Onda 3 + IA produtiva</h3>
+        <p><strong>Objetivo:</strong> aprofundamento, IA em produção, observabilidade.</p>
+        <ul>
+          <li><strong>Revisor de HAS em 2 estágios</strong> (cliente envia → analista revisa → auditor revisa em campo).</li>
+          <li><strong>Reconhecimento automático</strong> de certificado halal de matéria-prima via acreditadores (GAC, JAKIM, BPJPH, MUIS).</li>
+          <li><strong>IA de extração de documentos</strong> (Claude API) em produção na Supervisão.</li>
+          <li><strong>Calendário avançado de auditores</strong> + balanceamento ponderado por complexidade.</li>
+          <li><strong>Dashboards executivos</strong> de receita, ciclo e taxa de aprovação por país.</li>
+          <li><strong>Geolocalização e foto na assinatura</strong> do supervisor (pedido FAMBRAS, pós-implantação).</li>
+        </ul>
+
+        <h3>5.5 Janeiro–Julho/2027 — Escala e expansão</h3>
+        <p><strong>Objetivo:</strong> atender múltiplas certificadoras, posicionar a porta 4 como diferencial vendável.</p>
+        <ul>
+          <li>Multi-tenant operacional (várias certificadoras no mesmo Gestão de Certificações com isolamento estrito).</li>
+          <li>Onboarding self-service de novas plantas/empresas.</li>
+          <li>Integração com registros externos por país (HAKSIS, SiHalal, MOIAT, halal.gov.sa).</li>
+          <li>Marketplace de auditores (qualificação cruzada entre certificadoras).</li>
+          <li>API pública de validação cruzada para parceiros (porta 4 como serviço).</li>
+        </ul>
+      </section>
+
+      <section id="sec-6">
+        <h2>6. Riscos e mitigações</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Risco</th>
+              <th>Prob.</th>
+              <th>Impacto</th>
+              <th>Mitigação</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Atraso de feedback FAMBRAS em decisões de UX trava entregas de ago</td>
+              <td>Média</td>
+              <td>Alto</td>
+              <td>Sessões periódicas marcadas; decisões residuais respondidas ao longo de jun-jul</td>
+            </tr>
+            <tr>
+              <td>Aceite da FAMBRAS sobre a base carregada revelar divergências de cadastro/escopo</td>
+              <td>Média</td>
+              <td>Médio</td>
+              <td>Base já normalizada contra 4 fontes; correção via edição de escopo transacional já entregue</td>
+            </tr>
+            <tr>
+              <td>Bug crítico de regressão na Supervisão em produção durante uso real FAMBRAS</td>
+              <td>Baixa</td>
+              <td>Alto</td>
+              <td>Piloto controlado + smoke documentado; rollback via release branch</td>
+            </tr>
+            <tr>
+              <td>Capacidade do time (1 dev + IA) virar gargalo em UI especializada</td>
+              <td>Média</td>
+              <td>Médio</td>
+              <td>Ondas 2/3 mapeadas como "se houver folga"; entregas críticas de ago não dependem delas</td>
+            </tr>
+            <tr>
+              <td>Sys Halal precisar de mudança que toque a produção ativa antes do alinhamento</td>
+              <td>Baixa</td>
+              <td>Alto</td>
+              <td>TASK-S0 só começa após go-live FAMBRAS; produção congelada até lá</td>
+            </tr>
+            <tr>
+              <td>Deslize do go-live de agosto por acúmulo de validações de cliente</td>
+              <td>Média</td>
+              <td>Alto</td>
+              <td>Escopo de go-live congelado no início de agosto; o que ficar fora vai para Onda 2</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="sec-7">
+        <h2>7. Por que esse plano fecha em agosto</h2>
+        <p>
+          O total de "código a escrever" é pequeno; a maior parte do que resta é
+          <strong>validação operacional e treinamento</strong>, com prazo
+          dependente de FAMBRAS, não da equipe técnica. A carga e normalização de
+          dados — historicamente o maior risco de uma implantação —
+          <strong>já está feita e em produção</strong>.
+        </p>
+        <table>
+          <thead>
+            <tr>
+              <th>Frente</th>
+              <th>Entregue</th>
+              <th>Falta</th>
+              <th>Risco de prazo</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Gestão de Certificações — schema (banco)</td>
+              <td>100%</td>
+              <td>0%</td>
+              <td><span class="badge badge-ok">Baixo</span></td>
+            </tr>
+            <tr>
+              <td>Gestão de Certificações — dados reais (carga + normalização)</td>
+              <td>100%</td>
+              <td>Aceite FAMBRAS</td>
+              <td><span class="badge badge-ok">Baixo</span></td>
+            </tr>
+            <tr>
+              <td>Gestão de Certificações — backend (lógica/API)</td>
+              <td>95%</td>
+              <td>Ajustes finos Onda 1+</td>
+              <td><span class="badge badge-ok">Baixo</span></td>
+            </tr>
+            <tr>
+              <td>Gestão de Certificações — frontend (telas)</td>
+              <td>75%</td>
+              <td>Telas operacionais restantes Onda 1+</td>
+              <td><span class="badge badge-warning">Médio</span></td>
+            </tr>
+            <tr>
+              <td>Supervisão Industrial Halal — backend</td>
+              <td>95%</td>
+              <td>Dossiê in natura (vínculo embarque ⇄ produção)</td>
+              <td><span class="badge badge-ok">Baixo</span></td>
+            </tr>
+            <tr>
+              <td>Supervisão Industrial Halal — frontend</td>
+              <td>90%</td>
+              <td>UX pós-piloto</td>
+              <td><span class="badge badge-ok">Baixo</span></td>
+            </tr>
+            <tr>
+              <td>Integração ecossistema</td>
+              <td>40%</td>
+              <td>Porta 4 lote a lote (set)</td>
+              <td><span class="badge badge-ok">Baixo</span></td>
+            </tr>
+            <tr>
+              <td>Treinamento FAMBRAS</td>
+              <td>0%</td>
+              <td>Perfis × material × sessões</td>
+              <td><span class="badge badge-warning">Médio</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="sec-8">
+        <h2>8. Próximos passos imediatos</h2>
+        <ol>
+          <li>
+            <strong>Julho (resto do mês)</strong> — encerrar o piloto controlado da
+            Supervisão com aceite; fechar as telas operacionais restantes da Onda
+            1+ na Gestão de Certificações; concluir o dossiê de exportação in
+            natura.
+          </li>
+          <li>
+            <strong>Início de agosto</strong> — congelar escopo de go-live; agendar
+            treinamento FAMBRAS por perfil; obter aceite formal da FAMBRAS sobre a
+            base carregada.
+          </li>
+          <li>
+            <strong>Agosto</strong> — go-live FAMBRAS (entrega-âncora): produção
+            integral em Gestão de Certificações + Supervisão Industrial Halal.
+          </li>
+          <li>
+            <strong>Setembro</strong> — alinhamento Sys Halal (TASK-S0) e ativação
+            plena da porta 4 (validação lote a lote).
+          </li>
+          <li>
+            <strong>Contínuo</strong> — apresentar esta revisão à diretoria Ecohalal
+            e manter a cadência de sessões de validação com a FAMBRAS.
+          </li>
+        </ol>
+      </section>
+
+      <section id="sec-9">
+        <h2>9. Anexos relacionados</h2>
+        <ul>
+          <li>
+            <a href="BACKLOG-ECOHALAL.md">BACKLOG-ECOHALAL.md</a> — painel central
+            consolidado dos 3 sistemas.
+          </li>
+          <li>
+            <a href="ROADMAP-DIRETORIA-2026-05-12.md">ROADMAP-DIRETORIA-2026-05-12.md</a>
+            — versão anterior deste roadmap (maio/2026), mantida como histórico.
+          </li>
+          <li>
+            <a href="ROADMAP-TECNICO-2026-05-12.md">ROADMAP-TECNICO-2026-05-12.md</a>
+            — versão técnica do roadmap (para alinhamento interno de execução).
+          </li>
+        </ul>
+      </section>
+
+      <footer class="doc-footer">
+        Ecohalal · Roadmap Ecossistema Halal — Versão Diretoria · Revisão
+        2026-07-14
+      </footer>
+    </div>
+  </body>
+</html>
