@@ -24,3 +24,11 @@ _site/
 .sass-cache/
 .jekyll-cache/
 .jekyll-metadata
+
+# Fontes externas da FAMBRAS (planilhas FM 7.4.2.7, .rar, docx/pdf de reuniao).
+# ~21 MB de binario que nao versionamos aqui — mesma politica das demais fontes
+# externas (§8 do BACKLOG-ECOHALAL: C:\HalalSphere\, C:\SIH\).
+# Ignorado para o `git status` nao mentir: pasta suja permanente vira ruido e
+# faz WIP real passar despercebido.
+# ATENCAO: sem versionamento, estes arquivos existem SO nesta maquina.
+Reuniões/
