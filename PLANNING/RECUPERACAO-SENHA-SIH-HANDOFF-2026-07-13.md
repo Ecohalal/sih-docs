@@ -12,7 +12,10 @@ sem meio de recuperar senha). Espelha o fluxo forgot/reset do GC.
 - **Política de senha nova:** simples — mínimo 6 caracteres, sem exigência de
   complexidade (igual ao troca-senha atual `/system-users/me/password`).
 
-## O que foi implementado (código pronto, **NÃO deployado**)
+## O que foi implementado — ✅ **EM `release`** (back `06ae5ef` · front `a24385b`, remote `ecohalal`)
+
+> Correção de 16/jul: este handoff dizia *"código pronto, NÃO deployado"* — o git desmentia.
+> Estado atual sempre em `sih-docs/PLANNING/BACKLOG-ECOHALAL.md` (§4).
 
 ### Backend (`sih-backend`)
 - **Schema** `prisma/schema.prisma` — `SystemUser` ganhou:
@@ -47,16 +50,16 @@ sem meio de recuperar senha). Espelha o fluxo forgot/reset do GC.
 Link gerado: `${FRONTEND_URL}/redefinir-senha?token=...` (FRONTEND_URL já em prod =
 `https://supervisao-industrial.ecohalal.solutions`).
 
-## Pendências antes / durante o deploy (Renato)
-1. **⚠️ SES fora do sandbox:** confirmar que o SES do SIH entrega a e-mails
-   arbitrários de usuário (no GC houve caso de não-entrega). Se em sandbox, só entrega
-   a identidades verificadas — **bloqueia o fluxo em campo**. Verificar antes do go-live.
-2. **Swagger / API Gateway:** as rotas caem sob o prefixo `auth` que **já tem
-   `{proxy+}`** no gateway → **não exige** nova resource. Ainda assim, rode o passo
-   padrão (`npm run generate:swagger` + `node scripts/generate-api-gateway.js`) para
-   manter o `swagger.json` fiel, se for gerar deploy do gateway.
-3. **Migration em prod:** `AUTO_MIGRATE=true` aplica no deploy. Confirmar aplicação.
-4. **Deploy = push em `release`** (dispara CI/CD). Autorização explícita do Renato.
+## Pendências (estado real — o mestre §4 manda)
+1. ✅ **SES fora do sandbox — CONFIRMADO pelo Renato** (13/jul e reconfirmado 16/jul).
+   Era o risco de bloquear o fluxo em campo; está resolvido.
+2. ✅ **Deploy** — feito: push em `release` (back `06ae5ef` · front `a24385b`).
+3. 🧩 **Swagger / API Gateway:** as rotas caem sob o prefixo `auth` que **já tem
+   `{proxy+}`** → **não exige** resource nova (por isso não bloqueou o deploy). Mas o
+   `swagger.json` segue defasado — item aberto no §4.2 do mestre.
+4. 🔧 **Migration em prod:** `AUTO_MIGRATE=true` aplica no deploy. Confirmar aplicação
+   de `20260713120000_password_reset_token` — aberto no §4.1.
+5. 🔧 **Validação E2E** (roteiro abaixo) — aberto no §4.1.
 
 ## Validação end-to-end (pós-deploy)
 1. Login → "Esqueci minha senha" → informar e-mail de um `SystemUser` ativo → checar

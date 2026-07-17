@@ -82,7 +82,7 @@
 ### 4.1 Renato — validar / infra / operacional
 - ✅ *(16/jul)* `CERTIFICATE_PDF_UNLOCK_KEY` na task def do GC.
 - 🔧 Validar: `.K.` bovino×aves · OIC/SMIIC **01/2019** · **993** só em abate · PDF protegido (abre livre, não copia, imprime) · busca por SIF · guard-rail (CV+HII bloqueia) · **Edição de escopo F1** (roteiro de 5 passos no handoff 13/jul) · **filtro de empresa em `/homologacao-mp`** — selecionar empresa → o **X limpa** → digitar outra → troca (`160b2cdd`; era o bug do filtro "Diana Food": o `[&_svg]:pointer-events-none` do Button engolia o clique no X).
-- 🔧 **SIH:** validar recuperação de senha E2E · confirmar **SES fora do sandbox** (se em sandbox, o fluxo quebra em campo) · confirmar migration `20260713120000_password_reset_token` aplicada · validar "Ver PDF" (`d7e9eaa`).
+- 🔧 **SIH:** validar recuperação de senha E2E · ✅ *(16/jul)* **SES fora do sandbox — CONFIRMADO pelo Renato** (era o risco de quebrar o fluxo em campo; item fechado) · confirmar migration `20260713120000_password_reset_token` aplicada · validar "Ver PDF" (`d7e9eaa`).
 - 🔧 **SIH · espelho GC→SIH (deployado 03-05/jul, NUNCA validado):** abrir planta Rolândia → card do espelho no bloco "Origem da Certificação Halal" (nome canônico + certs vigentes) · badge de cert no destino da transferência. Código: GC `b4337037` + SIH back `0450f78` + SIH front `f76cc8d`, todos em release/prod.
 - 🔧 **SysHalal `/integration` (trilha SIH↔SysHalal, spec `SYSHALAL-INTEGRATION-ENDPOINT-SIH-SPEC-2026-07-06`):**
   (i) **SSM staging** `syshalal-external-api-staging.json`: adicionar `SERVICE_API_KEYS` (chave nova p/ o SIH) + `SERVICE_PDF_USER_OWNER/TOKEN` (usuário API do ambiente staging) → **restart do serviço** (configEnv lê SSM só no boot) → passar a chave ao Claude p/ teste;
