@@ -167,7 +167,7 @@
 
 **Identidade**
 13. **NUNCA "HalalSphere"** visível. Título/remetente = **"Gestão de Certificações"**; identidade = **"Fambras Halal by Ecohalal"**. Marca EcoHalal = **azul `#118add`**.
-14. **Cor dos e-mails segue teal** (migração p/ azul = opcional).
+14. ✅ **Cor dos e-mails migrada para o azul Ecohalal `#118add`** *(16/jul, `e953c21b`)* — a opção que estava aberta ("segue teal, migração opcional") foi **exercida pelo Renato**. Eram **2 cores**, não 1: verde `#1a5c2e` + subtítulo `#a7d5b5` (4 templates) e teal `#0f766e` (notificações) → tudo `#118add` (subtítulo `#bfe3fa`). Zero cor antiga em `src/email` e `src/notification`. 🔧 **[Renato] Validar** um e-mail real (ex.: Primeiro Acesso) e uma notificação. ⚠️ Esta pendência vinha do handoff 13/jul e **não estava no §4** — gap da extração, fechado aqui (regra §0.5).
 
 **Modelo de dados / arquitetura**
 15. `CompanyGroup` = grupo econômico · `Company` = CNPJ da filial · `Plant` = estabelecimento (**1 SIF ↔ 1 CNPJ**, nullable p/ químicos/casing). Unique `(sanitary_code, sanitary_code_type)` está CERTA → **sem migration**. Base DEFINITIVA de cadastro: `C:\HalalSphere\FM78x_atualizados\` (FM 7.8.1 .xlsx + 7.8.2 .xlsb, 25/06) → 652 estabelecimentos (571 BR + 81 estrangeiros).
