@@ -100,7 +100,11 @@
 **GC · Trilha A (emissão):**
 - ✅ **#3 multi-CATEGORIA — FECHADO (16/jul), nada a fazer.** Decisão: vale o **§5.8** (Clonar manual). O aviso ao operador **já existe** no guard-rail `e1f92785` (`ManualCertificateEmission.tsx`): templates diferentes (7.7.1×7.7.2) **bloqueia** com *"Emita certificados separados usando 'Clonar de um certificado'"*; mesmo template com tipos diferentes **avisa**. O split automático (base `####` por categoria, Minerva 1430×1431) foi **descartado** — é automação, não correção. Se um dia voltar: **não rodar em paralelo com `marketScopes`** (§2).
 - 🧩 **`marketScopes` na emissão manual** — não existe no form/DTO; sem ele o PDF usa fallback em vez do catálogo. ❓ depende de FAMBRAS.
-- 🧩 **F3 — nº do certificado = nº do CONTRATO** (Lina). ✅ **DESTRAVADO** (16/jul: `.K.` validado — §3.3). É agora o **próximo da Trilha A**. Mexe em numeração: não tocar junto com `.K.`/`marketScopes`.
+- ❓ **F3 — nº do certificado = nº do CONTRATO** (Lina). Sequenciamento destravado (`.K.` validado, §3.3), **mas o requisito não fecha** — escopado em 16/jul:
+  - `Contract.contractNumber` **existe** (unique, FK `certificationId`) e o schema diz *"mesmo número da proposta aceita (**IT 4.2**)"* → encaixa com o `.K.` (base = nº do contrato + `.K.` da norma = padrão Minerva `1430.1`/`1430.2`).
+  - 🚩 **Bloqueio 1:** a **emissão manual não tem contrato** (cria `Certification` synthetic pulando proposta→contrato) → sem fonte para o número. Operador digita? Passa a exigir contrato?
+  - 🚩 **Bloqueio 2:** Minerva teve **2 bases (1430 × 1431) para 2 categorias**. Se base = nº do contrato, são **2 contratos**? Ou 1 contrato com base por categoria?
+  - ⇒ **Perguntar à Lina/FAMBRAS antes de codar.** Mexe em numeração: não tocar junto com `.K.`/`marketScopes`.
 - 🧩 **F2 — draft→aprovar→travar + audit trail** (ISO 17065). ❓ depende de PO. Toca trilhas A e C.
 - ✅ *(16/jul)* **`base-template.renderer.ts` deletado** — `353a0b79` (⚠️ **commit local em `release`, push pendente do OK do Renato**). Zero consumidores confirmado por grep (a classe só aparecia na própria declaração); carregava caminho de `userPassword` e foi a origem da divergência entre renderers.
 - 🧩 `main.ts` — último "HalalSphere" interno (Swagger title + log de boot). Baixa.
