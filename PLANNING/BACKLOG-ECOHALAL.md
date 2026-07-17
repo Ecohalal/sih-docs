@@ -115,9 +115,11 @@
 - ⏸ **Parkeados:** parser xlsx (aguarda arquivo de escopo real da Lina) · emissão assíncrona (rebaixada — o "timeout dos 151" era shadow-copy do OneDrive, não escala) · DSM/IFF cert-de-produto (atrás da digitalização do escopo da indústria).
 
 **GC · Trilha B (normalização):**
-- 🚩 **Fallback CNPJ-only — GC FEITO (`853ed242`, `release` LOCAL, push pendente do OK); SIH FALTA (é Trilha D).**
-  - **GC (Trilha B, meu domínio):** `resolvePlant` — com SIF mantém SIF+CNPJ (null se não casar: divergência real não se mascara); **sem SIF cai para CNPJ, só se INEQUÍVOCO** (2+ plantas sem SIF no mesmo CNPJ → null). Beneficia os 2 endpoints (`raw-materials/by-plant` + `plant-summary`). Rota existente → **sem regen de API GW**. tsc ok. Validado em prod: Kin Master e Minerva Casing resolvem 1:1; Rolândia (com SIF) não entra no fallback = zero regressão.
-  - 🚩 **Bloqueio: o SIH nem chama.** `sih-backend/src/gc-integration/gc-integration.service.ts:92` e `:150` → `if (!plant.sanitaryCode || !plant.cnpj) throw BadRequestException("...nao tem SIF e CNPJ cadastrados")`. Esse arquivo é **Trilha D** (§2), não B → **precisa OK p/ tocar** (regra §0.3). Sem isso o fallback do GC fica inalcançável.
+- ✅ *(17/jul)* **Fallback CNPJ-only — FEITO nas DUAS pontas.** Planta sem SIF (químico/casing: Kin Master ×2, Minerva Casing = `NAO_APLICAVEL`) não casava por definição; agora casa por CNPJ.
+  - **GC** `853ed242` (**pushado** em `release`, CI/CD disparado): `resolvePlant` — com SIF mantém SIF+CNPJ e devolve null se não casar (**divergência real não se mascara**); sem SIF cai para CNPJ **só se INEQUÍVOCO** (2+ plantas sem SIF no mesmo CNPJ → null, não chuta). Beneficia os 2 endpoints (`raw-materials/by-plant` + `plant-summary`). Rota existente → **sem regen de API GW**.
+  - **SIH** `6daeff9` (**`release` LOCAL, push pendente do OK**) — Trilha D tocada com OK do Renato (§0.3): o guard exigia `sanitaryCode` E `cnpj` e **derrubava a chamada dentro do SIH**, antes de sair; agora só CNPJ é obrigatório e o SIF vai vazio.
+  - Validado contra prod: Kin Master e Minerva Casing resolvem 1:1; Rolândia (com SIF) não entra no fallback = **zero regressão**. tsc ok nos 2 repos.
+  - 🔧 **[Renato] Validar pós-deploy:** abrir Kin Master/Minerva Casing no SIH → espelho e MP devem aparecer (antes davam "falta SIF e CNPJ").
 - 🧩 Reenriquecer AR/PY/estrangeiras via SysHalal por CUIT/RUC.
 - 🧩 Cadastrar no GC: Padoca Maricota + Kin Master Passo Fundo (`…0296`) · merge do dup Kin Master no SIH (**migrar, não deletar** — tem operação).
 - 🧩 Lotes MP **N5b** (OUTROS) · **N5c** (GRUPO JBS consolidado) · INTERMEDIÁRIAS — das 28 planilhas FAM-0017 só Rolândia + N5 carregados.
