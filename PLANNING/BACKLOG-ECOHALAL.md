@@ -56,7 +56,7 @@
 | Trilha | Estado | Domínio de arquivos |
 |---|---|---|
 | **A · Emissão / normas / certificado** (GC) | 🚧 ativa | back: `certificate.service.ts` · `certificate-pdf.service.ts` · `pdf/*-renderer.ts` · `pdf/pdf-protection.ts` · `data/seal-config.ts` · `data/category-display-map.ts` — front: `ManualCertificateEmission.tsx` |
-| **B · Normalização de cadastro** (GC) | 🚧 ativa | **dados** (DBeaver): `company_groups` · `companies` · `plants` · `certifications` · `certificates` · `scope_products` · `scope_brands` · `raw_material_*` — código: `/integration/*`, `BulkImportProductsDialog.tsx` |
+| **B · Normalização de cadastro** (GC) | 🚧 ativa | **dados** (DBeaver): `company_groups` · `companies` · `plants` · `certifications` · `certificates` · `scope_products` · `scope_brands` · `raw_material_*` — código: `/integration/*`, `BulkImportProductsDialog.tsx`, `CompanyCombobox.tsx` |
 | **C · Edição de escopo** (GC) | ✅ F1 em prod, aguarda validação | back: `certification-scope.{service,controller}.ts` — front: `ScopeEditor.tsx` · `CertificationDetails.tsx` |
 | **D · SIH** | 🧩 aberta | `sih-backend/src/{auth,gc-integration}/` · `sih-frontend/src/pages/{auth,gc-raw-materials}/` |
 | **E · SysHalal** | 🚩 WIP solto | `syshalal-api` (ver §1) |
@@ -81,7 +81,7 @@
 
 ### 4.1 Renato — validar / infra / operacional
 - ✅ *(16/jul)* `CERTIFICATE_PDF_UNLOCK_KEY` na task def do GC.
-- 🔧 Validar: `.K.` bovino×aves · OIC/SMIIC **01/2019** · **993** só em abate · PDF protegido (abre livre, não copia, imprime) · busca por SIF · guard-rail (CV+HII bloqueia) · **Edição de escopo F1** (roteiro de 5 passos no handoff 13/jul).
+- 🔧 Validar: `.K.` bovino×aves · OIC/SMIIC **01/2019** · **993** só em abate · PDF protegido (abre livre, não copia, imprime) · busca por SIF · guard-rail (CV+HII bloqueia) · **Edição de escopo F1** (roteiro de 5 passos no handoff 13/jul) · **filtro de empresa em `/homologacao-mp`** — selecionar empresa → o **X limpa** → digitar outra → troca (`160b2cdd`; era o bug do filtro "Diana Food": o `[&_svg]:pointer-events-none` do Button engolia o clique no X).
 - 🔧 **SIH:** validar recuperação de senha E2E · confirmar **SES fora do sandbox** (se em sandbox, o fluxo quebra em campo) · confirmar migration `20260713120000_password_reset_token` aplicada · validar "Ver PDF" (`d7e9eaa`).
 - 🔧 **SIH · espelho GC→SIH (deployado 03-05/jul, NUNCA validado):** abrir planta Rolândia → card do espelho no bloco "Origem da Certificação Halal" (nome canônico + certs vigentes) · badge de cert no destino da transferência. Código: GC `b4337037` + SIH back `0450f78` + SIH front `f76cc8d`, todos em release/prod.
 - 🔧 **SysHalal `/integration` (trilha SIH↔SysHalal, spec `SYSHALAL-INTEGRATION-ENDPOINT-SIH-SPEC-2026-07-06`):**
@@ -121,7 +121,9 @@
 - 🧩 Lotes MP **N5b** (OUTROS) · **N5c** (GRUPO JBS consolidado) · INTERMEDIÁRIAS — das 28 planilhas FAM-0017 só Rolândia + N5 carregados.
 - ⚠️ **Dívida:** os scripts de carga vivem no **scratchpad (efêmero, não versionado)** — as cargas de dado têm número antes/depois, mas **nenhum hash**. Se precisar rastreabilidade, é aqui.
 
-**GC · Trilha C (escopo):** 🧩 **Fase 2** — campos gerais (datas, norma, observações), `industrialCategories` M2M, market scopes. Número segue **travado**.
+**GC · Trilha C (escopo):** 🧩 **Fase 2** — campos gerais (datas, norma, observações), `industrialCategories` M2M, ~~market scopes~~. Número segue **travado**.
+- 🚩 **REESCOPAR ANTES DE INICIAR (16/jul):** *market scopes* saiu do pacote da Fase 2 — a **Trilha A já entregou `marketScopes`** no lado da emissão (`847006e6` + `d2ec0623` + `ea8e76fa`, §4.2/A #9). E `marketScopes` toca `manualEmit` + `ManualCertificateEmission.tsx` = **domínio da Trilha A**, que o §2 marca como "nunca em paralelo". Se a Fase 2 precisar editar `MarketScope` de um certificado já existente, definir antes **de quem é o arquivo** — senão colide.
+- ⚠️ **F2 (draft→aprovar→travar)** do bloco da Trilha A declara que "toca trilhas A e C" → quando andar, coordenar; não iniciar em paralelo.
 
 **GC · FAM-0017:** 🧩 **F4 — FK opcional `ScopeSupplier`/`SupplierHomologation` + RevisionLog** (*prioridade sobre F5/F6* — acreditabilidade ISO 17065) · F5 UI U7 `/homologacao-mp` · F6 import das 29 planilhas · seeds S1 (~40 certificadoras) e S2 (231 intermediários) → DBeaver quando curados.
 
@@ -200,6 +202,11 @@
 
 **GC — emissão:** guard-rail de categorias por modelo `e1f92785` · selos visíveis na tela em vez do código do template `82a5e2c1` · "Voluntária" → "Sem norma acreditada (GSO/SMIIC)" `2844a9c2` · busca por SIF `298a346f`+`49f84b7f` · PDF com cópia bloqueada, AES-128 `6fed9470` · env renomeada p/ `CERTIFICATE_PDF_UNLOCK_KEY` `9bf9bab0`.
 **Recuperados (estavam soltos no working tree):** preset de normas por espécie + SIF na tela `827f8adf` · normas FAMBRAS + `.K.` `c396f0a5`.
+**Antes (13/jul)** — entregas que não estavam registradas em §4 nem §7 (gap da extração, trazidas pela regra §0.5):
+- **GC · fix do filtro de empresa** (`/homologacao-mp`): o X não limpava — `[&_svg]:pointer-events-none` do Button engolia o clique; X e chevron saíram de dentro do gatilho do Popover → `160b2cdd`. 🔧 [Renato] validar (§4.1).
+- **GC · Trilha C — Edição de escopo F1** (produtos/marcas na tela de detalhe + auditoria transacional em `CertificationHistory`): back `0f3a9b32` · front `a44f9e49`. 🔧 [Renato] validar (§4.1).
+- **SIH · recuperação de senha** (forgot/reset self-service): back `06ae5ef` · front `a24385b`. 🔧 [Renato] validar E2E + SES + migration (§4.1).
+
 **Antes (09/jul):** trava de data `295d274f` · clone typeahead `5de76e6a` · descartar-só-produtos `d5ced92a` · allowlist de selos `ee23628f`.
 
 **Os 4 pontos do André estão fechados** (busca por SIF · guard-rail de categorias · "Voluntária" · templates).
