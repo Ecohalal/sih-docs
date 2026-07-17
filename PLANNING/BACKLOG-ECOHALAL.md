@@ -35,9 +35,9 @@
 
 | Repo | Branch | WIP solto | release→base | Último commit |
 |---|---|---|---|---|
-| **halalsphere-backend** (GC) | `release` | 0 | **3** → develop | 16/jul `49f84b7f` |
+| **halalsphere-backend** (GC) | `release` | 0 | **0** ✅ *(17/jul)* | 17/jul `853ed242` |
 | **halalsphere-frontend** (GC) | `release` | 0 | **7** → develop | 16/jul `298a346f` |
-| **sih-backend** | `release` | 0 | **4** → development | 13/jul (recuperação de senha) |
+| **sih-backend** | `release` | 0 | **0** ✅ *(17/jul)* | 17/jul `6daeff9` |
 | **sih-frontend** | `release` | 0 | **4** → development | 13/jul (telas de senha) |
 | **syshalal-api** | 🚩 `carta-correcao-brf-kuwait` | 🚩 **3** | 2 → develop | **30/jun** |
 | **syshalal-external-api** | `staging` | 0 | **release 3 atrás de staging** | 06/jul `6d2c2e7` (rotas /integration p/ SIH — staging apenas, NÃO em prod) |
@@ -110,7 +110,7 @@
   - 🚩 **Bloqueio 2:** Minerva teve **2 bases (1430 × 1431) para 2 categorias**. Se base = nº do contrato, são **2 contratos**? Ou 1 contrato com base por categoria?
   - ⇒ **Perguntar à Lina/FAMBRAS antes de codar.** Mexe em numeração: não tocar junto com `.K.`/`marketScopes`.
 - 🧩 **F2 — draft→aprovar→travar + audit trail** (ISO 17065). ❓ depende de PO. Toca trilhas A e C.
-- ✅ *(16/jul)* **`base-template.renderer.ts` deletado** — `353a0b79` (⚠️ **commit local em `release`, push pendente do OK do Renato**). Zero consumidores confirmado por grep (a classe só aparecia na própria declaração); carregava caminho de `userPassword` e foi a origem da divergência entre renderers.
+- ✅ *(16/jul)* **`base-template.renderer.ts` deletado** — `353a0b79`. Zero consumidores confirmado por grep (a classe só aparecia na própria declaração); carregava caminho de `userPassword` e foi a origem da divergência entre renderers. ⚠️ *(corrigido 17/jul — §6)*: o doc dizia "commit local, push pendente do OK"; **já estava em `origin/release`** (`git branch -r --contains` confirma) e agora também em `origin/develop` pela reconciliação. Mais uma de doc-relata-intenção × git-relata-fato.
 - 🧩 `main.ts` — último "HalalSphere" interno (Swagger title + log de boot). Baixa.
 - ⏸ **Parkeados:** parser xlsx (aguarda arquivo de escopo real da Lina) · emissão assíncrona (rebaixada — o "timeout dos 151" era shadow-copy do OneDrive, não escala) · DSM/IFF cert-de-produto (atrás da digitalização do escopo da indústria).
 
