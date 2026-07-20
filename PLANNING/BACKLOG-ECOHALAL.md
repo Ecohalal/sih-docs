@@ -139,8 +139,22 @@
 - ⚠️ **F2 (draft→aprovar→travar)** do bloco da Trilha A declara que "toca trilhas A e C" → quando andar, coordenar; não iniciar em paralelo.
 
 **GC · FAM-0017:** 🧩 **F4 — FK opcional `ScopeSupplier`/`SupplierHomologation` + RevisionLog** (*prioridade sobre F5/F6* — acreditabilidade ISO 17065) · F5 UI U7 `/homologacao-mp` · F6 import das 29 planilhas · seeds S1 (~40 certificadoras) e S2 (231 intermediários) → DBeaver quando curados.
+- 🧩 **Validade/vencimento do certificado de MP visível + alerta ao analista** — *(reunião 30/jun, Soha; trazido ao §4 em 17/jul pela §0.5)*. A **auditoria interna pegou certificados de MP vencidos passando** pelo analista: mostrar a validade na listagem e avisar quando vencido. ⚠️ **≠** do "certs vencidos-mas-ativos (Gelita)" do §4.3 — aquele é **cert de habilitação**, este é **cert de matéria-prima**.
+- 🧩 **Subir no menu a tela de busca do catálogo global de MP** — busca por produto/fornecedor + vínculos + documentos/avaliações anexados. A tela **existe**, só não está exposta no menu. Baixa. *(§0.5, 30/jun)*
 
-**SIH:** 🧩 Regenerar swagger das rotas `auth` (já tem `{proxy+}`, não exige resource nova) · 🧩 acoplar MP aprovada à validação de produção/abate (❓ PO) · 🧩 embarque multi-origem **A/B/C** (backend A1 `3114c02` + A2 `47a52dd` já em prod; falta UI N-origens, datas como faixa, vínculo no controlador) · 🧩 NC FM 7.1.6.1 UI · 🧩 catálogo produtos 5A-2 (❓ aguarda .xlsx) · 🧩 destino no PDF de transferência.
+**SIH:** 🧩 Regenerar swagger das rotas `auth` (já tem `{proxy+}`, não exige resource nova) · 🧩 acoplar MP aprovada à validação de produção/abate (❓ PO — **desenho fechado no bloco abaixo**) · 🧩 embarque multi-origem **A/B/C** (backend A1 `3114c02` + A2 `47a52dd` já em prod; falta UI N-origens, datas como faixa, vínculo no controlador) · 🧩 NC FM 7.1.6.1 UI · 🧩 catálogo produtos 5A-2 (❓ aguarda .xlsx) · 🧩 destino no PDF de transferência.
+
+**SIH · Fluxo de homologação de MP + travas (reunião FAMBRAS 30/jun):** *(trazido ao §4 em 17/jul pela regra §0.5 — vivia só na ATA/fluxograma de 30/jun, commitados em `1db4442`; nenhuma linha estava no mestre)*. Desenho: `FLUXOGRAMA-RELATORIO-FABRICACAO-MP-2026-06-30` + `ATA-ALINHAMENTO-FAMBRAS-2026-06-30` (§8). **Nada codado — zero hash.**
+- 🧩 **Trava na ASSINATURA, não no registro** — supervisor só enxerga MP do escopo (read-only do GC). MP fora do escopo → **alerta no preenchimento** → salva rascunho → **não assina** (pendente de validação). É o detalhamento do "acoplar MP aprovada" acima. ❓ depende de PO.
+- 🧩 **3 casos quando falta MP:** (1) já no escopo → segue · (2) **já homologada na base/catálogo global** → analista só **inclui no escopo** (reuso, **sem** homologação nova) · (3) MP nova → homologação completa (cliente alimenta a planilha + analista avalia). ⚠️ O **supervisor não cadastra MP** — sinaliza e orienta o cliente (coerente com §5.16, mas ver o gap de sync no §6).
+- 🧩 **Lista viva** — após homologar, a lista suspensa precisa refletir **na hora**; senão trava o supervisor em campo (Elaine: *"a atualização tem que ser simultânea"*).
+- 🧩 **Tela de pendências** (controladoria/analistas) — relatórios travados por MP não homologada.
+- 🧩 **Liberação sempre REGISTRADA** (quem autorizou) — auditável. Critério de quem destrava = ❓ FAMBRAS (§4.3).
+- 🧩 **Roteamento industrializado × In Natura** — cert/relatório de **industrializado** foi classificado na divisão **In Natura** e "ninguém acha" (Lina, 30/jun). Garantir roteamento correto por divisão + relatório localizável independentemente da divisão.
+- 🧩 **Dashboard de Ocorrências (qualidade)** — decisão da reunião: ocorrências ficam **centralizadas no SIH**, espelhando o Power BI do time da Elaine. 📦 bloqueado pelo Power BI atualizado (§4.3).
+- 🧩 **Perfil "Qualidade" no SIH** — não existe; criar (acesso Elaine/time).
+- 🔧 **E-mails de acesso não chegaram** (Elaine e Soha, 30/jun) — investigar envio; encosta no §3.5.
+- 🚩 **Ciclo embarque ⇄ nº do cert SysHalal — CONFLITA com o §5.21. NÃO CODAR.** A reunião propôs **travar o Relatório de Embarque** (só avança com o nº do cert) e **travar a emissão no SysHalal** até o embarque ser aprovado. O §5.21 trava o oposto: **manter o embarque como está** e pôr a rastreabilidade no **Dossiê paralelo**. ⇒ ❓ **Decisão [Renato/FAMBRAS] antes de qualquer código:** a trava entra no Dossiê (paralelo) ou re-litiga o §5.21?
 
 **SIH↔SysHalal · integração sem escopo de grupo (código PRONTO, rollout pendente — ver §4.1):**
 - ✅ external-api rotas `/integration/{certified,certified_status,certified_pdf}` c/ x-api-key: `25c96a6` (develop `89c6e7e` · staging `6d2c2e7` · **release NÃO — não está em prod**).
@@ -160,11 +174,19 @@
 
 **❓ Outras decisões:** #3 base por categoria (Minerva 1430×1431) · #9 múltiplos mercados · draft→aprovação existe? · N2b de-para de **14 categorias** · 3 SIFs duplicados (585 FRIGOMARCA×PANTANAL · 4699 LAR×AGROARACA · 2620 FALCAO×BMG) · dedup Hexus×Vidara · REVIEW histórico (7 casos) · overlap couro 7.1.4.5×7.1.4.9 · 5 decisões Fase 5B FAM-0017 (Lina) · certs vencidos-mas-ativos (ex. Gelita).
 
+**❓ Matriz de criticidade de travas — quem destrava o relatório (reunião 30/jun):** *(trazido ao §4 em 17/jul pela §0.5)*. Pré-requisito do fluxo de homologação de MP (§4.2/SIH). Desenho proposto na reunião, **falta a FAMBRAS fechar**:
+- **Documento vencido** (ex.: nitrito de sódio) → **controlador libera** (Lina: *"já confiam que ele faça"*).
+- **MP fora do escopo** → **trava** até incluir/homologar no GC; caso **emergencial** sobe a **gestor**.
+- ❓ **Critério de MP crítica × não-crítica** (sugestão da Soha) — o que trava direto vs. o que libera.
+- ❓ **Quem é "gestor"** para liberação emergencial + formato do registro/escalonamento.
+- ❓ **SLA da atualização "simultânea"** da lista após homologar (o que é aceitável p/ não travar o supervisor).
+- Invariante já acordado: **toda liberação fica registrada** (quem autorizou) — Lina: *"pelo menos a gente sabe de onde veio"*.
+
 **📋 Correção na FONTE (relatório pronto — `halalsphere-docs/PLANNING/RELATORIO-ESCOPO-CORRECAO-FAMBRAS-2026-07-12.xlsx`, `7f565b7`):** *(novo 17/jul)* **3 produtos** cujo nome é **código DSM na própria planilha FM** (`8001 D/P`, `8008 C/U`) · **30 marcas** que são produto/embalagem/lista no lugar da marca. O parser refinado recuperou **312 dos 315** casos automaticamente (315→3); o resíduo é dado ausente/trocado no FM, só a FAMBRAS resolve.
 
 **❓ Curadoria do catálogo de MP (N5 v2):** *(novo 17/jul)* catálogo refeito → **335 masters, 0 nome numérico** (v1 tinha 56 numéricos + blobs de fórmula). **7 famílias ficaram em `pending`** aguardando a FAMBRAS decidir a fusão (ex.: `Ácido Cítrico` × `Ácido Cítrico Anidro` × `Acidulante Ácido Cítrico Pó`) — **não fundi no automático porque em halal a forma/origem importa** (cítrico sintético × microbiano difere). Propostas em `scratchpad/n5v2-merge-propostas.txt`. Também: **7 `company_raw_materials` em `awaiting_matching`** cujo "nome" é **fórmula inteira** ("Açúcar cristal, açúcar mascavo, sal, especiarias…") = receita de produto final, não MP → corrigir na origem.
 
-**📦 Entregas aguardadas:** logos/assinatura em **alta resolução** · lista "certificada desde" · **textos oficiais EN por categoria** (só "K" confirmado) · arquivo de **escopo real** da Lina (destrava o parser xlsx) · .xlsx do catálogo de produtos (destrava 5A-2) · CSVs FM 7.8.1/7.8.2 · certificado real **preenchido** de referência (A2 layout datas EN/AR) · logo Indonésia (Elaine consulta acreditadora) · **aprovar itens de MP** na tela de review (sem isso `approvedOnly=true` volta vazio) · lançar dados reais no FM 20.1 · lista oficial plantas+CNPJ · criticidade halal · códigos reais dos 322 `N5-*` · 16 estrangeiras sem endereço (fonte externa) · Starmilk/Econata (fora do SIGSIF).
+**📦 Entregas aguardadas:** logos/assinatura em **alta resolução** · lista "certificada desde" · **textos oficiais EN por categoria** (só "K" confirmado) · arquivo de **escopo real** da Lina (destrava o parser xlsx) · .xlsx do catálogo de produtos (destrava 5A-2) · CSVs FM 7.8.1/7.8.2 · certificado real **preenchido** de referência (A2 layout datas EN/AR) · logo Indonésia (Elaine consulta acreditadora) · **aprovar itens de MP** na tela de review (sem isso `approvedOnly=true` volta vazio) · lançar dados reais no FM 20.1 · lista oficial plantas+CNPJ · criticidade halal · códigos reais dos 322 `N5-*` · 16 estrangeiras sem endereço (fonte externa) · Starmilk/Econata (fora do SIGSIF) · **Power BI de qualidade atualizado** (Elaine — destrava o dashboard de Ocorrências do §4.2/SIH; o que está em mãos é a versão de **abril**) *(§0.5, 30/jun)*.
 
 ---
 
@@ -241,8 +263,10 @@
 >
 > **Nada foi apagado.** As pendências destes handoffs foram extraídas para o §4 em 16/jul, mas a extração é falível: se você encontrar aqui um item aberto que **não** está no §4, **traga-o para o §4** (regra §0.5). O banner marca "não é estado" — não "não leia".
 
-**Specs (referência técnica — continuam válidas):** `SPEC-EMISSAO-MULTI-CERT-NORMAS-GC-2026-07-14` · `CATEGORIA-POR-NORMA-PICKER-EMISSAO-GC-SPEC-2026-07-08` · `SPEC-EMISSAO-MANUAL-CERTIFICADO-2026-07-06` · `REGRAS-NORMAS-POR-DT-MERCADO-2026-07-06` · `REFERENCIA-TEMPLATES-CERTIFICADO-2026-07-06` · `NORMALIZACAO-CADASTROS-PLANO-MESTRE-2026-07-10` (Anexo A tem os SQL de diagnóstico) · `SYSHALAL-INTEGRATION-ENDPOINT-SIH-SPEC-2026-07-06` (sih-docs).
+**Specs (referência técnica — continuam válidas):** `SPEC-EMISSAO-MULTI-CERT-NORMAS-GC-2026-07-14` · `CATEGORIA-POR-NORMA-PICKER-EMISSAO-GC-SPEC-2026-07-08` · `SPEC-EMISSAO-MANUAL-CERTIFICADO-2026-07-06` · `REGRAS-NORMAS-POR-DT-MERCADO-2026-07-06` · `REFERENCIA-TEMPLATES-CERTIFICADO-2026-07-06` · `NORMALIZACAO-CADASTROS-PLANO-MESTRE-2026-07-10` (Anexo A tem os SQL de diagnóstico) · `SYSHALAL-INTEGRATION-ENDPOINT-SIH-SPEC-2026-07-06` (sih-docs) · **`FLUXOGRAMA-RELATORIO-FABRICACAO-MP-2026-06-30`** (sih-docs — fluxo de homologação de MP + travas, Rev 2 com raias por ator; pendências extraídas para o §4.2/SIH em 17/jul).
 
-**Handoffs (histórico):** halalsphere-docs `HANDOFF-SESSAO-2026-07-{08,13,14}` · `HANDOFF-NORMALIZACAO-2026-07-{10,12}` · `EDICAO-ESCOPO-CERTIFICADO-FASE1-HANDOFF-2026-07-13` · `HANDOFF-EMISSAO-MANUAL-2026-07-07` · `HANDOFF-SEED-GC-2026-07-{02}` — sih-docs `HANDOFF-SESSAO-2026-07-14` · `RECUPERACAO-SENHA-SIH-HANDOFF-2026-07-13`.
+**Handoffs (histórico):** halalsphere-docs `HANDOFF-SESSAO-2026-07-{08,13,14}` · `HANDOFF-NORMALIZACAO-2026-07-{10,12}` · `EDICAO-ESCOPO-CERTIFICADO-FASE1-HANDOFF-2026-07-13` · `HANDOFF-EMISSAO-MANUAL-2026-07-07` · `HANDOFF-SEED-GC-2026-07-{02}` — sih-docs `HANDOFF-SESSAO-2026-07-14` · `RECUPERACAO-SENHA-SIH-HANDOFF-2026-07-13` · **`ATA-ALINHAMENTO-FAMBRAS-2026-06-30`** (alinhamento dos 3 sistemas: fluxo de homologação de MP, dashboard de qualidade, ciclo embarque⇄cert; pendências extraídas para §4.2/§4.3 em 17/jul).
+
+⚠️ **Gap de registro fechado em 17/jul:** a `ATA-ALINHAMENTO-FAMBRAS-2026-06-30` e o `FLUXOGRAMA-RELATORIO-FABRICACAO-MP-2026-06-30` foram versionados em `1db4442` (o lote dos "15 docs que viviam só na máquina local") mas **nunca foram listados aqui nem tiveram pendências extraídas para o §4** — ficaram invisíveis para o mestre por 17 dias. Mesma classe de falha do §6 (docs passam batido na auditoria de código). *(Regra §0.5 aplicada.)*
 
 **Fontes externas (fora de git):** transcrições em `C:\HalalSphere\Alinhamentos de validação\` · gabaritos em `C:\HalalSphere\Gabaritos atualizados\` · `C:\HalalSphere\FM78x_atualizados\` · docx contratuais em `C:\SIH\`.
