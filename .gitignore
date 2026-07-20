@@ -15,6 +15,12 @@ Thumbs.db
 # Database dumps
 *.bkp
 *.sql
+# Excecao: scripts de carga/correcao curados, que precisam de rastreabilidade.
+# A regra acima existe para DUMPS (volumosos, com dado de producao). Ela estava
+# jogando fora tambem os scripts que o Renato roda no DBeaver — a divida
+# "cargas de dado sem nenhum hash" registrada no §4.2 do BACKLOG-ECOHALAL.
+# Nao colocar dump nem dado sensivel aqui: e diretorio de script versionado.
+!PLANNING/sql/*.sql
 
 # Test output
 test-*.pdf
