@@ -37,8 +37,8 @@
 |---|---|---|---|---|
 | **halalsphere-backend** (GC) | `release` | 0 | **0** ✅ *(17/jul)* | 17/jul `853ed242` |
 | **halalsphere-frontend** (GC) | `release` | 0 | **7** → develop | 16/jul `298a346f` |
-| **sih-backend** | `release` | 0 | **0** ✅ *(21/jul)* | 🚧 **21/jul `46e7c42` — 2 commits NÃO pushados** (Bloco C) |
-| **sih-frontend** | `release` | 0 | **0** ✅ *(21/jul)* | 🚧 **21/jul `c36ce0d` — 1 commit NÃO pushado** (Bloco C) |
+| **sih-backend** | `release` | 0 | **0** ✅ *(21/jul)* | 21/jul `94fbe96` — 🚧 **1 commit NÃO pushado** (fecha o Bloco C) |
+| **sih-frontend** | `release` | 0 | **0** ✅ *(21/jul)* | 21/jul `31f1a8a` — 🚧 **1 commit NÃO pushado** (fecha o Bloco C) |
 | **syshalal-api** | 🚩 `carta-correcao-brf-kuwait` | 🚩 **3** | 2 → develop | **30/jun** |
 | **syshalal-external-api** | `staging` | 0 | **release 3 atrás de staging** | 06/jul `6d2c2e7` (rotas /integration p/ SIH — staging apenas, NÃO em prod) |
 | **syshalal-web** | `release` | 0 | 0 | 22/jun |
