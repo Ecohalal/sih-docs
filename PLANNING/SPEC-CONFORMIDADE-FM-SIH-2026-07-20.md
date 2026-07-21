@@ -265,14 +265,15 @@ Idem `destinationCnpj`, que vive só em `useState`.
    segue aberto, pela mesma razão: precisa de coluna.
 
 **P2 — fidelidade ao FM**
-9. Nº do documento do supervisor assinante — A3/E6
-10. Nome do supervisor = quem assinou, não quem criou — A4
-11. Autofill robusto do endereço de origem — §3.1
-12. Datas como faixa na UI (modelagem já existe) — E3
-13. Horário também no bloco bovino — A6
-14. Vincular NC ao FM 7.1.6.1 — A7
-15. Validar `verificationItems` (completude antes de assinar) — A11
-16. `serialNumber` no PDF · turno com rótulo · `formNumber` coerente com espécie — A8/A5/A9
+9. ✅ *(21/jul)* Nº do documento do supervisor assinante — A3/E6
+10. ✅ *(21/jul)* Nome do supervisor = quem assinou, não quem criou — A4
+11. ✅ *(21/jul)* Autofill robusto do endereço de origem — §3.1
+12. ✅ *(já existia)* Datas como faixa na UI — E3
+13. 🧩 Horário também no bloco bovino — A6
+14. ✅ *(21/jul)* Vincular NC ao FM 7.1.6.1 — A7
+15. ✅ *(21/jul)* Validar `verificationItems` (completude antes de assinar) — A11
+16. ✅ turno com rótulo *(21/jul)* · 🧩 `serialNumber` no PDF · 🧩 `formNumber` coerente com espécie — A8/A5/A9
+17. 🧩 `rejectedSequence` impresso também em aves — A10
 
 **P3 — depende de terceiros**
 17. Produto preso ao escopo — **exige rota nova no GC** — E4
@@ -307,6 +308,13 @@ Idem `destinationCnpj`, que vive só em `useState`.
 | `d1feabc` | sih-frontend | **Bloco A:** "Aprovados" derivado · "Nº do Pedido" fora da tela · turno do FM (3 listas locais removidas) · FM 7.1.7.11 nos 4 pontos |
 | `878678d` | sih-backend | Metadados do 7.1.7.11 corrigidos contra o documento oficial |
 | `beba85e` | sih-frontend | Tabela de produtos do 7.1.7.11 enxuta, como no documento |
+| `b071b75` | sih-backend | **Bloco B:** `products` validado (era `z.any()`) · assinar exige produto com nome · detalhe no PDF |
+| `9fc4aac` | sih-frontend | **Bloco B:** endereço de origem sincroniza ao trocar planta · campo "Detalhe do produto" |
+| `93a3ae5` | sih-backend | **Bloco C:** `SystemUser.document` + migration · quem assinou no cabeçalho · completude C/NC na assinatura |
+| `c36ce0d` | sih-frontend | **Bloco C:** campo de documento no cadastro · aviso do FM 7.1.6.1 ao marcar NC |
+| `46e7c42` | sih-backend | *(à parte)* versiona os 5 scripts de junho que estavam soltos |
+
+**Status de deploy:** A e B **em produção e validados**. **C ainda NÃO foi pushado** — ver §11.
 
 ### Decisões do Renato aplicadas (21/jul)
 
@@ -352,6 +360,59 @@ o `moduleNameMapper` — os imports `.js` do padrão NodeNext não resolviam. Co
 
 **Efeito colateral desejado:** o `signatureBlock` ganhou um parâmetro opcional de observações,
 então **todos os 6 tipos de relatório** passaram a imprimir o campo — não só o abate.
+
+---
+
+## 11. ONDE PARAMOS — para retomar noutra sessão
+
+> Escrito em 21/jul, fim da sessão. Leia isto antes do resto do documento.
+
+### 11.1 Pendente de deploy
+
+O **Bloco C está commitado mas NÃO pushado**: back `93a3ae5` + `46e7c42` · front `c36ce0d`.
+
+⚠️ **Tem migration** — `20260721160000_system_user_document` (coluna `document` em `system_users`,
+aditiva e idempotente). Rodar o `VALIDATE.sql` da pasta depois do deploy.
+
+⚠️ **Duas travas novas entram em produção com este push.** Ambas conferidas contra o banco antes
+de commitar:
+- assinar embarque exige **produto com nome** → nenhum rascunho afetado
+- assinar exige **verificação C/NC completa** (abate, produção, embarque) → **1 rascunho** seria
+  bloqueado, o `EM-SIF9998/2026/00001` da planta **Ecotrace Teste** (desativada)
+
+O commit `46e7c42` é **separado de propósito**: versiona 5 scripts de junho que estavam soltos no
+working tree e **não são do Bloco C**. Se preferir descartá-los, é só esse commit que sai.
+
+### 11.2 O que sobrou do Bloco C
+
+| # | Item | Onde |
+|---|---|---|
+| C5 | Horário também no bloco **bovino** (a nota do FM pede "duas verificações em horários alternados") | `SlaughterReportForm.tsx`, bloco bovino |
+| C6 | `serialNumber` no PDF (hoje só aparece na tela) | `pdf-helpers.ts` (cabeçalho) |
+| C7 | `rejectedSequence` impresso também em **aves** (hoje só bovino) | `slaughter-report-pdf.ts:87` |
+| — | `formNumber` gravado × derivado da espécie: backend não valida coerência | `slaughter-report.service.ts` |
+
+### 11.3 Próximos blocos
+
+1. **Importação da planilha `FRIGORÍFICOS DIVERSOS FUNCIONÁRIOS ALI CHAHINE.xlsx`** (bloco próprio,
+   já combinado). Cruzamento feito em 21/jul: **92 plantas** existem no GC e faltam no SIH ·
+   **46 supervisores** + **54 degoladores**, nenhum cadastrado · **19 das 96 plantas têm marcador de
+   status** ("sem produção", "fechou", "Ali verificar") e exigem curadoria. Degolador vira
+   `Collaborator`, não `SystemUser`. Só 2 e-mails são `@fambrashalal.com.br` — o resto é pessoal.
+2. **D1 — produto preso ao escopo** (pedido do André): **exige rota nova no GC**, nenhum endpoint
+   expõe escopo de produtos do certificado. Metade já foi feita (campo de detalhe existe e é gravado).
+3. **D3 — ciclo embarque ⇄ SysHalal:** depende dos Industrializados + do WIP solto do `syshalal-api`.
+
+### 11.4 Perguntas abertas
+
+| Para | Pergunta |
+|---|---|
+| FAMBRAS | A **nota fiscal** também bloqueia a assinatura? Hoje só o documento sanitário |
+| FAMBRAS | A sequência do nº de série deve **contar o 7.1.7.11**, que não tem esse campo? |
+| FAMBRAS | O rótulo do 7.1.7.11 diz "Quantidade por produto (**kg**)" mas a planta preenche **caixas** — corrigir o formulário |
+| Vitor | Falta um **FM 7.1.7.3 preenchido** — único dos cinco sem documento oficial |
+| Renato | Cadastros: **Ziad Mansour**, **Haitham** (supervisor IND sem planta), `division` de 4 supervisores + Mussa · e o **"Vitor Sup."** com as 38 plantas é conta de teste? |
+| Renato | Rotação das senhas do SIH e do GC (pendente desde 10 e 17/jul) |
 
 ---
 
