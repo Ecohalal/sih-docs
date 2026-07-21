@@ -296,6 +296,17 @@ Idem `destinationCnpj`, que vive só em `useState`.
 
 ---
 
+## 8. O que ainda não foi verificado
+
+- FM 7.1.7.4: campos **Vendedor**, **Cliente**, **Nº do documento sanitário** no cabeçalho — §4
+- FM 7.1.7.1: as 2 perguntas C/NC da **checagem final do contêiner** — E5
+- Cabeçalho do embarque campo a campo — §3.1
+- FM 7.1.7.3 (transferência) **não foi lido em documento oficial preenchido** — o que sabemos vem da
+  reunião. Vale pedir um ao Vitor.
+- Pág. 2 do FM 7.1.7.4 não veio no PDF enviado (o arquivo tem as págs. 1, 3 e 4).
+
+---
+
 ## 9. Implementado em 21/jul
 
 | Commit | Repo | Conteúdo |
@@ -314,7 +325,7 @@ Idem `destinationCnpj`, que vive só em `useState`.
 | `c36ce0d` | sih-frontend | **Bloco C:** campo de documento no cadastro · aviso do FM 7.1.6.1 ao marcar NC |
 | `46e7c42` | sih-backend | *(à parte)* versiona os 5 scripts de junho que estavam soltos |
 
-**Status de deploy:** A e B **em produção e validados**. **C ainda NÃO foi pushado** — ver §11.
+**Status de deploy de cada bloco:** no **§4.2 do mestre** — não replicado aqui, para não divergir.
 
 ### Decisões do Renato aplicadas (21/jul)
 
@@ -363,64 +374,12 @@ então **todos os 6 tipos de relatório** passaram a imprimir o campo — não s
 
 ---
 
-## 11. ONDE PARAMOS — para retomar noutra sessão
+## 11. Estado da implementação — onde consultar
 
-> Escrito em 21/jul, fim da sessão. Leia isto antes do resto do documento.
-
-### 11.1 Pendente de deploy
-
-O **Bloco C está commitado mas NÃO pushado**: back `93a3ae5` + `46e7c42` · front `c36ce0d`.
-
-⚠️ **Tem migration** — `20260721160000_system_user_document` (coluna `document` em `system_users`,
-aditiva e idempotente). Rodar o `VALIDATE.sql` da pasta depois do deploy.
-
-⚠️ **Duas travas novas entram em produção com este push.** Ambas conferidas contra o banco antes
-de commitar:
-- assinar embarque exige **produto com nome** → nenhum rascunho afetado
-- assinar exige **verificação C/NC completa** (abate, produção, embarque) → **1 rascunho** seria
-  bloqueado, o `EM-SIF9998/2026/00001` da planta **Ecotrace Teste** (desativada)
-
-O commit `46e7c42` é **separado de propósito**: versiona 5 scripts de junho que estavam soltos no
-working tree e **não são do Bloco C**. Se preferir descartá-los, é só esse commit que sai.
-
-### 11.2 O que sobrou do Bloco C
-
-| # | Item | Onde |
-|---|---|---|
-| C5 | Horário também no bloco **bovino** (a nota do FM pede "duas verificações em horários alternados") | `SlaughterReportForm.tsx`, bloco bovino |
-| C6 | `serialNumber` no PDF (hoje só aparece na tela) | `pdf-helpers.ts` (cabeçalho) |
-| C7 | `rejectedSequence` impresso também em **aves** (hoje só bovino) | `slaughter-report-pdf.ts:87` |
-| — | `formNumber` gravado × derivado da espécie: backend não valida coerência | `slaughter-report.service.ts` |
-
-### 11.3 Próximos blocos
-
-1. **Importação da planilha `FRIGORÍFICOS DIVERSOS FUNCIONÁRIOS ALI CHAHINE.xlsx`** (bloco próprio,
-   já combinado). Cruzamento feito em 21/jul: **92 plantas** existem no GC e faltam no SIH ·
-   **46 supervisores** + **54 degoladores**, nenhum cadastrado · **19 das 96 plantas têm marcador de
-   status** ("sem produção", "fechou", "Ali verificar") e exigem curadoria. Degolador vira
-   `Collaborator`, não `SystemUser`. Só 2 e-mails são `@fambrashalal.com.br` — o resto é pessoal.
-2. **D1 — produto preso ao escopo** (pedido do André): **exige rota nova no GC**, nenhum endpoint
-   expõe escopo de produtos do certificado. Metade já foi feita (campo de detalhe existe e é gravado).
-3. **D3 — ciclo embarque ⇄ SysHalal:** depende dos Industrializados + do WIP solto do `syshalal-api`.
-
-### 11.4 Perguntas abertas
-
-| Para | Pergunta |
-|---|---|
-| FAMBRAS | A **nota fiscal** também bloqueia a assinatura? Hoje só o documento sanitário |
-| FAMBRAS | A sequência do nº de série deve **contar o 7.1.7.11**, que não tem esse campo? |
-| FAMBRAS | O rótulo do 7.1.7.11 diz "Quantidade por produto (**kg**)" mas a planta preenche **caixas** — corrigir o formulário |
-| Vitor | Falta um **FM 7.1.7.3 preenchido** — único dos cinco sem documento oficial |
-| Renato | Cadastros: **Ziad Mansour**, **Haitham** (supervisor IND sem planta), `division` de 4 supervisores + Mussa · e o **"Vitor Sup."** com as 38 plantas é conta de teste? |
-| Renato | Rotação das senhas do SIH e do GC (pendente desde 10 e 17/jul) |
-
----
-
-## 8. O que ainda não foi verificado
-
-- FM 7.1.7.4: campos **Vendedor**, **Cliente**, **Nº do documento sanitário** no cabeçalho — §4
-- FM 7.1.7.1: as 2 perguntas C/NC da **checagem final do contêiner** — E5
-- Cabeçalho do embarque campo a campo — §3.1
-- FM 7.1.7.3 (transferência) **não foi lido em documento oficial preenchido** — o que sabemos vem da
-  reunião. Vale pedir um ao Vitor.
-- Pág. 2 do FM 7.1.7.4 não veio no PDF enviado (o arquivo tem as págs. 1, 3 e 4).
+> **Estado de sessão NÃO vive aqui.** O que está feito, o que falta, o que está commitado e ainda
+> não foi deployado, e as pendências por dono ficam no **`BACKLOG-ECOHALAL.md` §4** — fonte única
+> (regra §0.5 do próprio mestre). Esta spec guarda a **análise técnica**: o cruzamento campo a campo
+> do FM em papel com o sistema, que não muda de sessão para sessão.
+>
+> Para saber onde paramos: **§4.2 do mestre, bloco "SIH · Conformidade FM"**.
+> A §9 acima lista os commits desta spec, para rastreabilidade.

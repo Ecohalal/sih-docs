@@ -93,6 +93,11 @@
   (iv) validação final: buscar **`2607FU7I2`** (grupo ≠ BRF) na UI do SIH → verde; `2607PHJWS` de regressão.
 - ⚠️ **Rotacionar a senha do GC (Aurora)** — compartilhada em sessão anterior, em arquivo temp. Pendente desde 10/jul.
 - ⚠️ **Rotacionar a senha do SIH (`db_ecohalal_sih`)** — *(novo 17/jul)* transitou em texto plano no scratchpad (`db-conn-sih.json`) para o cruzamento GC↔SIH. Mesmo cluster Aurora do GC, user `db_ecohalal_sih_user`.
+- 🔧 **Cadastros do SIH pendentes** *(levantados no diagnóstico de 20/jul, cruzando `db_ecohalal_sih`)*:
+  - **Criar o supervisor Ziad Mansour** — assina os FM da BRF Dourados (doc. `V444820C`) e não existe na base. Precisa ser pela UI (hash bcrypt) + vincular à planta.
+  - **Haitham Mohamed** — supervisor IND **sem nenhuma planta vinculada**: ao logar vê dropdown vazio. Vincular ou inativar.
+  - **`division` NULL em 4 supervisores + Mussa.** Inferido pelos vínculos: **Mussa Mustafa → IN** · **Sameh Kamal → IN** · **Vinicius (Jamal) → IND**. ❓ **"Vitor Sup." (`vitor.franco@sih.com`) tem as 38 plantas vinculadas** — conta de teste? Se for, inativar antes do go-live é melhor que classificar.
+  - ℹ️ Sem `division`, o filtro novo de plantas (`7bc4768`) não recorta nada para esses usuários — eles veem tudo.
 - 🔧 Rodar **import IND** em prod (`prisma/import-plantas-ind.ts`, `79b2935`+`91f08fc`) — 23 plantas + vínculos de supervisor.
 - 🔧 SQLs de limpeza de teste no DBeaver (4 arquivos em `halalsphere-backend/prisma/`).
 - 🔧 `capabilities=processamento` das 4 Seara (admin Lina) — confirmar quais.
