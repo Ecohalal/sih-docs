@@ -164,11 +164,11 @@ Formulário **distinto** do 7.1.7.1, com campos próprios:
 
 | Campo exclusivo | Sistema |
 |---|---|
-| **Vendedor** (`1 - VALE COMPANY`) | **[NÃO VERIFICADO]** |
-| **Cliente** (no lugar de Importador/Consignatário) | **[NÃO VERIFICADO]** |
-| **Endereço destino** | existe (`destinationAddress`) |
-| **Nº do documento sanitário (CSN ou DCPOA)** — campo próprio no cabeçalho, além do anexo | **[NÃO VERIFICADO]** |
-| Tipo de transporte: só *terrestre/aéreo* (sem marítimo) | **[NÃO VERIFICADO]** |
+| **Vendedor** (`1 - VALE COMPANY`) | ✅ existe (`seller`) — *verificado 21/jul* |
+| **Cliente** (no lugar de Importador/Consignatário) | ✅ existe (`client`) — *verificado 21/jul* |
+| **Endereço destino** | ✅ existe (`destinationAddress`) |
+| **Nº do documento sanitário (CSN ou DCPOA)** — campo próprio no cabeçalho, além do anexo | ✅ existe (`sanitaryDocType` + `sanitaryDocNumber`) — *verificado 21/jul* |
+| Tipo de transporte: só *terrestre/aéreo* (sem marítimo) | **[NÃO VERIFICADO]** se o enum restringe por tipo de FM |
 
 O título diz **"para emissão do certificado halal"** — este relatório alimenta a emissão, como o
 7.1.7.1. Transferência (7.1.7.3) **não gera certificado** (confirmado pelo Vitor na reunião).
@@ -240,17 +240,25 @@ Idem `destinationCnpj`, que vive só em `useState`.
 
 ## 6. Backlog priorizado (para o §4 do mestre)
 
+> **Status de 21/jul.** P0 e P1 implementados — ver §9. Os demais seguem abertos.
+
 **P0 — conformidade documental**
-1. Fonte única das listas de verificação + alinhar aves ao FM (13 itens) — §1
-2. Decidir o destino dos 2 relatórios de aves já assinados com a lista antiga — §1
+1. ✅ *(21/jul)* Fonte única das listas de verificação + alinhar aves ao FM (13 itens) — §1
+2. ❓ Decidir o destino dos 2 relatórios de aves já assinados com a lista antiga — §1
 
 **P1 — erro de dado observado ao vivo**
-3. Tempo de retorno: `m:ss` ou unidade explícita — A1
-4. Imprimir `observations` no PDF — A2
-5. Unidade de volume (caixa × kg) — E1
-6. Totalizador de volumes e peso, na tela e no PDF — E2
-7. Anexo obrigatório: documento sanitário **+** nota fiscal — E8
-8. Persistir `halalCertData`/`halalCertSource`/`destinationCnpj` + expor `HalalCertField` na exportação — §5.4
+3. ✅ *(21/jul)* Tempo de retorno em `m:ss` — A1
+4. ✅ *(21/jul)* Imprimir `observations` no PDF (6 templates) — A2
+5. ✅ *(21/jul)* "Natureza dos volumes" / "Nº de volumes" + datalist — E1
+6. ✅ *(21/jul)* Totalizador de volumes e peso, na tela e no PDF — E2
+7. ✅ *(21/jul)* Documento sanitário obrigatório para assinar — E8 · ❓ a nota fiscal também bloqueia?
+8. ✅ *(21/jul)* Persistir `halalCertData`/`halalCertSource` — §5.4
+   🚩 **`HalalCertField` na exportação ficou de fora, de propósito.** Ele usa
+   `halalSerialNumber` como número do certificado, mas esse campo é o **número de série do
+   relatório** (§5.1) — são coisas diferentes na mesma coluna. Expor o componente na
+   exportação criaria dois inputs gravando no mesmo lugar. Separar exige migration e depende
+   da decisão da FAMBRAS sobre o número de série. `destinationCnpj` (só `useState`) também
+   segue aberto, pela mesma razão: precisa de coluna.
 
 **P2 — fidelidade ao FM**
 9. Nº do documento do supervisor assinante — A3/E6
@@ -280,6 +288,24 @@ Idem `destinationCnpj`, que vive só em `useState`.
    `Decimal(12,2)` cobre a meia carcaça de aves
 6. "Nome do pedido" — o documento real não tem, só nota fiscal. Remover da tela?
 7. Turno: enum atual (`matutino…`) ou numeração do FM (`1º TURNO`, `I`)?
+
+---
+
+## 9. Implementado em 21/jul
+
+| Commit | Repo | Conteúdo |
+|---|---|---|
+| `9c3ec7f` | sih-backend | `SLAUGHTER_FM` como fonte única + `/fm-metadata/slaughter/*` + PDF usando o rótulo gravado + **primeiro teste do repo** (10 casos) |
+| `16afce7` | sih-frontend | Verificações vindas do backend; itens gravam `labelPt`/`labelEn` |
+| `f77bb97` | sih-backend | Observações no PDF (6 templates) · linha TOTAL no embarque · anexo sanitário obrigatório para assinar · `halalCertData` persistido |
+| `b57a5b0` | sih-frontend | Tempo de retorno `m:ss` · "Natureza dos volumes"/"Nº de volumes" + datalist · totalizador na tela |
+
+**Nota de infraestrutura:** o jest estava configurado mas **sem nenhum teste**, porque faltava
+o `moduleNameMapper` — os imports `.js` do padrão NodeNext não resolviam. Corrigido em
+`9c3ec7f`; a suíte agora roda com `npm test`.
+
+**Efeito colateral desejado:** o `signatureBlock` ganhou um parâmetro opcional de observações,
+então **todos os 6 tipos de relatório** passaram a imprimir o campo — não só o abate.
 
 ---
 
