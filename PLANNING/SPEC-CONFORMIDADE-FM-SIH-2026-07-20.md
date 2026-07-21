@@ -22,6 +22,10 @@ enviados pelo Vitor em 20/jul (`C:\SIH\Meetings\handson 1707\Testes`).
 | **7.1.4.2** — Abate e Controle da Carcaça · BOVINO | **Rev 06 · 14/01/2026** | `Testes BOVINOS/03.03.2026 com insensibilizao.pdf` | JBS Vilhena SIF 4333 · sup. Abdelhakim Roumadi |
 | **7.1.7.1** — Acompanhamento de Embarque · Exportação | Rev 04 · 17/12/2021 | `Testes AVES/TEMU9380381.pdf` · `Testes BOVINOS/CAAU4237772.pdf` | BRF Dourados SIF 18 → Omã · JBS Vilhena → EUA |
 | **7.1.7.4** — Expedição: venda mercado interno | Rev 05 · 17/12/2021 | `REL VENDA MERCADO INTERNO PARA EMISSO (5).pdf` | Vale Company SIF 4466 |
+| **7.1.7.11** — Transferência: **exclusivo entre BRF** | **Rev 01 · 06/07/2020** | `Testes AVES/image2026-05-26-164618.pdf` *(localizado em 21/jul)* | BRF Dourados SIF 18 → BRF Concórdia SIF 1 · sup. Ziad Mansour |
+
+⚠️ **Falta o FM 7.1.7.3** (transferência) preenchido — é o único dos cinco sem documento oficial em mãos;
+o que sabemos dele veio da conversa da reunião de 17/jul.
 
 Documentos de respaldo no pacote: CSI do MAPA, DCPOA, CSN, nota fiscal.
 
@@ -299,6 +303,48 @@ Idem `destinationCnpj`, que vive só em `useState`.
 | `16afce7` | sih-frontend | Verificações vindas do backend; itens gravam `labelPt`/`labelEn` |
 | `f77bb97` | sih-backend | Observações no PDF (6 templates) · linha TOTAL no embarque · anexo sanitário obrigatório para assinar · `halalCertData` persistido |
 | `b57a5b0` | sih-frontend | Tempo de retorno `m:ss` · "Natureza dos volumes"/"Nº de volumes" + datalist · totalizador na tela |
+| `50bd589` | sih-backend | **Bloco A:** nº de série Halal gerado · FM 7.1.7.11 (enum + migration) · turno com rótulo do FM · pedido/NF no PDF · +9 testes de serial |
+| `d1feabc` | sih-frontend | **Bloco A:** "Aprovados" derivado · "Nº do Pedido" fora da tela · turno do FM (3 listas locais removidas) · FM 7.1.7.11 nos 4 pontos |
+| `878678d` | sih-backend | Metadados do 7.1.7.11 corrigidos contra o documento oficial |
+| `beba85e` | sih-frontend | Tabela de produtos do 7.1.7.11 enxuta, como no documento |
+
+### Decisões do Renato aplicadas (21/jul)
+
+| # | Decisão | Como ficou |
+|---|---|---|
+| 1 | Anexo obrigatório trava na **assinatura** | ✅ implementado. ❓ **a nota fiscal também bloqueia?** Hoje só o documento sanitário |
+| 2 | **Auto-cálculo** de "Aprovados" | ✅ derivado, read-only. Das 5 validações restaram 2 |
+| 3 | **Descartar** os 2 relatórios de aves | ✅ removidos de prod (zero dependências, em transação) |
+| 4 | Remover "nome do pedido" | ✅ fora da tela; coluna preservada, PDF compõe pedido/NF |
+| 5 | Turno como nos FM reais | ✅ "1º/2º/3º Turno". **Rótulo trocado, não o valor** — `Shift` também alimenta escala e analytics |
+| 10 | Nº de série `SIF/ANO/6 dígitos` | ✅ gerado quando o supervisor não informa; sequência parte do **maior emitido**, não de `count()` |
+| 11 | O `18/2022/...` da BRF tem ano errado | ✅ confirmado pelo Renato — erro de preenchimento da planta |
+| 12 | Criar o FM 7.1.7.11 | ✅ + metadados **corrigidos** contra o documento oficial (ver §10) |
+
+---
+
+## 10. O FM 7.1.7.11 real — o que ele corrigiu
+
+O documento oficial preenchido (localizado em 21/jul) **desmentiu três suposições** feitas ao criar
+o tipo a partir do 7.1.7.3:
+
+| | Inferido do 7.1.7.3 | **Documento real** |
+|---|---|---|
+| Data da revisão | 17/12/2021 | **06/07/2020** |
+| Título | "Relatório de Transferência Halal" | **"…: EXCLUSIVO ENTRE BRF"** |
+| Verificações C/NC | as do 7.1.7.3 | **próprias** (produção acompanhada por supervisor FAMBRAS + produtos identificados) |
+
+**Outras diferenças:** tabela bem mais enxuta (`Produto | Data de abate | Quantidade por produto`,
+mais `TOTAL` e `Peso total (kg)`) — sem SIF, lote ou embalagem; e **não existe campo de número de
+série do relatório Halal**.
+
+🚩 **A coluna do formulário induz erro.** Ela se chama *"Quantidade por produto (**kg**)"*, mas a
+planta preenche **caixas** (479 / 201 / 770 → TOTAL 1450, com peso total de 37.800,000 kg à parte).
+Foi por isso que o André disse na reunião: *"o documento foi preenchido incorretamente, mas seriam
+caixas"*. **O rótulo do FM está errado, não o supervisor** — levar à FAMBRAS.
+
+❓ **A sequência do nº de série deve contar este tipo?** O 7.1.7.11 não tem o campo, mas a geração
+hoje roda para todo `shipping_report`.
 
 **Nota de infraestrutura:** o jest estava configurado mas **sem nenhum teste**, porque faltava
 o `moduleNameMapper` — os imports `.js` do padrão NodeNext não resolviam. Corrigido em
