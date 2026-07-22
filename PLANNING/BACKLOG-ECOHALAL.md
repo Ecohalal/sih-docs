@@ -93,10 +93,9 @@
   (iv) validação final: buscar **`2607FU7I2`** (grupo ≠ BRF) na UI do SIH → verde; `2607PHJWS` de regressão.
 - ⚠️📅 **Rotacionar as senhas GC + SIH (Aurora) — AGENDADO pelo Renato p/ 25/jul.** GC (`db_ecohalal_halalsphere`) pendente desde 10/jul; SIH (`db_ecohalal_sih`, user `db_ecohalal_sih_user`, mesmo cluster) desde 17/jul. Ambas transitaram em texto plano em arquivo temp/scratchpad (`db-conn-sih.json`) no cruzamento GC↔SIH.
 - 🔧 **Cadastros do SIH pendentes** *(levantados no diagnóstico de 20/jul, cruzando `db_ecohalal_sih`)*:
-  - **Criar o supervisor Ziad Mansour** — assina os FM da BRF Dourados (doc. `V444820C`) e não existe na base. Precisa ser pela UI (hash bcrypt) + vincular à planta.
-  - **Haitham Mohamed** — supervisor IND **sem nenhuma planta vinculada**: ao logar vê dropdown vazio. Vincular ou inativar.
-  - **`division` NULL em 4 supervisores + Mussa.** Inferido pelos vínculos: **Mussa Mustafa → IN** · **Sameh Kamal → IN** · **Vinicius (Jamal) → IND**. ❓ **"Vitor Sup." (`vitor.franco@sih.com`) tem as 38 plantas vinculadas** — conta de teste? Se for, inativar antes do go-live é melhor que classificar.
-  - ℹ️ Sem `division`, o filtro novo de plantas (`7bc4768`) não recorta nada para esses usuários — eles veem tudo.
+  - **Criar o supervisor Ziad Mansour** — assina os FM da BRF Dourados (doc. `V444820C`) e não existe na base. Precisa ser pela UI (hash bcrypt) + vincular à planta. **PENDENTE.**
+  - 🔧 **Haitham Mohamed** — supervisor IND **sem nenhuma planta vinculada**: ao logar vê dropdown vazio. **[Renato] vincular ou inativar** (não toquei — é decisão).
+  - ✅ *(22/jul, DADO em prod)* **`division` dos supervisores preenchida:** Mussa Mustafa → **IN** · Sameh Kamal → **IN** · Vinicius (Jamal) → **IND**. **"Vitor Sup." (`vitor.franco@sih.com`) INATIVADO** — era conta de teste (38 plantas), confirmado pelo Renato. Resultado: **nenhum supervisor ativo com `division` NULL** → o filtro `7bc4768` passa a recortar corretamente para todos. Script em `scratchpad/fix-supervisores.js` (transação, antes/depois).
 - 🔧 Rodar **import IND** em prod (`prisma/import-plantas-ind.ts`, `79b2935`+`91f08fc`) — 23 plantas + vínculos de supervisor.
 - 🔧 SQLs de limpeza de teste no DBeaver (4 arquivos em `halalsphere-backend/prisma/`).
 - 🔧 `capabilities=processamento` das 4 Seara (admin Lina) — confirmar quais.
