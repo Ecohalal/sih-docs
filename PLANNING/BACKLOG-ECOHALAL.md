@@ -121,6 +121,27 @@
 - 🧩 `main.ts` — último "HalalSphere" interno (Swagger title + log de boot). Baixa.
 - ⏸ **Parkeados:** parser xlsx (aguarda arquivo de escopo real da Lina) · emissão assíncrona (rebaixada — o "timeout dos 151" era shadow-copy do OneDrive, não escala) · DSM/IFF cert-de-produto (atrás da digitalização do escopo da indústria).
 
+**GC · Trilha A — 🎯 KERNEL DE NORMAS + backlog de emissão (reunião 20/jul + testes Giovanna/William + WhatsApp Soha 22/jul).**
+> Arquitetura completa: **`halalsphere-docs/ARCHITECTURE/ADR-KERNEL-NORMAS-CERTIFICADO-2026-07-22`** (§8). Decisão travada = **§5.22**. **Nada codado — zero hash.**
+
+_Raiz (stress-test + inventário 22/jul):_ o `Certificate` **não persiste as normas resolvidas** — o PDF re-resolve ao vivo (`certificate-pdf.service.ts:685-737`), lendo catálogo + `category-display-map` (que vaza o rótulo `2055-2` para a linha de norma). É o bug do 2055 **e** uma violação de imutabilidade ISO 17065 já hoje.
+
+- 🧩 **Fatia 0** — `resolved_scope_snapshot` no `Certificate`; cert emitido lê só do snapshot, nunca re-resolve. **Mata a classe do bug + entrega imutabilidade ISO** (independente da matriz). Backfill na janela "prod=homologação".
+- 🧩 **Fatia 1** — matriz `certification_standards_by_market` vira **produtor único** da linha de norma; deletar os 2 fallbacks duplicados (`certificate.service.ts:889-906` = `certificate-pdf.service.ts:714-729`); `notes` texto-livre → colunas tipadas; unificar catálogo de país (totalidade, sem `[]` silencioso); guard-rail de normas conflitantes (W11).
+- 🧩 **Fatia 2** — effective-dating por norma + provenance (`approved_by`/`source_doc_ref`/`effective_from`) + pin da versão na `Certification` no gate da **auditoria**; tabela **ingrediente restrito × mercado** + flag do operador (long-term via FAM-0017).
+
+_Backlog de emissão (bugs dos testers — render/split, correm em paralelo ao kernel):_
+- [ ] **W2/#1** GSO sai `2055-2` na linha de norma (deveria `2055-1`+`993`) — o vazamento; selo GAC mantém `2055-2:2021` (correto). [Fatia 1]
+- [ ] **W1** UAE.S classificado "sem norma acreditada" — corrigir (imprime ENAS = é acreditada). [Fatia 1]
+- [ ] **G1/W17** Products/Scope: sai só a subcategoria, em PT; deve ser `CATEGORY <G> – <nome>/ SUBCATEGORY <cód> – <nome>` + facility + BRANDS, em **EN** (bloqueado pelos textos EN por categoria, §4.3). [Fatia 1]
+- [ ] **G5/W6** Split de norma bugado nos 2 sentidos: "vários por grupo" gera Indonésia+SMIIC não pedidos (G5); habilitação c/ +1 norma sai tudo num arquivo (W6). Frigorífico=split, industrial=único. [bounded context numeração]
+- [ ] **W11** 🎯 **trava de normas conflitantes** = enforcement de `mercado ⊆ base ∩ ingrediente ∩ auditor ∩ habilitação` + aviso. [Fatia 1]
+- [ ] **W7** picklist de produto conforme FM 7.2.1.2/7.2.1.3 ("ticar" válidos) — em vez de texto livre. Conecta parser xlsx/escopo real.
+- [ ] **W15** possível emitir aves só desossa OU só abate — validação de escopo faltando.
+- [ ] **W4/W5/W3** seção "6. Emissão e mercados" não auto-seleciona normas ao escolher mercado (W4); "10. Ajustes Avançados" não auto-seleciona DTs (W5); sugestão subir a seção 6 (W3).
+- [ ] **G2/W14** marca não centralizada (G2) / não aparece na habilitação (W14). **G4/W8** datas+número desalinhados. **W9** caps só na unidade. **W10** Estado/País como sigla (deveria por extenso). [render — vários rápidos]
+- [ ] **Fuad `.1.` — RESOLVIDO por evidência:** cert real mostra `.1.` legítimo em **frigorífico** (índice de grupo `ABC.SIG.ANOMES.SEQQ.NORMA.PAIS`); o bug é `.1.` em **industrial único** (CP Kelco). Não re-perguntar.
+
 **GC · Trilha B (normalização):**
 - ✅ *(17/jul)* **Fallback CNPJ-only — FEITO nas DUAS pontas.** Planta sem SIF (químico/casing: Kin Master ×2, Minerva Casing = `NAO_APLICAVEL`) não casava por definição; agora casa por CNPJ.
   - **GC** `853ed242` (**pushado** em `release`, CI/CD disparado): `resolvePlant` — com SIF mantém SIF+CNPJ e devolve null se não casar (**divergência real não se mascara**); sem SIF cai para CNPJ **só se INEQUÍVOCO** (2+ plantas sem SIF no mesmo CNPJ → null, não chuta). Beneficia os 2 endpoints (`raw-materials/by-plant` + `plant-summary`). Rota existente → **sem regen de API GW**.
@@ -211,8 +232,16 @@
 ### 4.3 FAMBRAS — decisões e entregas
 **❓ Decisões de norma (as 3 mais quentes — Soha):**
 1. **Mercados nacionais (BPJPH/MUIS/MS) devem derivar GSO?** O alinhamento de 08/jul diz que são baseados em GSO e o sistema **já os trata como GSO** (nomenclatura de categoria + `gsoAuditMode`, *"Default to GSO rules"*) — só a derivação de `standard` não reflete. Se sim, "Sem norma acreditada" quase desaparece.
-2. 🚩 **Contradição:** marcar **só UAE.S** → classifica "sem norma acreditada", **mas o PDF imprime o selo ENAS**, que É acreditação.
+2. ✅ *(22/jul)* ~~Contradição UAE.S → "sem norma acreditada" × imprime ENAS~~ — **RESOLVIDO (Soha):** UAE.S **tem norma acreditada própria** (imprime ENAS); corrigir a classificação. Vira decisão **§5.22**.
 3. **GSO+OIC juntos → template GCC → só o selo GAC** (o OIC não sai). Coerente com "SMIIC só Turquia" — confirmar.
+
+**✅ Respondido pela Soha (WhatsApp 22/jul) — vira decisão §5.22:**
+- **A auditoria governa a versão da norma** (update prospectivo, a partir da próxima auditoria; não retroage).
+- **Mercado no cert ⊆ mercado auditado por auditor ELEGÍVEL** (Indonésia = grupo de auditores dedicado).
+- **2055-2 = norma do organismo (selo GAC) · 2055-1(+993) = norma da planta (linha)** — anos divergentes são normais.
+- **Ingrediente restrito filtra mercado** (conchonilha: Ásia Amarela aceita, GSO/UAE não) — modelamos **tabela geral** (decisão Renato).
+
+**🚩 Aberto — bloqueia modelagem de selo (mesma questão do "Logo Indonésia — Elaine consulta acreditador"):** testes William W12/W13/W16 pedem **selo por grupo-de-norma** (Indonésia → selo Indonésia, não GAC/ENAS; Saudi → GAC). **Contradiz o §5.2** ("selos nacionais nunca"). ⇒ ❓ **Elaine/acreditador:** o §5.2 se refina para "selo segue o grupo/template"?
 
 **❓ Outras decisões:** #3 base por categoria (Minerva 1430×1431) · #9 múltiplos mercados · draft→aprovação existe? · N2b de-para de **14 categorias** · 3 SIFs duplicados (585 FRIGOMARCA×PANTANAL · 4699 LAR×AGROARACA · 2620 FALCAO×BMG) · dedup Hexus×Vidara · REVIEW histórico (7 casos) · overlap couro 7.1.4.5×7.1.4.9 · 5 decisões Fase 5B FAM-0017 (Lina) · certs vencidos-mas-ativos (ex. Gelita).
 
@@ -263,6 +292,16 @@
 20. **M7.4 — NC com relatório-pai: OPCIONAL** (Renato, 22/mai).
 21. **Dossiê de exportação** (22/jun): manter o Relatório de Embarque **como está** + construir o Dossiê como **fluxo PARALELO** (rastreabilidade documental completa). O sistema deve **cobrar do supervisor as datas efetivas de abate**.
 
+**Kernel de normas (22/jul — ADR em `halalsphere-docs/ARCHITECTURE/ADR-KERNEL-NORMAS-CERTIFICADO-2026-07-22`, §8)**
+22. **Kernel de normas = snapshot-first + tabela plana effective-dated + produtor único.** Regras confirmadas com a Soha (22/jul):
+    - **(a)** A **auditoria** governa a versão da norma; update é **prospectivo** (próxima auditoria), não retroage.
+    - **(b)** Mercado no cert **⊆ mercado auditado por auditor elegível** para a norma (Indonésia = grupo dedicado). Inativa no modo emissão-manual.
+    - **(c)** **2055-2 = norma do OC (selo GAC)** × **2055-1(+993) = norma da planta (linha de norma)** — nunca se cruzam; anos divergentes são normais. UAE.S **tem** norma acreditada (não é "sem norma").
+    - **(d)** Elegibilidade de mercado = **base ∩ ingrediente ∩ auditor ∩ habilitação**; **ingrediente restrito × mercado = tabela geral** (conchonilha é a 1ª linha).
+    - **(e)** `Certificate` **congela** as normas resolvidas na emissão (satisfaz imutabilidade §5.3); PDF de cert emitido **nunca re-resolve**.
+    - **(f)** Kernel **não funde** numeração/audit-days/competência de auditor (bounded contexts próprios); liga a competência **por validação**, não por fusão.
+    - ⚠️ **Depende de 1 reconciliação:** selo por grupo-de-norma × §5.2 (item aberto "Logo Indonésia", §4.3).
+
 ---
 
 ## 6. Divergências doc × git encontradas em 16/jul
@@ -305,10 +344,10 @@
 >
 > **Nada foi apagado.** As pendências destes handoffs foram extraídas para o §4 em 16/jul, mas a extração é falível: se você encontrar aqui um item aberto que **não** está no §4, **traga-o para o §4** (regra §0.5). O banner marca "não é estado" — não "não leia".
 
-**Specs (referência técnica — continuam válidas):** **`SPEC-CONFORMIDADE-FM-SIH-2026-07-20`** (sih-docs — cruzamento campo a campo dos FM em papel × SIH, a partir dos formulários oficiais preenchidos e assinados; P0/P1 implementados em 21/jul, §4.2) · `SPEC-EMISSAO-MULTI-CERT-NORMAS-GC-2026-07-14` · `CATEGORIA-POR-NORMA-PICKER-EMISSAO-GC-SPEC-2026-07-08` · `SPEC-EMISSAO-MANUAL-CERTIFICADO-2026-07-06` · `REGRAS-NORMAS-POR-DT-MERCADO-2026-07-06` · `REFERENCIA-TEMPLATES-CERTIFICADO-2026-07-06` · `NORMALIZACAO-CADASTROS-PLANO-MESTRE-2026-07-10` (Anexo A tem os SQL de diagnóstico) · `SYSHALAL-INTEGRATION-ENDPOINT-SIH-SPEC-2026-07-06` (sih-docs) · **`FLUXOGRAMA-RELATORIO-FABRICACAO-MP-2026-06-30`** (sih-docs — fluxo de homologação de MP + travas, Rev 2 com raias por ator; pendências extraídas para o §4.2/SIH em 17/jul).
+**Specs (referência técnica — continuam válidas):** **`ARCHITECTURE/ADR-KERNEL-NORMAS-CERTIFICADO-2026-07-22`** (halalsphere-docs — kernel de normas: snapshot-first + matriz effective-dated + as decisões da Soha 22/jul + fatias 0/1/2 + arquivos a consolidar; = decisão §5.22) · **`SPEC-CONFORMIDADE-FM-SIH-2026-07-20`** (sih-docs — cruzamento campo a campo dos FM em papel × SIH, a partir dos formulários oficiais preenchidos e assinados; P0/P1 implementados em 21/jul, §4.2) · `SPEC-EMISSAO-MULTI-CERT-NORMAS-GC-2026-07-14` · `CATEGORIA-POR-NORMA-PICKER-EMISSAO-GC-SPEC-2026-07-08` · `SPEC-EMISSAO-MANUAL-CERTIFICADO-2026-07-06` · `REGRAS-NORMAS-POR-DT-MERCADO-2026-07-06` · `REFERENCIA-TEMPLATES-CERTIFICADO-2026-07-06` · `NORMALIZACAO-CADASTROS-PLANO-MESTRE-2026-07-10` (Anexo A tem os SQL de diagnóstico) · `SYSHALAL-INTEGRATION-ENDPOINT-SIH-SPEC-2026-07-06` (sih-docs) · **`FLUXOGRAMA-RELATORIO-FABRICACAO-MP-2026-06-30`** (sih-docs — fluxo de homologação de MP + travas, Rev 2 com raias por ator; pendências extraídas para o §4.2/SIH em 17/jul).
 
 **Handoffs (histórico):** halalsphere-docs `HANDOFF-SESSAO-2026-07-{08,13,14}` · `HANDOFF-NORMALIZACAO-2026-07-{10,12}` · `EDICAO-ESCOPO-CERTIFICADO-FASE1-HANDOFF-2026-07-13` · `HANDOFF-EMISSAO-MANUAL-2026-07-07` · `HANDOFF-SEED-GC-2026-07-{02}` — sih-docs `HANDOFF-SESSAO-2026-07-14` · `RECUPERACAO-SENHA-SIH-HANDOFF-2026-07-13` · **`ATA-ALINHAMENTO-FAMBRAS-2026-06-30`** (alinhamento dos 3 sistemas: fluxo de homologação de MP, dashboard de qualidade, ciclo embarque⇄cert; pendências extraídas para §4.2/§4.3 em 17/jul).
 
 ⚠️ **Gap de registro fechado em 17/jul:** a `ATA-ALINHAMENTO-FAMBRAS-2026-06-30` e o `FLUXOGRAMA-RELATORIO-FABRICACAO-MP-2026-06-30` foram versionados em `1db4442` (o lote dos "15 docs que viviam só na máquina local") mas **nunca foram listados aqui nem tiveram pendências extraídas para o §4** — ficaram invisíveis para o mestre por 17 dias. Mesma classe de falha do §6 (docs passam batido na auditoria de código). *(Regra §0.5 aplicada.)*
 
-**Fontes externas (fora de git):** transcrições em `C:\HalalSphere\Alinhamentos de validação\` · gabaritos em `C:\HalalSphere\Gabaritos atualizados\` · `C:\HalalSphere\FM78x_atualizados\` · docx contratuais em `C:\SIH\` · **Google Doc "SIH - usabilidade"** (Nilsa, `docs.google.com/document/d/1YCGcECIZZNvNb-APufGSgU9QZPxfdixJpetC8nBRlf4`; 9 prints, lido via Drive 21/jul — pendências A/B/C/F extraídas ao §4.2).
+**Fontes externas (fora de git):** transcrições em `C:\HalalSphere\Alinhamentos de validação\` · gabaritos em `C:\HalalSphere\Gabaritos atualizados\` · `C:\HalalSphere\FM78x_atualizados\` · docx contratuais em `C:\SIH\` · **Google Doc "SIH - usabilidade"** (Nilsa, `docs.google.com/document/d/1YCGcECIZZNvNb-APufGSgU9QZPxfdixJpetC8nBRlf4`; 9 prints, lido via Drive 21/jul — pendências A/B/C/F extraídas ao §4.2) · **`c:\Projetos\Ecohalal\reunioes_fambras\2007_1100\`** (reunião FAMBRAS 20/jul: transcrição + **FM 4.1.X REV 03** ANEXO 1 [.xlsx, matriz DT×mercado→norma canônica] + DT 7.2.1 aves REV 14 + TXTs de numeração `.N.` aves/bovinos) — insumo do ADR do kernel (§5.22); + thread WhatsApp Soha 22/jul (decisões de norma, não versionado).
