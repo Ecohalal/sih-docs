@@ -39,13 +39,13 @@
 | **halalsphere-frontend** (GC) | `release` | 0 | **7** → develop | 16/jul `298a346f` |
 | **sih-backend** | `release` | 0 | **0** ✅ *(22/jul)* | 22/jul `94fbe96` (pushado, dev `cba9e66`) — Bloco C fechado |
 | **sih-frontend** | `release` | 0 | **0** ✅ *(22/jul)* | 22/jul `39b36fc` (pushado, dev `ff8ed51`) — usabilidade Nilsa A/B/C/F |
-| **syshalal-api** | 🚩 `carta-correcao-brf-kuwait` | 🚩 **3** | 2 → develop | **30/jun** |
+| **syshalal-api** | `release` ✅ *(22/jul)* | 0 ✅ *(22/jul)* | 0 | `160a16c` (PR #381 carta-correção mergeada) |
 | **syshalal-external-api** | `staging` | 0 | **release 3 atrás de staging** | 06/jul `6d2c2e7` (rotas /integration p/ SIH — staging apenas, NÃO em prod) |
 | **syshalal-web** | `release` | 0 | 0 | 22/jun |
 | halalsphere-docs | `main` | 0 | — | 16/jul |
 | sih-docs | `main` | 0 ✅ *(17/jul)* | — | 17/jul `f4223ca` |
 
-🚩 **`syshalal-api` é o ponto de atenção:** parado em branch de feature desde **30/jun** com 3 arquivos soltos (`package.json`, `pnpm-lock.yaml`, template draft `Industrializados_SIS_2020_DRAFT.html`). Tem **8 branches** vivas (4 hotfix + 2 feature). SysHalal é o **único sistema com usuários reais** — WIP solto ali é o de maior risco. **Ação: commitar ou descartar.**
+✅ **`syshalal-api` — RESOLVIDO em 22/jul (era alarme falso na substância).** A investigação por git provou que o WIP não tinha **nenhum código de produção**: os 3 tracked modificados eram (a) o template `Industrializados_SIS_2020_DRAFT.html` **byte-idêntico ao `origin/release`** — re-aplicava à mão o fix dos portos que já estava em prod desde 23/jun (`f711d10`); (b) `puppeteer` em `package.json`/`pnpm-lock`, usado **só** pelos scripts soltos (nenhum `src/` importa). Os untracked eram 5 scripts de simulação (mai/jun, backup em scratchpad) + `output/` = **184 MB de PDF gerado**. **Ação executada [Claude]:** restaurados os 3 tracked, removidos scripts+output, `checkout release` + fast-forward → **árvore limpa, 0/0**. Descoberta de bônus: a branch `carta-correcao-brf-kuwait` **já fora mergeada em prod** via PR #381 (`160a16c`) — o trabalho estava no ar, não só "salvo". *(Lição: "WIP solto = maior risco" era hipótese; git desmentiu. Ainda restam ~8 branches locais stale — higiene, não risco.)*
 
 ---
 
@@ -72,7 +72,7 @@
 ## 3. 🟥 DESTRAVA JÁ — pronto, esperando 1 ação
 
 1. ✅ *(22/jul)* **[SIH] `GC_INTEGRATION_API_KEY` na task def `sih-api-task` — CONFIRMADO FEITO pelo Renato.** (Já vinha validado em prod em 02/jul — `/gc-raw-materials` Rolândia 19/19 + boot log `Integracao GC configurada` + secret `production.GC_INTEGRATION_API_KEY_SHI_API`; revisões :95/:96 herdaram as envs. Renato confirmou em 22/jul.)
-2. 🚩 **[SysHalal] Resolver o WIP de `syshalal-api`** — commitar ou descartar (§1). **[Renato decide]**
+2. ✅ *(22/jul)* **[SysHalal] WIP de `syshalal-api` RESOLVIDO** — investigado, descartado (zero-loss, era ferramentaria + 184 MB de PDF gerado; nenhum código de prod), repo em `release` limpo. A feature já estava em prod (PR #381). Detalhe no §1.
 3. ✅ *(16/jul)* **[GC] Pacote de 16/jul VALIDADO pelo Renato** — `.K.`/normas (número do certificado), PDF protegido, busca por SIF, guard-rail. **Destrava o F3** (§4.2).
 4. ✅ *(16/jul)* **Reconciliar `release`→base** — FEITO em GC back+front (`develop`) e SIH back+front (`development`, remote `ecohalal`); todos com `ahead=0`. **Resta só `syshalal-api` (2)** — travado pelo WIP solto do item 2. **[Claude]**
 5. ✅ *(22/jul)* **Criar 4 usuários FAMBRAS — CRIADOS E ATIVOS** (Renato). GC: Mariana + Elaine · SIH: Karoline + Osama.
