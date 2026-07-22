@@ -241,7 +241,7 @@ _Backlog de emissão (bugs dos testers — render/split, correm em paralelo ao k
 - **2055-2 = norma do organismo (selo GAC) · 2055-1(+993) = norma da planta (linha)** — anos divergentes são normais.
 - **Ingrediente restrito filtra mercado** (conchonilha: Ásia Amarela aceita, GSO/UAE não) — modelamos **tabela geral** (decisão Renato).
 
-**🚩 Aberto — bloqueia modelagem de selo (mesma questão do "Logo Indonésia — Elaine consulta acreditador"):** testes William W12/W13/W16 pedem **selo por grupo-de-norma** (Indonésia → selo Indonésia, não GAC/ENAS; Saudi → GAC). **Contradiz o §5.2** ("selos nacionais nunca"). ⇒ ❓ **Elaine/acreditador:** o §5.2 se refina para "selo segue o grupo/template"?
+**✅ *(resolvido — Elaine, reunião anterior)* Selo por grupo-de-norma:** cert de **Indonésia (e nacionais) NÃO leva selo** — nem o nacional, nem GAC/ENAS (que são acreditação do **Golfo**). **Confirma o §5.2** (nacionais nunca) e resolve W12 (GAC/ENAS fora da Indonésia = correto) + W13 (sem selo Indonésia = correto). Modelo: **selo por grupo** — GSO/Golfo→GAC(+ENAS p/ UAE) · OIC/SMIIC→HAK · **nacionais→conjunto vazio**. W16 (Saudi sem GAC) segue bug: Saudi=GSO **deve** levar GAC.
 
 **❓ Outras decisões:** #3 base por categoria (Minerva 1430×1431) · #9 múltiplos mercados · draft→aprovação existe? · N2b de-para de **14 categorias** · 3 SIFs duplicados (585 FRIGOMARCA×PANTANAL · 4699 LAR×AGROARACA · 2620 FALCAO×BMG) · dedup Hexus×Vidara · REVIEW histórico (7 casos) · overlap couro 7.1.4.5×7.1.4.9 · 5 decisões Fase 5B FAM-0017 (Lina) · certs vencidos-mas-ativos (ex. Gelita).
 
@@ -300,7 +300,7 @@ _Backlog de emissão (bugs dos testers — render/split, correm em paralelo ao k
     - **(d)** Elegibilidade de mercado = **base ∩ ingrediente ∩ auditor ∩ habilitação**; **ingrediente restrito × mercado = tabela geral** (conchonilha é a 1ª linha).
     - **(e)** `Certificate` **congela** as normas resolvidas na emissão (satisfaz imutabilidade §5.3); PDF de cert emitido **nunca re-resolve**.
     - **(f)** Kernel **não funde** numeração/audit-days/competência de auditor (bounded contexts próprios); liga a competência **por validação**, não por fusão.
-    - ⚠️ **Depende de 1 reconciliação:** selo por grupo-de-norma × §5.2 (item aberto "Logo Indonésia", §4.3).
+    - **(g)** ✅ **Selo por grupo-de-norma** (Elaine): GSO/Golfo→GAC(+ENAS p/ UAE) · OIC/SMIIC→HAK · **nacionais (Indonésia/BPJPH, MS, MUIS)→SEM selo** (não contradiz §5.2; refina o enforcement — hoje o código põe GAC/ENAS em tudo).
 
 ---
 
