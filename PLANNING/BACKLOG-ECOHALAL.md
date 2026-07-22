@@ -137,7 +137,7 @@ _Backlog de emissão (bugs dos testers — render/split, correm em paralelo ao k
 - [ ] **W2/#1** GSO sai `2055-2` na linha de norma (deveria `2055-1`+`993`) — o vazamento; selo GAC mantém `2055-2:2021` (correto). [Fatia 1]
 - [x] ✅ *(22/jul)* **W1** UAE.S "sem norma acreditada" — **corrigido** (back `1c83a68c` + front `e386c449`, locais): UAE.S = família GSO, acreditada. [Fatia 1.1]
 - [ ] **G1/W17** Products/Scope: sai só a subcategoria, em PT; deve ser `CATEGORY <G> – <nome>/ SUBCATEGORY <cód> – <nome>` + facility + BRANDS, em **EN** (bloqueado pelos textos EN por categoria, §4.3). [Fatia 1]
-- [ ] **G5/W6** Split de norma bugado nos 2 sentidos: "vários por grupo" gera Indonésia+SMIIC não pedidos (G5); habilitação c/ +1 norma sai tudo num arquivo (W6). Frigorífico=split, industrial=único. [bounded context numeração]
+- [x] ✅ *(22/jul)* **G5/W6** Split de norma — **corrigido** (front `4130ac1a`, LOCAL): preset "vários por grupo" agora **intersecta** com as normas selecionadas (G5 — grupo não pedido não vira cert; sem seleção sugere todos, editável) · modo **Único em FM 7.7.1 BLOQUEIA** normas de grupos de habilitação diferentes com mensagem apontando o "Vários por grupo" (W6; GSO+UAE bovino = mesmo grupo `.1`, segue junto; **industrial 7.7.2 sem trava** — CP Kelco real comprova). Helper único `speciesNormGroups()` alimenta preset+validação.
 - [ ] **W11** 🎯 **trava de normas conflitantes** = enforcement de `mercado ⊆ base ∩ ingrediente ∩ auditor ∩ habilitação` + aviso. [Fatia 1]
 - [ ] **W7** picklist de produto conforme FM 7.2.1.2/7.2.1.3 ("ticar" válidos) — em vez de texto livre. Conecta parser xlsx/escopo real.
 - [ ] **W15** possível emitir aves só desossa OU só abate — validação de escopo faltando.
