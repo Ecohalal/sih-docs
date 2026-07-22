@@ -71,11 +71,11 @@
 
 ## 3. 🟥 DESTRAVA JÁ — pronto, esperando 1 ação
 
-1. 🔧 **[SIH] `GC_INTEGRATION_API_KEY` na task def `sih-api-task`** — ⚠️ **PROVAVELMENTE JÁ FEITO (re-verificar antes de executar):** validado em prod em **02/jul** — screenshot Renato `/gc-raw-materials` Rolândia 19/19 aprovados + boot log `Integracao GC configurada` + secret `production.GC_INTEGRATION_API_KEY_SHI_API` criado; revisões :95/:96 (06/jul) herdaram as envs. Item veio de handoff de 28-29/jun. **Checagem de 30s:** CloudWatch log group `/aws/ecs/sih-api-loggroup`, filtro `Integracao` no boot da task atual. Se OK, riscar. **[Renato/AWS]**
+1. ✅ *(22/jul)* **[SIH] `GC_INTEGRATION_API_KEY` na task def `sih-api-task` — CONFIRMADO FEITO pelo Renato.** (Já vinha validado em prod em 02/jul — `/gc-raw-materials` Rolândia 19/19 + boot log `Integracao GC configurada` + secret `production.GC_INTEGRATION_API_KEY_SHI_API`; revisões :95/:96 herdaram as envs. Renato confirmou em 22/jul.)
 2. 🚩 **[SysHalal] Resolver o WIP de `syshalal-api`** — commitar ou descartar (§1). **[Renato decide]**
 3. ✅ *(16/jul)* **[GC] Pacote de 16/jul VALIDADO pelo Renato** — `.K.`/normas (número do certificado), PDF protegido, busca por SIF, guard-rail. **Destrava o F3** (§4.2).
 4. ✅ *(16/jul)* **Reconciliar `release`→base** — FEITO em GC back+front (`develop`) e SIH back+front (`development`, remote `ecohalal`); todos com `ahead=0`. **Resta só `syshalal-api` (2)** — travado pelo WIP solto do item 2. **[Claude]**
-5. 🔧 **Criar 4 usuários FAMBRAS** — GC: Mariana + Elaine · SIH: Karoline (com K) + Osama. **100% destravado, e-mails em mãos.**
+5. ✅ *(22/jul)* **Criar 4 usuários FAMBRAS — CRIADOS E ATIVOS** (Renato). GC: Mariana + Elaine · SIH: Karoline + Osama.
 
 ---
 
@@ -91,8 +91,7 @@
   (ii) ❓ **destino do `api_sih`** em prod: manter ativo como credencial interna do PDF (sugestão Claude — o download de PDF faz login real no syshalal-api) × criar usuário interno novo · **rotacionar o token** (transitou em texto plano em sessão de 06/jul);
   (iii) rollout prod (após teste staging): SSM prod + merge `staging→release` do syshalal-external-api (staging=`6d2c2e7`) + secret `production.SYSHALAL_INTEGRATION_API_KEY_SIH_API` na task def `sih-api-task`;
   (iv) validação final: buscar **`2607FU7I2`** (grupo ≠ BRF) na UI do SIH → verde; `2607PHJWS` de regressão.
-- ⚠️ **Rotacionar a senha do GC (Aurora)** — compartilhada em sessão anterior, em arquivo temp. Pendente desde 10/jul.
-- ⚠️ **Rotacionar a senha do SIH (`db_ecohalal_sih`)** — *(novo 17/jul)* transitou em texto plano no scratchpad (`db-conn-sih.json`) para o cruzamento GC↔SIH. Mesmo cluster Aurora do GC, user `db_ecohalal_sih_user`.
+- ⚠️📅 **Rotacionar as senhas GC + SIH (Aurora) — AGENDADO pelo Renato p/ 25/jul.** GC (`db_ecohalal_halalsphere`) pendente desde 10/jul; SIH (`db_ecohalal_sih`, user `db_ecohalal_sih_user`, mesmo cluster) desde 17/jul. Ambas transitaram em texto plano em arquivo temp/scratchpad (`db-conn-sih.json`) no cruzamento GC↔SIH.
 - 🔧 **Cadastros do SIH pendentes** *(levantados no diagnóstico de 20/jul, cruzando `db_ecohalal_sih`)*:
   - **Criar o supervisor Ziad Mansour** — assina os FM da BRF Dourados (doc. `V444820C`) e não existe na base. Precisa ser pela UI (hash bcrypt) + vincular à planta.
   - **Haitham Mohamed** — supervisor IND **sem nenhuma planta vinculada**: ao logar vê dropdown vazio. Vincular ou inativar.
