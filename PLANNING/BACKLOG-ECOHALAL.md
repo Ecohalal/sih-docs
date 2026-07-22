@@ -121,6 +121,7 @@
 - ⏸ **Parkeados:** parser xlsx (aguarda arquivo de escopo real da Lina) · emissão assíncrona (rebaixada — o "timeout dos 151" era shadow-copy do OneDrive, não escala) · DSM/IFF cert-de-produto (atrás da digitalização do escopo da indústria).
 
 **GC · Trilha A — 🎯 KERNEL DE NORMAS + backlog de emissão (reunião 20/jul + testes Giovanna/William + WhatsApp Soha 22/jul).**
+> ✅✅ **VALIDADO EM PROD 22/jul (fim do dia): Nilsa rodou o roteiro T1–T7 — TODOS OK** (artifact + `halalsphere-docs/TESTING/ROTEIRO-VALIDACAO-EMISSAO-NILSA-2026-07-22`) **+ banco 100% conferido por SQL (outputs literais Renato)**. O pacote inteiro do dia (Fatias 0/1.1-1.3/2 + W1/G5/W6/W11) está **validado**. Pendências residuais: provar `first-render-freeze` (reimprimir 1 cert pré-22/jul) · confirmar se as 4 emissões `.1.BRA` eram frigorífico (senão, bug `.1.` do Fuad na fila).
 > Arquitetura completa: **`halalsphere-docs/ARCHITECTURE/ADR-KERNEL-NORMAS-CERTIFICADO-2026-07-22`** (§8). Decisão travada = **§5.22**. **Nada codado — zero hash.**
 
 _Raiz (stress-test + inventário 22/jul):_ o `Certificate` **não persiste as normas resolvidas** — o PDF re-resolve ao vivo (`certificate-pdf.service.ts:685-737`), lendo catálogo + `category-display-map` (que vaza o rótulo `2055-2` para a linha de norma). É o bug do 2055 **e** uma violação de imutabilidade ISO 17065 já hoje.
