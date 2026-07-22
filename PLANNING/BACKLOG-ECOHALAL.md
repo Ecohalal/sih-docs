@@ -144,7 +144,7 @@ _Backlog de emissão (bugs dos testers — render/split, correm em paralelo ao k
 - [x] ✅ *(22/jul)* **W11** — entregue em 2 camadas: **trava** de grupos de habilitação no Único 7.7.1 (`4130ac1a`, G5/W6) + **aviso** de ingrediente restrito × norma (`15f77a57`+`cd4ad539`, Fatia 2). Eixos auditor/habilitação ficam p/ ciclo completo (§5.22-b).
 - [ ] **W7** picklist de produto conforme FM 7.2.1.2/7.2.1.3 ("ticar" válidos) — em vez de texto livre. Conecta parser xlsx/escopo real.
 - [ ] **W15** possível emitir aves só desossa OU só abate — validação de escopo faltando.
-- [ ] **W4/W5/W3** seção "6. Emissão e mercados" não auto-seleciona normas ao escolher mercado (W4); "10. Ajustes Avançados" não auto-seleciona DTs (W5); sugestão subir a seção 6 (W3).
+- [x] ✅ *(22/jul)* **W3/W4/W5** — **entregues** (front `977a909c`, LOCAL): seção "Emissão e mercados" subiu p/ posição **2** com renumeração (W3) · marcar destino **puxa a norma** do país (W4; BR não puxa — interno=só DT; só adiciona, desligar não remove) · DTs **re-derivam** ao trocar categoria/planta — `dtTouched` era preso, causa raiz do "não seleciona as DT corretas" (W5). tsc limpo.
 - [ ] **G2/W14** marca não centralizada (G2) / não aparece na habilitação (W14). **G4/W8** datas+número desalinhados. **W9** caps só na unidade. **W10** Estado/País como sigla (deveria por extenso). [render — vários rápidos]
 - [ ] **Fuad `.1.` — RESOLVIDO por evidência:** cert real mostra `.1.` legítimo em **frigorífico** (índice de grupo `ABC.SIG.ANOMES.SEQQ.NORMA.PAIS`); o bug é `.1.` em **industrial único** (CP Kelco). Não re-perguntar.
 
