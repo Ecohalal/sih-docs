@@ -37,8 +37,8 @@
 |---|---|---|---|---|
 | **halalsphere-backend** (GC) | `release` | 0 | **0** ✅ *(17/jul)* | 17/jul `853ed242` |
 | **halalsphere-frontend** (GC) | `release` | 0 | **7** → develop | 16/jul `298a346f` |
-| **sih-backend** | `release` | 0 | **0** ✅ *(21/jul)* | 21/jul `94fbe96` — 🚧 **1 commit NÃO pushado** (fecha o Bloco C) |
-| **sih-frontend** | `release` | 0 | **0** ✅ *(21/jul)* | 21/jul `31f1a8a` — 🚧 **1 commit NÃO pushado** (fecha o Bloco C) |
+| **sih-backend** | `release` | 0 | **0** ✅ *(22/jul)* | 22/jul `94fbe96` (pushado, dev `cba9e66`) — Bloco C fechado |
+| **sih-frontend** | `release` | 0 | **0** ✅ *(22/jul)* | 22/jul `39b36fc` (pushado, dev `ff8ed51`) — usabilidade Nilsa A/B/C/F |
 | **syshalal-api** | 🚩 `carta-correcao-brf-kuwait` | 🚩 **3** | 2 → develop | **30/jun** |
 | **syshalal-external-api** | `staging` | 0 | **release 3 atrás de staging** | 06/jul `6d2c2e7` (rotas /integration p/ SIH — staging apenas, NÃO em prod) |
 | **syshalal-web** | `release` | 0 | 0 | 22/jun |
@@ -179,10 +179,10 @@
 - ✅ *(21/jul, `b57a5b0`)* **Tempo de retorno em `m:ss`** (o print mostrava `(s) / Ex: 60`, build velho).
 - ✅ *(21/jul, `b57a5b0`)* **Totalizador de produtos** — linha TOTAL em `ProductTable.tsx` (componente compartilhado → exportação, transferência e venda).
 - ✅ *(21/jul, P1 `f77bb97`)* **Anexo DCPOA/CSN obrigatório** na transferência (já vinha do Gabriel/FAMBRAS 23/jun).
-- 🧩 **[Claude] A · Acentuação de labels — NÃO COBERTO em lugar nenhum do mestre.** ~19 labels sem acento apontados + a varredura achou **mais** (mesmo defeito, outras telas). Arquivos: `Sidebar.tsx` (13 itens), `DateRangeFilter.tsx` (Últimos/Mês), `ProductionReportForm.tsx:608`, `fm-metadata.service.ts` (96/105/112/114/121); além dos apontados: `MeatInventoryList.tsx`, `ControladoriaDashboard.tsx`, `GcRawMaterialsList.tsx`, `CouroFields.tsx`, `StatusHistory.tsx`, "Dt. Fabricacao" em Tripas/Fracionamento. Front puro, baixo risco — corrigir tudo de uma vez, não só os apontados.
-- 🧩 **[Claude] B · Menu lateral perde a seleção ao entrar em `/new` ou `/:id`.** Raiz: `Sidebar.tsx isLinkActive` compara `pathname` por **igualdade exata** (`FASE-A2-REMAINING.md:91` marcava "testar highlight com query params" — nunca testado, e não cobre as rotas filhas). Corrigir para match por **prefixo** mantendo a checagem dos query params.
-- 🧩 **[Claude] C · Largura dos formulários** — padronizar o container das páginas de formulário (Produção mais estreito que Embarque nos prints). Front puro.
-- 🧩 **[Claude] F · Copy do texto de ajuda da MP** em `ProductionReportForm` — de *"Ao vincular, uma matéria-prima é adicionada com SIF e data do abate preenchidos"* para *"Ao vincular o relatório de abate, uma matéria-prima é adicionada ao SIF e a data do abate é preenchida"*. Trivial.
+- ✅ *(22/jul, `39b36fc`)* **A · Acentuação de labels** — 18 arquivos, só strings de exibição (nenhum identificador/rota/enum/query param). Cobre os apontados + irmãos do mesmo defeito achados na varredura: `Sidebar.tsx` (13 itens + 2 grupos), `DateRangeFilter.tsx` (Últimos/Mês/Período), `fm-metadata.service.ts` (5 labels FM), `ProductionReportForm.tsx` (Tipo de Produção), `ControladoriaDashboard.tsx`, `GcRawMaterialsList.tsx`, `MeatInventoryList.tsx`, `CouroFields.tsx`, Tripas/Fracionamento/Heparina (Dt. Fabricação, Lote-mãe), `StatusHistory.tsx`, e o toast "Não foi possível salvar" em 5 telas. `tsc -b` verde.
+- ✅ *(22/jul, `39b36fc`)* **B · Menu lateral perde a seleção ao entrar em `/new` ou `/:id`.** `isLinkActive` passou a casar as rotas-filhas por **prefixo** mantendo a checagem dos query params. ⚠️ **Efeito colateral conhecido:** em `/production-reports/new?productionType=couro` acendem **2 itens** (Couro + atalho "Venda/Prod. Couro 7.1.4.5", ambos couro) — cosmético, só no couro; não adicionei "match mais longo vence".
+- ✅ *(22/jul, `39b36fc`)* **C · Largura dos formulários** — relatórios padronizados em `max-w-5xl` (Abate/Ocorrência saíam de 3xl, Coleta de 4xl; Produção/Embarque já em 5xl).
+- ✅ *(22/jul, `39b36fc`)* **F · Copy do texto de ajuda da MP** em `LinkedSlaughtersField.tsx` — reescrito conforme a Nilsa.
 - ❓ **[Nilsa] D1 · validação obrigatória do horário?** O campo Horário existe (`9a6e282`) mas segue **fora** da trava de obrigatoriedade (exige amperagem/voltagem/frequência/cuba/velocidade, **não** `checkTime`). Se a anotação *"validação"* era "obrigar o preenchimento", segue aberto; se era "não tinha onde botar a hora", está fechado.
 - ❓ **[Nilsa] G · "Relatório de acompanhamento de embarque"** — título sem texto no doc; conteúdo (se houver) está só no print. Perguntar o que era.
 - 🔧 **[Renato] Pedir à Nilsa retestar com o build atual** antes de reabrir — 5 dos pontos já caíram.
