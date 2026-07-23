@@ -35,8 +35,8 @@
 
 | Repo | Branch | WIP solto | release→base | Último commit |
 |---|---|---|---|---|
-| **halalsphere-backend** (GC) | `release` | 0 | **0** ✅ *(17/jul)* | 17/jul `853ed242` |
-| **halalsphere-frontend** (GC) | `release` | 0 | **7** → develop | 16/jul `298a346f` |
+| **halalsphere-backend** (GC) | `release` | 0 | **0** ✅ *(23/jul — merge `383eabcb`)* | 23/jul `d7212546` (C-F2.1, pushado) |
+| **halalsphere-frontend** (GC) | `release` | 0 | **0** ✅ *(23/jul — merge `d533ab89`)* | 23/jul `647e7178` (C-F2.2, pushado) |
 | **sih-backend** | `release` | 0 | **0** ✅ *(23/jul, verificado por git)* | 23/jul `ae10132` (pushado) — refinamentos formNumber/cert destino/NC |
 | **sih-frontend** | `release` | 0 | **0** ✅ *(23/jul, verificado por git)* | 23/jul `6bc283a` (pushado) — link NC pré-preenchido |
 | **syshalal-api** | `release` ✅ *(22/jul)* | 0 ✅ *(22/jul)* | 0 | `160a16c` (PR #381 carta-correção mergeada) |
@@ -179,7 +179,7 @@ _Backlog de emissão (bugs dos testers — render/split, correm em paralelo ao k
 - ⚠️ **Dívida:** os scripts de carga vivem no **scratchpad (efêmero, não versionado)** — as cargas de dado têm número antes/depois, mas **nenhum hash**. Se precisar rastreabilidade, é aqui.
 
 **GC · Trilha C (escopo):** 🧩 **Fase 2 (C-F2)** — campos gerais (datas, norma, observações), `industrialCategories` M2M, ~~market scopes~~. Número segue **travado**.
-- 🟡 *(23/jul)* **C-F2 IMPLEMENTADA e PUSHADA em `release` (CI/CD disparado) — aguarda validação do Renato.** back `d7212546` · front `647e7178` (ambos `origin/release`, 23/jul). ⚠️ reconciliar `release→develop` pendente (housekeeping). Doc: **`halalsphere-docs/PLANNING/EDICAO-ESCOPO-CERTIFICADO-FASE2-REESCOPO-2026-07-23`** (§8).
+- 🟡 *(23/jul)* **C-F2 IMPLEMENTADA e PUSHADA em `release` (CI/CD disparado) — aguarda validação do Renato.** back `d7212546` · front `647e7178` (ambos `origin/release`, 23/jul). ✅ **`release→develop` reconciliado** (back merge `383eabcb`, front `d533ab89` — ambos `ahead=0`; §1). Doc: **`halalsphere-docs/PLANNING/EDICAO-ESCOPO-CERTIFICADO-FASE2-REESCOPO-2026-07-23`** (§8).
   - **C-F2.1 back** (`d7212546`): `certification.update()` transacional — mantém `status_*` e passa a gravar `certification_updated` com diff `{campo:{from,to}}` (tipo/norma/notas/analista/datas-ISO; status fora do diff) · `updateScope()` transacional + `scope_general_updated` (controller passa `req.user.id`) · rotas de categoria (`industrial-classification`) transacionais com `industrial_category_added/removed/primary_changed` + **P2: primária sincroniza os legados** (`industrialGroup/Category/SubcategoryId`). **Zero rota nova (sem regen API GW), zero migration.** Specs: 148/148, tsc build exit 0.
   - **C-F2.2 front** (`647e7178`): novo `CertificationGeneralEditor.tsx` (modal), botão "Editar dados gerais" no card Informações (gate analista/gestor/admin); seções vigência (sanidade ano + avisos >3a/expira) · norma (GSO/SMIIC/BOTH/VOLUNTARY + justificativa) · observações+capacidade/turnos/funcionários · categorias M2M (listar/primária/remover/adicionar) + histórico no rodapé. `UpdateCertificationDto` ganhou `standard`/`standardNotes`. tsc -b exit 0.
   - **Decisões aplicadas (P1–P5 = sim):** observações = `standardNotes` + `scope.description`; sync legados c/ primária; capacidade/turnos/funcionários no modal; VOLUNTARY exposto. **Fronteira A/C** gravada no §2: `certificate/*`=A · `certification/*`+`certification-scope/*`+categorias do `industrial-classification`=C; **MarketScope 100% fora** (destinos = A); snapshot da Fatia 0 garante que nada alcança PDF emitido.
