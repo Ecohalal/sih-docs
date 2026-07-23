@@ -37,13 +37,13 @@
 |---|---|---|---|---|
 | **halalsphere-backend** (GC) | `release` | 0 | **0** ✅ *(17/jul)* | 17/jul `853ed242` |
 | **halalsphere-frontend** (GC) | `release` | 0 | **7** → develop | 16/jul `298a346f` |
-| **sih-backend** | `release` | 0 | **0** ✅ *(22/jul)* | 22/jul `94fbe96` (pushado, dev `cba9e66`) — Bloco C fechado |
-| **sih-frontend** | `release` | 0 | **0** ✅ *(22/jul)* | 22/jul `39b36fc` (pushado, dev `ff8ed51`) — usabilidade Nilsa A/B/C/F |
+| **sih-backend** | `release` | 0 | **0** ✅ *(23/jul, verificado por git)* | 23/jul `ae10132` (pushado) — refinamentos formNumber/cert destino/NC |
+| **sih-frontend** | `release` | 0 | **0** ✅ *(23/jul, verificado por git)* | 23/jul `6bc283a` (pushado) — link NC pré-preenchido |
 | **syshalal-api** | `release` ✅ *(22/jul)* | 0 ✅ *(22/jul)* | 0 | `160a16c` (PR #381 carta-correção mergeada) |
 | **syshalal-external-api** | `staging` | 0 | **release 3 atrás de staging** | 06/jul `6d2c2e7` (rotas /integration p/ SIH — staging apenas, NÃO em prod) |
 | **syshalal-web** | `release` | 0 | 0 | 22/jun |
 | halalsphere-docs | `main` | 0 | — | 16/jul |
-| sih-docs | `main` | 0 ✅ *(17/jul)* | — | 17/jul `f4223ca` |
+| sih-docs | `main` | 1 untracked (`STATUS-EXECUTIVO-DIRETORIA-2026-07-22.md` — ❓ Renato: versionar ou descartar) | — | 23/jul `101a118` (pushado; sincronizado ✅) |
 
 ✅ **`syshalal-api` — RESOLVIDO em 22/jul (era alarme falso na substância).** A investigação por git provou que o WIP não tinha **nenhum código de produção**: os 3 tracked modificados eram (a) o template `Industrializados_SIS_2020_DRAFT.html` **byte-idêntico ao `origin/release`** — re-aplicava à mão o fix dos portos que já estava em prod desde 23/jun (`f711d10`); (b) `puppeteer` em `package.json`/`pnpm-lock`, usado **só** pelos scripts soltos (nenhum `src/` importa). Os untracked eram 5 scripts de simulação (mai/jun, backup em scratchpad) + `output/` = **184 MB de PDF gerado**. **Ação executada [Claude]:** restaurados os 3 tracked, removidos scripts+output, `checkout release` + fast-forward → **árvore limpa, 0/0**. Descoberta de bônus: a branch `carta-correcao-brf-kuwait` **já fora mergeada em prod** via PR #381 (`160a16c`) — o trabalho estava no ar, não só "salvo". *(Lição: "WIP solto = maior risco" era hipótese; git desmentiu. Ainda restam ~8 branches locais stale — higiene, não risco.)*
 
@@ -101,6 +101,7 @@
 - 🔧 `capabilities=processamento` das 4 Seara (admin Lina) — confirmar quais.
 - 🔧 Confirmar no console a regra de listener do ALB `/verify/*` (SysHalal QR).
 - ❓ Enviar a resposta ao André (4 pontos, todos entregues em 16/jul).
+- ❓ **`sih-docs`: decidir o destino do `PLANNING/STATUS-EXECUTIVO-DIRETORIA-2026-07-22.md`** — está **untracked** (fora de git, só nesta máquina). Versionar ou descartar; ninguém commita sem essa decisão (regra §0.4).
 
 ### 4.2 Claude — código
 **GC · Trilha A (emissão):**
@@ -184,7 +185,7 @@ _Backlog de emissão (bugs dos testers — render/split, correm em paralelo ao k
 - 🧩 **Validade/vencimento do certificado de MP visível + alerta ao analista** — *(reunião 30/jun, Soha; trazido ao §4 em 17/jul pela §0.5)*. A **auditoria interna pegou certificados de MP vencidos passando** pelo analista: mostrar a validade na listagem e avisar quando vencido. ⚠️ **≠** do "certs vencidos-mas-ativos (Gelita)" do §4.3 — aquele é **cert de habilitação**, este é **cert de matéria-prima**.
 - 🧩 **Subir no menu a tela de busca do catálogo global de MP** — busca por produto/fornecedor + vínculos + documentos/avaliações anexados. A tela **existe**, só não está exposta no menu. Baixa. *(§0.5, 30/jun)*
 
-**SIH:** 🧩 Regenerar swagger das rotas `auth` (já tem `{proxy+}`, não exige resource nova) · 🧩 acoplar MP aprovada à validação de produção/abate (❓ PO — **desenho fechado no bloco abaixo**) · 🧩 catálogo produtos 5A-2 (❓ aguarda .xlsx).
+**SIH:** ✅ *(23/jul)* ~~Regenerar swagger das rotas `auth`~~ — **verificado: NO-OP, item fechado sem código.** Os 3 `deploy/sih-api.*.json` já estavam atuais (regeneração local deu **diff zero**, byte-idêntico; última regen foi `4d202db`/`ab0314c`) e `/auth/{proxy+}` já roteava `forgot-password`/`reset-password`. O `swagger.json` raiz é **gitignored** (não versionável) e o controller usa Zod + `Record<string, unknown>` (sem DTO class → sem schema novo a emitir). Nada a commitar. · 🧩 acoplar MP aprovada à validação de produção/abate (❓ PO — **desenho fechado no bloco abaixo**) · 🧩 catálogo produtos 5A-2 (❓ aguarda .xlsx).
 - ✅ *(23/jul, EM PROD) pacote de refinamentos:* back `ae10132` · front `6bc283a`.
   - **`formNumber` do abate DERIVADO da espécie** no service (antes o dado gravado podia ficar incoerente; o PDF já derivava). +teste.
   - **PDF de transferência** imprime o **Certificado Halal do destino** (`halalCertData`: número + empresa + status) quando existe — informativo, como a reunião de 17/jul pediu.
@@ -219,7 +220,7 @@ _Backlog de emissão (bugs dos testers — render/split, correm em paralelo ao k
   - ⚠️ **Toca o GC:** a planilha tem **nome real + município** das plantas — insumo para a normalização de nomes do GC (lá estão como "BRF S.A." / "JBS S/A"). E revelou **ruído no endereço do GC** (ex.: Barra Mansa marcada "Sertãozinho/**PB**", sendo SP).
   - ⚠️ **Toca o GC:** a planilha traz **nome real + município** para 94 plantas que no GC estão como "BRF S.A." / "JBS S/A" — insumo pronto para a normalização de nomes, sem depender de nova entrega da FAMBRAS.
 - ❓ **[Renato] Os 2 relatórios de aves assinados** têm 12 itens gravados sem rótulo; com o fallback, seguem imprimindo **como antes** (deslocado). Não corrigi retroativamente de propósito — mexer no que um documento assinado mostra é pior que o defeito. Sendo teste, a saída limpa é **descartá-los**.
-- 🧩 **Abertos da spec (P2/P3):** nº do documento do supervisor assinante (o FM exige na declaração; hoje o PDF reusa `slaughtererDoc` do degolador, que não tem input e é sempre vazio) · nome do supervisor = quem **assinou**, não quem criou · autofill robusto do endereço de origem · datas como faixa na UI (modelagem já existe) · horário também no bloco bovino · **vincular NC ao FM 7.1.6.1** (o FM manda: *"em caso de não conformidade, preencher o check list FM 7.1.6.1"*) · validar `verificationItems` antes de assinar (hoje `z.any()`) · `serialNumber` no PDF · turno com rótulo · produto preso ao escopo (**exige rota nova no GC**).
+- ✅ *(23/jul — lista auditada por git; era o retrato de 20/jul)* **Abertos da spec (P2/P3): TODOS fechados pelos Blocos A/B/C + pacote de 23/jul, EXCETO 1.** De-para: documento do supervisor assinante = **C1** · nome = quem assinou = **C2** · vincular NC ao FM 7.1.6.1 = **C3** + link pré-preenchido `6bc283a` · validar `verificationItems` antes de assinar = **C4** · horário no bloco bovino + `serialNumber` no PDF = `94fbe96` · turno com rótulo = Bloco A `d1feabc` · datas como faixa = já existiam (Bloco B) · autofill do endereço de origem = Bloco B `9fc4aac` (`loadingAddress` é o MESMO campo na transferência "Endereço de Origem" e na exportação "Endereço de Carregamento"; sobrescreve ao trocar planta). **Resta só:** produto preso ao escopo (**exige rota nova no GC** — bloqueado; conversa com W7 da Trilha A).
 - 🚩 **Número de série do relatório Halal — regra normativa não implementada.** A Nota 1 impressa no FM define `SIF/ANO/SEQUENCIAL`, **sequência única por planta** cobrindo embarque + venda + transferência. Hoje é `halalSerialNumber`, texto livre opcional, sem geração nem unicidade — e os 3 documentos reais usam 3 formatos diferentes (`18/2022/0000200` · `4466/2026/000122` · `SIF 4333/2026/00088`). ❓ **FAMBRAS:** formato canônico + o sistema passa a gerar? Se gerar, vira chave natural e âncora melhor que `container + data` para o vínculo com o SysHalal.
 - 🚩 **Correção de relatório (Nota 2 do FM):** cancelar = carimbar **"CANCELADO"** e emitir o novo com sufixo **`A`**, *mantendo a mesma série*. Não existe nada disso no SIH. Conversa com `draft→aprovar→travar` e com a auditoria por linha da ISO 17065.
 - ⚠️ **`HalalCertField` na exportação NÃO foi exposto, de propósito:** ele usa `halalSerialNumber` como nº do certificado, mas esse campo é o **nº de série do relatório** — dois conceitos na mesma coluna. Separar exige migration e depende da decisão acima. `destinationCnpj` (hoje só `useState`) idem.
