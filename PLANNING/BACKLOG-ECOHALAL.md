@@ -132,8 +132,8 @@
 - 🧩 **Validar prefill do Emitir-da-certificação em prod** (André: "não está preenchendo"; código pushado desde 24/jul — suspeita cache de bundle, mesmo sintoma do GC-04).
 - 🧩 **Espécies de aves (nomenclatura):** pato, galinha d'angola etc. — só muda o nome no escopo, processo igual (André).
 - 🧩 **Menor:** geoloc do histórico de acesso errada (André no Wi-Fi da empresa aparece fora). ❓ **[Renato] perfis:** André/equipe estão como `analista` — p/ aprovar (F2) precisam `gestor`+`specialtyArea` corretos.
-- 🔁 **REABRE #3 multi-categoria (Giovanna):** emitir 2 categorias **numa ação só** (certs separados) — o §5.8 (Clonar manual) foi decidido antes do pedido explícito dela. ❓ decisão Renato.
-- ❓ **"Objeto da certificação" (produto/processo/serviço)** sem sentido p/ frigorífico (André) — simplificar/ocultar no caminho frigorífico?
+- ✅ *(DECIDIDO Renato 27/jul + EM PROD)* **#3 multi-categoria (Giovanna):** emitir 2+ categorias **numa ação só** (certs separados, cada um com base própria). Checkbox na Seção 4 → N emissões independentes (front `4af0ad85`). §5.8/Clonar continua disponível.
+- ✅ *(DECIDIDO Renato 27/jul + EM PROD)* **"Objeto da certificação"** ocultado e fixo em "produto" no caminho **frigorífico** (André: "evitar margem pra erro"); industrializado mantém a escolha (front `2bb6d34e`).
 - 📅 **Renato presencial 10-14/ago; reunião frigorífico QUARTA 12/ago** ("pegar na mão e pôr no ar"). Layout da habilitação (centralização Giovanna, categoria+subcategoria=G1/W17) fica **por último**, antes disso.
 - ✅ *decisão confirmada:* cliente (JBS/BRF) **não valida** o SIH — sem acesso (confidencialidade; André).
 
@@ -297,7 +297,7 @@ _Backlog de emissão (bugs dos testers — render/split, correm em paralelo ao k
 
 ### 4.3 FAMBRAS — decisões e entregas
 **❓ Decisões de norma (as 3 mais quentes — Soha):**
-1. **Mercados nacionais (BPJPH/MUIS/MS) devem derivar GSO?** O alinhamento de 08/jul diz que são baseados em GSO e o sistema **já os trata como GSO** (nomenclatura de categoria + `gsoAuditMode`, *"Default to GSO rules"*) — só a derivação de `standard` não reflete. Se sim, "Sem norma acreditada" quase desaparece.
+1. ✅ *(DECIDIDO Soha 27/jul + EM PROD)* **Nacionais (BPJPH/MUIS/MS) derivam GSO — SIM.** `deriveStandardFromStandards` (back) + `deriveStandard` (front) passam a classificá-los como **família GSO** (antes VOLUNTARY) → "Sem norma acreditada" some p/ eles. **Selo inalterado** (vem do template/marketVariant; nacional segue SEM selo, §5.2). back `ea1dcf19` · front `4ba1a9a3`. (§4.3-3 confirmado: GSO e OIC/SMIIC **nunca** saem no mesmo cert.)
 2. ✅ *(22/jul)* ~~Contradição UAE.S → "sem norma acreditada" × imprime ENAS~~ — **RESOLVIDO (Soha):** UAE.S **tem norma acreditada própria** (imprime ENAS); corrigir a classificação. Vira decisão **§5.22**.
 3. **GSO+OIC juntos → template GCC → só o selo GAC** (o OIC não sai). Coerente com "SMIIC só Turquia" — confirmar.
 
@@ -314,9 +314,9 @@ _Backlog de emissão (bugs dos testers — render/split, correm em paralelo ao k
 **❓ Matriz de criticidade de travas — quem destrava o relatório (reunião 30/jun):** *(trazido ao §4 em 17/jul pela §0.5)*. Pré-requisito do fluxo de homologação de MP (§4.2/SIH). Desenho proposto na reunião, **falta a FAMBRAS fechar**:
 - **Documento vencido** (ex.: nitrito de sódio) → **controlador libera** (Lina: *"já confiam que ele faça"*).
 - **MP fora do escopo** → **trava** até incluir/homologar no GC; caso **emergencial** sobe a **gestor**.
-- ❓ **Critério de MP crítica × não-crítica** (sugestão da Soha) — o que trava direto vs. o que libera.
-- ❓ **Quem é "gestor"** para liberação emergencial + formato do registro/escalonamento.
-- ❓ **SLA da atualização "simultânea"** da lista após homologar (o que é aceitável p/ não travar o supervisor).
+- ✅ *(Renato 27/jul)* **MP crítica — o flag JÁ EXISTE:** enum `Criticality` (baixa/media/alta), **por produto**, em `critical_raw_materials` (decisão Lina 09/mai; `RawMaterialMaster` aponta pra régua). A trava vai chavear nele. 🧩 falta só definir **quais níveis travam direto** (só `alta`? `alta`+`media`?).
+- ✅ *(Renato 27/jul)* **Gestor da liberação emergencial = por departamento: André (frigorífico) / Fuad (industrial).** Documento vencido → **controlador libera sozinho**. Toda liberação fica registrada.
+- ✅ *(Renato 27/jul)* **SLA da lista viva após homologar = 48 horas.**
 - Invariante já acordado: **toda liberação fica registrada** (quem autorizou) — Lina: *"pelo menos a gente sabe de onde veio"*.
 
 **📋 Correção na FONTE (relatório pronto — `halalsphere-docs/PLANNING/RELATORIO-ESCOPO-CORRECAO-FAMBRAS-2026-07-12.xlsx`, `7f565b7`):** *(novo 17/jul)* **3 produtos** cujo nome é **código DSM na própria planilha FM** (`8001 D/P`, `8008 C/U`) · **30 marcas** que são produto/embalagem/lista no lugar da marca. O parser refinado recuperou **312 dos 315** casos automaticamente (315→3); o resíduo é dado ausente/trocado no FM, só a FAMBRAS resolve.
