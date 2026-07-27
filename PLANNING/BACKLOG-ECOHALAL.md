@@ -35,8 +35,8 @@
 
 | Repo | Branch | WIP solto | release→base | Último commit |
 |---|---|---|---|---|
-| **halalsphere-backend** (GC) | `release` | 0 | **0** ✅ *(27/jul — merge `66043cfc`)* | 27/jul `253cea27` (segregação depto + fix teste, pushado) — frigorífico 1/2/3 + normalização MAPA |
-| **halalsphere-frontend** (GC) | `release` | 0 | **0** ✅ *(27/jul — merge `032dc3e4`)* | 27/jul `4ba11e4a` (card normas reais, pushado) — frigorífico 1/2/3 + card |
+| **halalsphere-backend** (GC) | `release` | 0 | **1** *(D/A/C após reconciliação `66043cfc`; ❓ manter develop?)* | 27/jul `ea1dcf19` (nacionais→GSO, pushado) — frigorífico 1/2/3 + segregação depto + normalização MAPA |
+| **halalsphere-frontend** (GC) | `release` | 0 | **3** *(D/A/C após `032dc3e4`; ❓ manter develop?)* | 27/jul `4af0ad85` (multi-categoria, pushado) — frigorífico 1/2/3 + card + objeto + nacionais |
 | **sih-backend** | `release` | 0 | **0** ✅ *(23/jul, dev `6fe61c2`)* | 23/jul `39d0e92` (pushado, deploy disparado) — rota derivable-sources sem :id |
 | **sih-frontend** | `release` | 0 | **0** ✅ *(23/jul, dev `a29bb5c`)* | 23/jul `4deba7c` (pushado, deploy disparado) — fontes na criação + autofill multi-origem |
 | **syshalal-api** | `release` ✅ *(22/jul)* | 0 ✅ *(22/jul)* | 0 | `160a16c` (PR #381 carta-correção mergeada) |
