@@ -154,19 +154,27 @@ footer{margin-top:40px;padding-top:18px;border-top:1px solid var(--line);font-si
     <div>
       <div class="eyebrow">EcoHalal × FAMBRAS · Gestão de Certificações + Supervisão Industrial</div>
       <h1>Plano de execução até o go-live — linha crítica</h1>
-      <p>Retrato do estado real (§4 do backlog) e o caminho mais curto para operar. O evento pivô é a <b>visita presencial de 10–14/ago</b> (“pegar na mão e pôr no ar”).</p>
+      <p>Estado real (§4 do backlog) <b>reconciliado com o roadmap-diretoria</b>. Marco contratual: <b>go-live 15/ago</b>, logo após o presencial de 10–14/ago (“pegar na mão e pôr no ar”).</p>
     </div>
     <div class="stamp">
-      Referência<br><b>27/jul/2026</b>
-      go-live alvo · <b style="font-size:15px">agosto/2026</b>
+      Atualizado<br><b>28/jul/2026</b>
+      go-live · <b style="font-size:15px;color:var(--red)">15/ago/2026</b>
     </div>
   </div>
 
   <div class="band tnum">
-    <div class="cell"><div class="k">Âncora</div><div class="v">10–14/ago <small>presencial</small></div></div>
-    <div class="cell"><div class="k">Frigorífico</div><div class="v">12/ago <small>quarta</small></div></div>
-    <div class="cell"><div class="k">Janela até lá</div><div class="v">~2 semanas</div></div>
-    <div class="cell"><div class="k">Risco nº 1</div><div class="v" style="color:var(--red)">Retrabalho de validação</div></div>
+    <div class="cell"><div class="k">Treino operacional</div><div class="v">1–14/ago <small>0% feito</small></div></div>
+    <div class="cell"><div class="k">Presencial</div><div class="v">10–14/ago <small>frig. 12</small></div></div>
+    <div class="cell"><div class="k">Go-live (marco)</div><div class="v" style="color:var(--red)">15/ago</div></div>
+    <div class="cell"><div class="k">Porta 4 / Sys Halal</div><div class="v">setembro <small>pós go-live</small></div></div>
+  </div>
+
+  <div class="risk" style="margin-bottom:26px;background:var(--blue-soft);border-color:color-mix(in srgb,var(--blue) 30%,transparent)">
+    <div class="ic">🔀</div>
+    <div>
+      <h3 style="color:var(--blue-deep)">Vista reconciliada: mestre (§4) × roadmap-diretoria</h3>
+      <p>Este plano cruza o <b>estado real (§4 do backlog)</b> com o <b>escopo de go-live do roadmap-diretoria (14/jul)</b>. Cada fonte estava defasada: o §4 não rastreava os itens de nível-diretoria (treinamento, aditivo contratual, dossiê, porta&nbsp;4); o roadmap público (<code>updatedAt 13/jul</code>) não reflete ~2 semanas de trabalho (F2, MP crítica, watermark, PT→EN). <b>Ação separada:</b> atualizar o roadmap público.</p>
+    </div>
   </div>
 
   <!-- CRITICAL PATH -->
@@ -210,12 +218,13 @@ footer{margin-top:40px;padding-top:18px;border-top:1px solid var(--line);font-si
         </ul>
       </div>
       <div class="phase p4">
-        <div class="top"><div class="ph">Fase 4 · pós-presencial</div><div class="when">Go-live FAMBRAS</div>
-          <div class="goal">Operação real. Diferidos entram depois.</div></div>
+        <div class="top"><div class="ph">Fase 4 · 15/ago → set</div><div class="when">Go-live + porta 4</div>
+          <div class="goal">15/ago: operação real. Set: diferencial cruzado.</div></div>
         <ul>
+          <li class="crit"><span class="dot"></span><span><b>15/ago — go-live FAMBRAS</b> (marco contratual)</span></li>
           <li><span class="dot"></span><span>Operação assistida + correções pontuais</span></li>
-          <li><span class="dot"></span><span>Diferidos: gate de MP (P3.2/P3.3), Dossiê de exportação</span></li>
-          <li><span class="dot"></span><span>Catálogo de Normas (UI), dashboard de Ocorrências</span></li>
+          <li><span class="dot"></span><span><b>Setembro:</b> Sys Halal alinhado (TASK-S0) + validação cruzada 4 portas</span></li>
+          <li><span class="dot"></span><span>Diferidos: gate de MP (P3.2/P3.3), catálogo de normas, dashboard Ocorrências</span></li>
         </ul>
       </div>
     </div>
@@ -312,6 +321,42 @@ footer{margin-top:40px;padding-top:18px;border-top:1px solid var(--line);font-si
     </div>
   </section>
 
+  <!-- ROADMAP GO-LIVE SCOPE -->
+  <section>
+    <div class="sec-h"><span class="num">R</span><h2>Escopo de go-live do roadmap — que o §4 não rastreava</h2>
+      <span class="note">nível diretoria · confrontado com o código em 28/jul</span></div>
+    <div class="grid">
+      <div class="card">
+        <h3>Implantação &amp; treinamento <span class="owner">Renato · FAMBRAS</span></h3>
+        <ul class="rows">
+          <li><span class="st pill p-block">gate</span><span class="txt"><b>Treinamento FAMBRAS operacional</b> (1–14/ago)<span class="sub">0% feito · por perfil: cliente, analista, gestão, controladoria · marco antes do go-live 15/ago</span></span></li>
+          <li><span class="st pill p-fam">aceite</span><span class="txt">Aceite formal da FAMBRAS sobre a base carregada (cadastro/certs/escopo/MP)</span></li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>GC — telas operacionais Onda 1+ <span class="owner">Claude</span></h3>
+        <ul class="rows">
+          <li><span class="st pill p-wip">existe/validar</span><span class="txt">Wizard de solicitação · hub de escopo · inbox do analista · renovação<span class="sub">rotas existem no código (roadmap 14/jul dizia "falta" — defasado); falta confirmar completude/validação</span></span></li>
+          <li><span class="st pill p-wip">a fazer</span><span class="txt"><b>Aditivo contratual</b> (PDF) + editor de planilha MP/fornecedores</span></li>
+          <li><span class="st pill p-wip">verificar</span><span class="txt">Programa de Certificação (3 modos) · Catálogo de Laboratórios</span></li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>SIH — dossiê de exportação <span class="owner">decisão</span></h3>
+        <ul class="rows">
+          <li><span class="st pill p-dec">divergência</span><span class="txt"><b>Dossiê in natura (embarque ⇄ produção)</b><span class="sub">⚠ roadmap põe no go-live de agosto · §4/§5.21 trata como diferido/paralelo pendente de decisão · reconciliar antes do freeze</span></span></li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Porta 4 — diferencial estratégico <span class="owner">set/2026</span></h3>
+        <ul class="rows">
+          <li><span class="st pill p-fam">setembro</span><span class="txt"><b>TASK-S0:</b> Sys Halal consome cadastro da GC (deixa de ter cadastro próprio)</span></li>
+          <li><span class="st pill p-fam">setembro</span><span class="txt"><b>Validação cruzada 4 portas</b> — SIH expõe evidência operacional por lote; Sys Halal valida antes de emitir cert de embarque<span class="sub">1º elo (SIH consome MP da GC) já em prod desde jun · ativação plena pós go-live</span></span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
   <!-- DECISIONS -->
   <section>
     <div class="sec-h"><span class="num">03</span><h2>Decisões que travam código — fechar antes do freeze</h2>
@@ -363,8 +408,8 @@ footer{margin-top:40px;padding-top:18px;border-top:1px solid var(--line);font-si
   </div>
 
   <footer>
-    <span>Fonte: <b>BACKLOG-ECOHALAL.md §4</b> (fonte única). Este plano é uma vista de execução — o estado detalhado vive no §4.</span>
-    <span>EcoHalal · 27/jul/2026</span>
+    <span>Fontes: <b>§4 do BACKLOG-ECOHALAL.md</b> (estado real) × <b>ROADMAP-DIRETORIA-2026-07-14</b> + Gantt (compromisso). O §4 é a fonte única de estado; este é o cruzamento de execução.</span>
+    <span>EcoHalal · rev. 28/jul/2026</span>
   </footer>
 </div>
 
