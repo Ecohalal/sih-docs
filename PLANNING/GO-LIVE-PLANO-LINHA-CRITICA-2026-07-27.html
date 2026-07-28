@@ -1,0 +1,381 @@
+<title>Go-Live FAMBRAS — Plano & Linha Crítica</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+:root{
+  --blue:#118add; --blue-deep:#0b5f99; --blue-soft:#e8f4fd;
+  --green:#1a7d46; --green-soft:#e6f4ec;
+  --amber:#b8791b; --amber-soft:#fbf1df;
+  --red:#c0392b; --red-soft:#fbe9e7;
+  --violet:#6d5bd0; --violet-soft:#eeebfb;
+  --ink:#12202b; --ink-soft:#42535f; --faint:#6a7b87;
+  --bg:#f6f8fa; --card:#ffffff; --line:#e2e8ee; --line-strong:#cdd8e1;
+  --shadow:0 1px 2px rgba(16,32,43,.04),0 4px 16px rgba(16,32,43,.05);
+  --mono:ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root{
+  --blue:#4aa8ec; --blue-deep:#8fcbf5; --blue-soft:#0e2c40;
+  --green:#5cc487; --green-soft:#123122;
+  --amber:#e0a84a; --amber-soft:#33280f;
+  --red:#ef7a6d; --red-soft:#361a17;
+  --violet:#a394ee; --violet-soft:#211c3a;
+  --ink:#e7eef3; --ink-soft:#a9b8c3; --faint:#7d8e9a;
+  --bg:#0c1319; --card:#131d26; --line:#233240; --line-strong:#33475a;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 20px rgba(0,0,0,.25);
+}}
+:root[data-theme="dark"]{
+  --blue:#4aa8ec; --blue-deep:#8fcbf5; --blue-soft:#0e2c40;
+  --green:#5cc487; --green-soft:#123122;
+  --amber:#e0a84a; --amber-soft:#33280f;
+  --red:#ef7a6d; --red-soft:#361a17;
+  --violet:#a394ee; --violet-soft:#211c3a;
+  --ink:#e7eef3; --ink-soft:#a9b8c3; --faint:#7d8e9a;
+  --bg:#0c1319; --card:#131d26; --line:#233240; --line-strong:#33475a;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 20px rgba(0,0,0,.25);
+}
+:root[data-theme="light"]{
+  --blue:#118add; --blue-deep:#0b5f99; --blue-soft:#e8f4fd;
+  --green:#1a7d46; --green-soft:#e6f4ec;
+  --amber:#b8791b; --amber-soft:#fbf1df;
+  --red:#c0392b; --red-soft:#fbe9e7;
+  --violet:#6d5bd0; --violet-soft:#eeebfb;
+  --ink:#12202b; --ink-soft:#42535f; --faint:#6a7b87;
+  --bg:#f6f8fa; --card:#ffffff; --line:#e2e8ee; --line-strong:#cdd8e1;
+  --shadow:0 1px 2px rgba(16,32,43,.04),0 4px 16px rgba(16,32,43,.05);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.5;
+  -webkit-font-smoothing:antialiased;font-size:15px}
+.wrap{max-width:1080px;margin:0 auto;padding:32px 20px 80px}
+h1,h2,h3{text-wrap:balance;margin:0}
+a{color:var(--blue)}
+.tnum{font-variant-numeric:tabular-nums}
+
+/* Header */
+.head{display:flex;flex-wrap:wrap;gap:20px;align-items:flex-end;justify-content:space-between;
+  padding-bottom:22px;border-bottom:2px solid var(--line-strong);margin-bottom:26px}
+.eyebrow{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--blue);font-weight:700}
+.head h1{font-size:30px;line-height:1.12;letter-spacing:-.02em;margin-top:8px;font-weight:800}
+.head p{margin:8px 0 0;color:var(--ink-soft);max-width:56ch}
+.stamp{text-align:right;font-size:13px;color:var(--faint);white-space:nowrap}
+.stamp b{display:block;font-size:26px;color:var(--ink);letter-spacing:-.01em}
+
+/* Countdown band */
+.band{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);
+  border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-bottom:30px}
+.band .cell{background:var(--card);padding:14px 16px}
+.band .k{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);font-weight:700}
+.band .v{font-size:19px;font-weight:750;margin-top:3px;letter-spacing:-.01em}
+.band .v small{font-weight:500;color:var(--ink-soft);font-size:13px}
+
+/* Section */
+section{margin:34px 0 0}
+.sec-h{display:flex;align-items:baseline;gap:12px;margin-bottom:14px}
+.sec-h h2{font-size:19px;font-weight:750;letter-spacing:-.01em}
+.sec-h .num{font-family:var(--mono);font-size:12px;color:var(--blue);font-weight:700;
+  border:1px solid var(--line-strong);border-radius:6px;padding:2px 7px}
+.sec-h .note{margin-left:auto;font-size:12.5px;color:var(--faint)}
+
+/* Critical path timeline */
+.cp{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+@media(max-width:760px){.cp{grid-template-columns:1fr}}
+.phase{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:0;overflow:hidden;box-shadow:var(--shadow);display:flex;flex-direction:column}
+.phase .top{padding:13px 15px 11px;border-bottom:1px solid var(--line);position:relative}
+.phase .top::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--blue)}
+.phase.p2 .top::before{background:var(--amber)}
+.phase.p3 .top::before{background:var(--green)}
+.phase.p4 .top::before{background:var(--violet)}
+.phase .ph{font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--faint);font-weight:700}
+.phase .when{font-size:15px;font-weight:750;margin-top:2px;letter-spacing:-.01em}
+.phase .goal{font-size:12.5px;color:var(--ink-soft);margin-top:5px}
+.phase ul{list-style:none;margin:0;padding:11px 15px 14px;display:flex;flex-direction:column;gap:8px}
+.phase li{font-size:13px;display:flex;gap:8px;align-items:flex-start;color:var(--ink)}
+.phase li .dot{flex:none;width:7px;height:7px;border-radius:50%;margin-top:6px;background:var(--line-strong)}
+.phase li.crit .dot{background:var(--red);box-shadow:0 0 0 3px var(--red-soft)}
+.phase li b{font-weight:650}
+.cp-flow{display:flex;align-items:center;gap:6px;color:var(--faint);font-size:12px;margin:0 0 12px;flex-wrap:wrap}
+.cp-flow .arw{color:var(--blue);font-weight:700}
+
+/* pills */
+.pill{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;
+  padding:2px 8px;border-radius:20px;letter-spacing:.01em;white-space:nowrap;line-height:1.7}
+.pill::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.9}
+.p-prod{color:var(--green);background:var(--green-soft)}
+.p-wip{color:var(--amber);background:var(--amber-soft)}
+.p-block{color:var(--red);background:var(--red-soft)}
+.p-dec{color:var(--violet);background:var(--violet-soft)}
+.p-fam{color:var(--blue-deep);background:var(--blue-soft)}
+
+/* work cards grid */
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+@media(max-width:760px){.grid{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 17px;box-shadow:var(--shadow)}
+.card h3{font-size:14.5px;font-weight:750;display:flex;align-items:center;gap:9px;letter-spacing:-.005em}
+.card h3 .tag{font-family:var(--mono);font-size:10.5px;color:var(--faint);font-weight:600;border:1px solid var(--line);border-radius:5px;padding:1px 5px}
+.card .owner{margin-left:auto;font-size:11px;font-weight:700;color:var(--faint);text-transform:uppercase;letter-spacing:.04em}
+.rows{list-style:none;margin:12px 0 0;padding:0;display:flex;flex-direction:column}
+.rows li{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-top:1px solid var(--line);font-size:13px}
+.rows li:first-child{border-top:none;padding-top:2px}
+.rows .st{flex:none;margin-top:1px}
+.rows .txt{color:var(--ink)}
+.rows .txt .sub{color:var(--faint);font-size:12px;display:block;margin-top:1px}
+
+/* risk callout */
+.risk{background:var(--red-soft);border:1px solid color-mix(in srgb,var(--red) 30%,transparent);
+  border-radius:12px;padding:16px 18px;display:flex;gap:14px;align-items:flex-start}
+.risk .ic{font-size:22px;line-height:1}
+.risk h3{font-size:15px;font-weight:750;color:var(--red);margin-bottom:4px}
+.risk p{margin:0;font-size:13.5px;color:var(--ink)}
+.risk b{color:var(--ink);font-weight:750}
+
+/* decisions / two-col lists */
+.split{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:760px){.split{grid-template-columns:1fr}}
+.list{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:15px 17px;box-shadow:var(--shadow)}
+.list h3{font-size:13.5px;font-weight:750;display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.list ul{list-style:none;margin:8px 0 0;padding:0;display:flex;flex-direction:column}
+.list li{font-size:12.8px;padding:7px 0;border-top:1px dashed var(--line);color:var(--ink)}
+.list li:first-child{border-top:none}
+.list li .who{color:var(--faint);font-size:11px;font-weight:600}
+.list li b{font-weight:700}
+
+.legend{display:flex;flex-wrap:wrap;gap:8px 14px;margin:6px 0 0;font-size:11.5px;color:var(--faint);align-items:center}
+footer{margin-top:40px;padding-top:18px;border-top:1px solid var(--line);font-size:12px;color:var(--faint);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.toggle{position:fixed;top:14px;right:14px;background:var(--card);border:1px solid var(--line-strong);
+  color:var(--ink-soft);border-radius:8px;padding:6px 10px;font-size:12px;cursor:pointer;font-family:var(--sans);box-shadow:var(--shadow)}
+.toggle:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+</style>
+
+<button class="toggle" id="tg" aria-label="Alternar tema">◐ tema</button>
+
+<div class="wrap">
+
+  <div class="head">
+    <div>
+      <div class="eyebrow">EcoHalal × FAMBRAS · Gestão de Certificações + Supervisão Industrial</div>
+      <h1>Plano de execução até o go-live — linha crítica</h1>
+      <p>Retrato do estado real (§4 do backlog) e o caminho mais curto para operar. O evento pivô é a <b>visita presencial de 10–14/ago</b> (“pegar na mão e pôr no ar”).</p>
+    </div>
+    <div class="stamp">
+      Referência<br><b>27/jul/2026</b>
+      go-live alvo · <b style="font-size:15px">agosto/2026</b>
+    </div>
+  </div>
+
+  <div class="band tnum">
+    <div class="cell"><div class="k">Âncora</div><div class="v">10–14/ago <small>presencial</small></div></div>
+    <div class="cell"><div class="k">Frigorífico</div><div class="v">12/ago <small>quarta</small></div></div>
+    <div class="cell"><div class="k">Janela até lá</div><div class="v">~2 semanas</div></div>
+    <div class="cell"><div class="k">Risco nº 1</div><div class="v" style="color:var(--red)">Retrabalho de validação</div></div>
+  </div>
+
+  <!-- CRITICAL PATH -->
+  <section>
+    <div class="sec-h"><span class="num">CP</span><h2>Linha crítica</h2>
+      <span class="note">● vermelho = item no caminho crítico (atrasa a data)</span></div>
+    <div class="cp-flow">
+      Fechar comprometidos <span class="arw">→</span> Congelar escopo <span class="arw">→</span> Validar em campo (presencial) <span class="arw">→</span> Go-live
+    </div>
+    <div class="cp">
+      <div class="phase p1">
+        <div class="top"><div class="ph">Fase 1 · agora → ~1/ago</div><div class="when">Fechar o comprometido</div>
+          <div class="goal">Zerar os fixes já pedidos. Nada novo entra.</div></div>
+        <ul>
+          <li class="crit"><span class="dot"></span><span><b>Layout do PDF industrial</b> (nome cobre nº, endereço, marca, DT sobrepõe) — reprovado pelo Fuad</span></li>
+          <li class="crit"><span class="dot"></span><span><b>PT→EN</b> das categorias (aplicar CATEGORIAS.docx)</span></li>
+          <li><span class="dot"></span><span>Render backlog: W2, G1/W17, G2/W14, G4/W8, W9, W10, W7, W15, Fuad “.1.”</span></li>
+          <li><span class="dot"></span><span>Prefill “Emitir-da-certificação” · layout da habilitação (Giovanna)</span></li>
+          <li class="crit"><span class="dot"></span><span><b>Cadastro:</b> revisão a 4 mãos (FAMBRAS) · popular criticidade das MPs</span></li>
+        </ul>
+      </div>
+      <div class="phase p2">
+        <div class="top"><div class="ph">Fase 2 · ~1–9/ago</div><div class="when">Congelar + validar</div>
+          <div class="goal">Freeze de escopo. Só validação e ajuste fino.</div></div>
+        <ul>
+          <li class="crit"><span class="dot"></span><span><b>CONGELAR escopo</b> — mitigação do risco nº 1</span></li>
+          <li><span class="dot"></span><span>Fuad testa emitir→rascunho→aprovar (industrial)</span></li>
+          <li><span class="dot"></span><span>Nilsa retesta SIH com build atual</span></li>
+          <li><span class="dot"></span><span>Fechar decisões abertas (ver bloco ao lado) antes do freeze</span></li>
+          <li><span class="dot"></span><span>FAMBRAS entrega os arquivos que faltam</span></li>
+        </ul>
+      </div>
+      <div class="phase p3">
+        <div class="top"><div class="ph">Fase 3 · 10–14/ago</div><div class="when">Pôr no ar (presencial)</div>
+          <div class="goal">Renato em campo — orientar uso, não corrigir.</div></div>
+        <ul>
+          <li class="crit"><span class="dot"></span><span><b>Frigorífico 12/ago</b> — validação em campo</span></li>
+          <li><span class="dot"></span><span>Industrializados + qualidade (cronograma interno FAMBRAS)</span></li>
+          <li><span class="dot"></span><span>Fluxo completo: cadastro → emissão → aprovação → QR</span></li>
+          <li><span class="dot"></span><span>SIH em campo: abate/produção/embarque + assinatura</span></li>
+        </ul>
+      </div>
+      <div class="phase p4">
+        <div class="top"><div class="ph">Fase 4 · pós-presencial</div><div class="when">Go-live FAMBRAS</div>
+          <div class="goal">Operação real. Diferidos entram depois.</div></div>
+        <ul>
+          <li><span class="dot"></span><span>Operação assistida + correções pontuais</span></li>
+          <li><span class="dot"></span><span>Diferidos: gate de MP (P3.2/P3.3), Dossiê de exportação</span></li>
+          <li><span class="dot"></span><span>Catálogo de Normas (UI), dashboard de Ocorrências</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- RISK -->
+  <section>
+    <div class="risk">
+      <div class="ic">⚠️</div>
+      <div>
+        <h3>O que determina a data não é código — é validação</h3>
+        <p>O risco nº 1 do go-live é a <b>validação gerar retrabalho</b>. Cada novo pedido que entra depois de <b>início de agosto</b> (empresa×fabricante, layout “clean” do Dib, DT-73/74) empurra a linha crítica. A alavanca de aceleração é <b>congelar o escopo cedo</b> e usar o presencial para validar, não para descobrir trabalho novo.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- STATUS SNAPSHOT -->
+  <section>
+    <div class="sec-h"><span class="num">01</span><h2>O que já está no ar</h2>
+      <span class="note">deployado — base para a validação</span></div>
+    <div class="grid">
+      <div class="card">
+        <h3>Emissão &amp; certificado (GC) <span class="owner">✓ prod</span></h3>
+        <ul class="rows">
+          <li><span class="st pill p-prod">prod</span><span class="txt">Kernel de normas T1–T7 · nacionais→GSO · selo por grupo<span class="sub">derivação, DT por espécie, Malásia×desossa, ingrediente restrito</span></span></li>
+          <li><span class="st pill p-prod">prod</span><span class="txt">F2 aprovação: rascunho→gestor · badge+notificação · Ver PDF · watermark+QR inválido+regen</span></li>
+          <li><span class="st pill p-prod">prod</span><span class="txt">Multi-categoria · objeto da certificação · card de normas · gestão &amp; edição de escopo (F1/C-F2)</span></li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Cadastro &amp; MP (GC) <span class="owner">✓ prod</span></h3>
+        <ul class="rows">
+          <li><span class="st pill p-prod">prod</span><span class="txt">Normalização SIGSIF/MAPA (balde A+B) · import Ali Chahine<span class="sub">86 plantas + 57 degoladores + 46 supervisores</span></span></li>
+          <li><span class="st pill p-prod">prod</span><span class="txt">MP crítica: enum 4 níveis + régua 89 tipos + atribuição na homologação + by-plant expõe criticidade</span></li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Supervisão industrial (SIH) <span class="owner">✓ prod</span></h3>
+        <ul class="rows">
+          <li><span class="st pill p-prod">prod</span><span class="txt">Conformidade FM: P0/P1 + Blocos A/B/C · multi-origem · NC · PDF altura dinâmica</span></li>
+          <li><span class="st pill p-prod">prod</span><span class="txt">P3.1 — seletor da MP homologada nos ingredientes (traz criticidade)</span></li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Correções de operação <span class="owner">✓ prod</span></h3>
+        <ul class="rows">
+          <li><span class="st pill p-prod">prod</span><span class="txt">UserForm: fim do autofill de senha + persistência de área/perfil</span></li>
+          <li><span class="st pill p-prod">prod</span><span class="txt">Perfis André/Fuad → gestor · Fuad área corrigida p/ industrial</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- REMAINING WORK -->
+  <section>
+    <div class="sec-h"><span class="num">02</span><h2>Falta fechar — por frente</h2>
+      <span class="note">o que ainda tem código/entrega pendente</span></div>
+    <div class="grid">
+      <div class="card">
+        <h3>Certificado — layout &amp; render <span class="owner">Claude · Renato</span></h3>
+        <ul class="rows">
+          <li><span class="st pill p-block">crítico</span><span class="txt"><b>Layout do PDF industrial</b> pixel-a-pixel<span class="sub">nome cobre nº · endereço · marca não aparece · “nº 2” · DT sobrepõe · PT→EN (tem o arquivo)</span></span></li>
+          <li><span class="st pill p-wip">a fazer</span><span class="txt">Render backlog W2/G1/W17/G2/W14/G4/W8/W9/W10/W7/W15 · Fuad “.1.” industrial único</span></li>
+          <li><span class="st pill p-wip">a fazer</span><span class="txt">Layout da habilitação (centralização, categoria+subcategoria)</span></li>
+          <li><span class="st pill p-wip">validar</span><span class="txt">Prefill “Emitir-da-certificação” (suspeita de cache de bundle)</span></li>
+          <li><span class="st pill p-fam">verificar</span><span class="txt">Empresa × fabricante (marca própria/terceiros) — o dado existe no fluxo?</span></li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>SIH — conformidade &amp; gate de MP <span class="owner">Claude</span></h3>
+        <ul class="rows">
+          <li><span class="st pill p-wip">próx.</span><span class="txt">Gate de MP na assinatura (P3.3 liberação do gestor → P3.2 gate)<span class="sub">regras decididas · exige grandfathering do legado · validação em campo</span></span></li>
+          <li><span class="st pill p-wip">a fazer</span><span class="txt">Perfil “Qualidade” · tela de pendências (controladoria) · roteamento IND×In Natura</span></li>
+          <li><span class="st pill p-fam">dado</span><span class="txt">Analista popular a criticidade nas MPs (desbloqueia o gate)</span></li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Validações da FAMBRAS <span class="owner">FAMBRAS</span></h3>
+        <ul class="rows">
+          <li><span class="st pill p-fam">crítico</span><span class="txt">Revisão de cadastro a 4 mãos (empresas→produtos→escopos)</span></li>
+          <li><span class="st pill p-fam">testar</span><span class="txt">Fuad: rascunho→aprovar + multi-categoria/objeto/card no industrial</span></li>
+          <li><span class="st pill p-fam">testar</span><span class="txt">Nilsa retesta SIH com o build atual antes de reabrir pontos</span></li>
+          <li><span class="st pill p-fam">infra</span><span class="txt">E-mails de acesso (Elaine/Soha 30/jun não chegaram) — investigar</span></li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Entregas aguardadas (FAMBRAS) <span class="owner">FAMBRAS</span></h3>
+        <ul class="rows">
+          <li><span class="st pill p-fam">arquivo</span><span class="txt">Logos/assinatura alta resolução · lista “certificada desde” · cert real preenchido (datas EN/AR)</span></li>
+          <li><span class="st pill p-fam">arquivo</span><span class="txt">Escopo real (Lina) → parser xlsx · .xlsx catálogo de produtos → 5A-2 · logo Indonésia</span></li>
+          <li><span class="st pill p-fam">arquivo</span><span class="txt">Aprovar itens de MP na review · Power BI de qualidade atualizado (→ dashboard Ocorrências)</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- DECISIONS -->
+  <section>
+    <div class="sec-h"><span class="num">03</span><h2>Decisões que travam código — fechar antes do freeze</h2>
+      <span class="note">sem elas, os itens acima não andam</span></div>
+    <div class="split">
+      <div class="list">
+        <h3><span class="pill p-dec">decisão</span> Norma &amp; certificado</h3>
+        <ul>
+          <li><b>F3 — nº do cert = nº do contrato</b> (Lina): emissão manual não tem contrato → operador digita ou passa a exigir contrato? <span class="who">PO/Lina</span></li>
+          <li><b>DT-73/74 nos nacionais</b> — levar à qualidade/Soha (formato das normas no cert). <span class="who">Qualidade</span></li>
+          <li><b>GSO+OIC → template GCC, só selo GAC</b> — confirmar. <span class="who">Soha</span></li>
+          <li><b>Layout “clean”/menos poluído</b> (Dib) — estudo → qualidade → Dr. Mohamed → acreditadores. <span class="who">Diretoria</span></li>
+        </ul>
+      </div>
+      <div class="list">
+        <h3><span class="pill p-dec">decisão</span> SIH / embarque / série</h3>
+        <ul>
+          <li><b>Embarque ⇄ nº cert SysHalal</b> — conflita com o §5.21 (Dossiê). <b>NÃO CODAR</b> até decidir. <span class="who">Renato/FAMBRAS</span></li>
+          <li><b>Bloco A conformidade FM</b> (3 pts): NF bloqueia assinatura? · série conta o 7.1.7.11? · falta um FM 7.1.7.3 preenchido. <span class="who">FAMBRAS</span></li>
+          <li><b>Nº de série do relatório Halal</b> — formato canônico + o sistema gera? · correção = CANCELADO + sufixo A. <span class="who">FAMBRAS</span></li>
+          <li><b>Nilsa:</b> horário de insensibilização obrigatório? · o que era o “Relatório de acompanhamento de embarque”? <span class="who">Nilsa</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- DEFERRED -->
+  <section>
+    <div class="sec-h"><span class="num">04</span><h2>Diferido — pós go-live (não trava a data)</h2></div>
+    <div class="list">
+      <ul style="columns:2;column-gap:28px">
+        <li><b>Gate de MP no SIH</b> (P3.2/P3.3) — depende de criticidade populada + validação em campo</li>
+        <li><b>Dossiê de exportação</b> — fluxo paralelo (§5.21)</li>
+        <li><b>Catálogo de Normas (UI admin)</b> — editar sem DBeaver (audit trail)</li>
+        <li><b>Dashboard de Ocorrências</b> — bloqueado pelo Power BI de qualidade atualizado</li>
+        <li><b>Kernel Fatia 2</b> — effective-dating por norma + provenance no gate de auditoria</li>
+        <li><b>FAM-0017 F4/F5/F6</b> — RevisionLog + UI homologação + import das planilhas</li>
+      </ul>
+    </div>
+  </section>
+
+  <div class="legend">
+    <span>Legenda:</span>
+    <span class="pill p-prod">no ar</span>
+    <span class="pill p-wip">a fazer / validar</span>
+    <span class="pill p-block">crítico</span>
+    <span class="pill p-dec">decisão</span>
+    <span class="pill p-fam">FAMBRAS</span>
+  </div>
+
+  <footer>
+    <span>Fonte: <b>BACKLOG-ECOHALAL.md §4</b> (fonte única). Este plano é uma vista de execução — o estado detalhado vive no §4.</span>
+    <span>EcoHalal · 27/jul/2026</span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  var btn=document.getElementById('tg');
+  btn.addEventListener('click',function(){
+    var cur=document.documentElement.getAttribute('data-theme');
+    var next = cur ? (cur==='dark'?'light':'dark')
+      : (matchMedia('(prefers-color-scheme:dark)').matches?'light':'dark');
+    document.documentElement.setAttribute('data-theme',next);
+  });
+})();
+</script>
