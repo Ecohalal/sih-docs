@@ -23,6 +23,7 @@
 
 ### Regras operacionais (valem sempre)
 - **`release` = deploy** (push dispara CI/CD). **Pedir OK ao Renato a cada push.**
+- ⚠️ **"Pushado" NÃO é "entregue" — rodar `npx tsc -b` ANTES de todo push do front.** O script de build é `tsc -b && vite build`: um import não usado derruba o pipeline inteiro, o git aceita o push e o deploy fica parado sem ninguém notar (aconteceu 27→30/jul, 3 dias, 2 commits; §6). E **não conferir pipeline 2 minutos após o push** — a listagem do console mostra o estado *daquele instante*. Verificação boa é a de fora: baixar o asset servido e procurar a string nova.
 - **Não iniciar dev server nem tocar `.env.local`** — o Renato sobe local.
 - **Renderer/lógica → sem API Gateway. Rota NOVA → regenerar** (swagger + 3 JSONs no MESMO commit).
 - **DDL = migration idempotente** com nome MAPEADO da tabela. **Dados/carga = SQL para o Renato rodar no DBeaver** (colar output; nunca presumir resultado).
@@ -83,6 +84,15 @@
 ## 4. Pendente por dono
 
 ### 4.1 Renato — validar / infra / operacional
+
+**🔴 ABERTO EM 31/jul — ciclo do retorno dos analistas FAMBRAS (os 6 lotes estão EM PROD; ver bloco no §4.2):**
+- 🚨 **`qualidade` é um perfil SEM NENHUM USUÁRIO — e o Lote 6.3 restringiu o registro de reclamação a ele.** Consulta ao banco de prod (31/jul): `analista` 21 · `gestor` 2 (André=frigorífico, Fuad=industrial) · `admin` 2 (Renato + Admin Master) · **`qualidade` 0**. A **Elaine Franco de Carvalho** (`elaine.carvalho@fambrashalal.com.br`), que é quem toca qualidade, está cadastrada como **analista** — a Nilsa também. ⇒ hoje **só os 2 admins conseguem abrir reclamação**. O perfil e o menu de `qualidade` existem no código (enum `UserRole` + `case 'qualidade'` na Sidebar: Dashboard Qualidade, Revisões de Qualidade, Homologação de MP, Certificações, Reclamações); falta gente nele. **3 saídas:** (A) trocar o perfil da Elaine (e do time dela) para `qualidade` — *certo, mas ela perde o menu de analista*; (B) somar `gestor` ao `POST /complaints` como ponte até (A); (C) reverter o 6.3. **Recomendação: A, com B de ponte.** ❓ **Pergunta que decide:** a Elaine atua **só** em qualidade ou também como analista? Se for os dois, o problema deixa de ser permissão e vira **um papel por usuário** — levar à FAMBRAS. *(Lição registrada: a restrição foi aplicada sem antes conferir se havia quem exercesse o papel.)*
+- 🔧 **Validar em prod os 6 lotes** — roteiro de 5 passos no bloco do §4.2 (importar a planilha da AD Foods = 38/0 · QR de rascunho = faixa âmbar · 3 DTs + muitas normas sem sobreposição · reprovação chega ao analista · "Sem norma externa" = só DT + selo FAMBRAS).
+- ❓ **Enviar a resposta aos analistas** (Guilherme + Caio) — rascunho pronto na sessão de 31/jul, cobre os 13 pontos + o aviso do 6.3 + o pedido de **revalidação** (eles testaram uma versão sem o `81e52f6c`). Decidir quanto detalhar a falha de publicação.
+- ❓ **Erro na emissão relatado pelo Caio — SEM EVIDÊNCIA.** Pedir print da mensagem ou data/hora + planta para localizar no log. Hipótese viva: front desatualizado × back novo (o deploy estava parado 3 dias — §6).
+- 🔧 **Conferir a aba Source do `halalsphere-verify-web-pipeline`** — hipótese de filtro de path (§6); não urgente.
+- ⏭️ **Pós-go-live:** escopo diferente por categoria (Caio 2) — pedir à FAMBRAS um caso concreto K×CII com a lista de produtos de cada uma antes de dimensionar.
+
 - ✅ *(16/jul)* `CERTIFICATE_PDF_UNLOCK_KEY` na task def do GC.
 - 🔧 Validar: `.K.` bovino×aves · OIC/SMIIC **01/2019** · **993** só em abate · PDF protegido (abre livre, não copia, imprime) · busca por SIF · guard-rail (CV+HII bloqueia) · **Edição de escopo F1** (roteiro de 5 passos no handoff 13/jul) · **filtro de empresa em `/homologacao-mp`** — selecionar empresa → o **X limpa** → digitar outra → troca (`160b2cdd`; era o bug do filtro "Diana Food": o `[&_svg]:pointer-events-none` do Button engolia o clique no X).
 - 🔧 **SIH:** validar recuperação de senha E2E · ✅ *(16/jul)* **SES fora do sandbox — CONFIRMADO pelo Renato** (era o risco de quebrar o fluxo em campo; item fechado) · confirmar migration `20260713120000_password_reset_token` aplicada · validar "Ver PDF" (`d7e9eaa`).
