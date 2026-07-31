@@ -146,6 +146,9 @@
 - ✅ *decisão confirmada:* cliente (JBS/BRF) **não valida** o SIH — sem acesso (confidencialidade; André).
 
 **🎯 RETORNO DOS ANALISTAS FAMBRAS 30/jul (e-mails Guilherme Luz + Caio França, thread "Considerações Sistema Analistas"; Renato liberou acesso a mais analistas p/ validar o GC) — 13 pontos triados CONTRA O CÓDIGO, 6 lotes autorizados 30/jul.**
+> ✅ **OS 6 LOTES ESTÃO EM PRODUÇÃO (31/jul).** back `02c251e0`→`e363f18d`→`ecf4f445`→`71760b1a`→`3731bc9f` · front `02c251e0`→`27bcb0c8`→`ced1955f`→`dc481dc3`. Todos pushados na `release` com pipeline verde. **Falta VALIDAR com a FAMBRAS** — e revalidar o retorno original, porque os analistas testaram uma versão sem o `81e52f6c` (ver §6).
+> Hashes por lote: **L1** importação `02c251e0` · **L2** verify back `ecf4f445` + front `27bcb0c8` · **L3** renderers `71760b1a` · **L4** emissão `ced1955f` · **L5+L6** back `3731bc9f` + front `dc481dc3`.
+> 🔧 **[Renato] pendente de validação em prod:** (a) importar a planilha oficial da AD Foods pela UI → 38 produtos, 0 erros; (b) escanear o QR de um rascunho → faixa âmbar "DOCUMENTO NÃO EMITIDO"; (c) emitir com 3 DTs + muitas normas → conferir que nada fica tampado; (d) reprovar um rascunho pelo Fuad → o analista recebe notificação e lê o motivo em "Meus Rascunhos"; (e) emitir com "Sem norma externa" → só DT + selo FAMBRAS. ⚠️ **Avisar os analistas do 6.3:** `analista`, `gestor`, `auditor` e `empresa` **perderam** a permissão de ABRIR reclamação (decisão 6) — quem tentar recebe 403.
 > Evidências do diagnóstico: PDF do cert `ADFOODS TRSTE` (rascunho), print da tela `/verify`, print da assinatura na tela, e a planilha real `C:\HalalSphere\avaliacoes\Cópia de AD Foods - FM 7.2.1.5 - Controle de Escopo atualizado 2701.xlsx`. Replay do parser rodado contra o arquivo (script em scratchpad).
 > **Decisões FAMBRAS que destravam os lotes: §4.3 bloco "Retorno analistas 30/jul".**
 
