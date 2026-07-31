@@ -446,6 +446,18 @@ _Backlog de emissão (bugs dos testers — render/split, correm em paralelo ao k
 | §5.16: *"SIH **não cadastra planta**"* | **O SIH tem `model Plant` próprio** (39 plantas) e **toda a operação pendura nele** (abate/produção/embarque/NC/supervisor/inventário/escala); a UI **permite cadastrar**. A integração é **read-through de uma via, SEM sync** (o `TASK-07` do schema do SIH diz que o sync GC→SIH é **planejado, não feito**). O §5.16 descreve o **alvo**, não o estado. ⇒ enquanto não houver sync, **os dois cadastros divergem em silêncio** e a junção `SIF+CNPJ` quebra sem avisar. *(Achado 17/jul, cruzando os 2 bancos — foi o que motivou o fallback CNPJ-only.)* |
 | §1: *"`sih-docs` — WIP solto **0**"* | Havia **16 caminhos não-rastreados**. Entre eles, **specs que o próprio mestre referencia**: `ITEM-A-B-C-MULTI-ORIGEM-SPEC` + `ITEM-A2` (base do "embarque multi-origem A/B/C" do §4.2/SIH) — o mestre apontava para arquivo **inexistente em git**. Também `ROADMAP-DIRETORIA-2026-07-14` e 20,8 MB de planilhas FM 7.4.2.7 em `Reuniões/` (fonte do F6/N5b/N5c). **Corrigido 17/jul:** 15 docs versionados (`1db4442`); `Reuniões/` → `.gitignore` (`f4223ca`, decisão do Renato: binário pesado segue a política de fontes externas do §8). *(Lição: a auditoria de 16/jul cobriu os repos de **código**; os de **docs** passaram batido — e o mestre vive num deles.)* |
 
+**🚨 Divergência de 30/jul — "pushado" ≠ "em produção" (nova classe de erro; o §0.1 não cobria):**
+
+| Afirmação do doc | Realidade no pipeline |
+|---|---|
+| §4.3: *"Deploy GC no ar (front `beb0674c`)"* | **NÃO estava.** O pipeline `gestaodecertificacoes_ws_production_pipeline` **falhou** em `81e52f6c` e de novo em `beb0674c`; produção ficou parada em `4af0ad85` (27/jul) por 3 dias. Só voltou a subir em 30/jul com `02c251e0`, que **levou os dois junto**. |
+| Implícito: *"front `81e52f6c` (fluxo de aprovação honesto + badge + ver-PDF + fix senha UserForm) entregue"* | **Nunca chegou em produção** até 30/jul. ⇒ **os analistas FAMBRAS (Guilherme/Caio) validaram uma tela SEM esse commit** — parte do retorno de 30/jul pode ser da versão antiga, e front-desatualizado×back-novo é hipótese viva para o "erro ao emitir" do Caio. **Repetir a validação depois deste deploy.** |
+
+**Causa raiz:** `81e52f6c` deixou um import não usado (`CheckCircle2`) em `ManualCertificateEmission.tsx`; o script de build é `tsc -b && vite build`, então **`tsc` derrubou o build inteiro**. Ninguém percebeu porque o commit foi pushado com sucesso — o git aceitou, o pipeline é que recusou. Removido em `02c251e0`.
+**Regra que nasce daqui (§0):** *"pushado" não é "entregue"* — **rodar `npx tsc -b` antes de todo push do front** e, quando possível, conferir o pipeline verde. Um `tsc` local de 40s teria evitado 3 dias de deploy parado.
+
+**⚠️ Achado colateral (a resolver antes do Lote 2 de 30/jul):** `halalsphere-verify-web-pipeline` está com **última execução de 22 dias atrás** (fonte `aa418b59`) e **não disparou** com o push de `02c251e0` na `release` — contrariando o registro de 22/jun ("push na release → build → deploy automático do verify"). Como o Lote 2 mexe em `VerifyCertificate.tsx`, a correção **não chegaria ao ar**. 🔧 [Renato] conferir a aba Source do pipeline (repo/branch/gatilho).
+
 ---
 
 ## 7. Entregue em 16/jul (esta consolidação)
