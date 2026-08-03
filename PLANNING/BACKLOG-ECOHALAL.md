@@ -32,19 +32,19 @@
 
 ---
 
-## 1. Retrato por repositório — git, 16/jul 15:43
+## 1. Retrato por repositório — git, 03/ago (verificado repo a repo)
 
 | Repo | Branch | WIP solto | release→base | Último commit |
 |---|---|---|---|---|
-| **halalsphere-backend** (GC) | `release` | 0 | **1** *(D/A/C após reconciliação `66043cfc`; ❓ manter develop?)* | ⚠️ **03/ago: 2 commits NÃO pushados** — `79553f48` (fix `specialtyArea` NULL) + `7a38a363` (refactor renderers). Antes: 31/jul `30aa732e` (Lote 7, pushado) |
-| **halalsphere-frontend** (GC) | `release` | 0 | **3** *(D/A/C após `032dc3e4`; ❓ manter develop?)* | 27/jul `4af0ad85` (multi-categoria, pushado) — frigorífico 1/2/3 + card + objeto + nacionais |
-| **sih-backend** | `release` | 0 | **0** ✅ *(23/jul, dev `6fe61c2`)* | 23/jul `39d0e92` (pushado, deploy disparado) — rota derivable-sources sem :id |
-| **sih-frontend** | `release` | 0 | **0** ✅ *(23/jul, dev `a29bb5c`)* | 23/jul `4deba7c` (pushado, deploy disparado) — fontes na criação + autofill multi-origem |
-| **syshalal-api** | `release` ✅ *(22/jul)* | 0 ✅ *(22/jul)* | 0 | `160a16c` (PR #381 carta-correção mergeada) |
+| **halalsphere-backend** (GC) | `release` | **0** | ❓ manter develop? | 03/ago `0f946f42` (roadmap público em dia) — Lotes 7 e 8: fabricante×exportador, endereço, certified since, bloco proporcional, fundo 300 dpi, datas, rodapé, QR, **consolidação dos renderers** (`certificate-common.ts`), marca mesclada. ⚠️ **9 untracked** (4 SQL de limpeza de teste + 5 scripts de amostra) — ❓ Renato: versionar ou descartar |
+| **halalsphere-frontend** (GC) | `release` | **0** | ❓ manter develop? | 03/ago `a5e2f978` (vigência ancorada no ciclo) — importação FM 7.2.1.5, verify com estado de rascunho, Meus Rascunhos, menu em ordem de processo, campos do fabricante |
+| **sih-backend** | `release` | **0** | 0 ✅ *(23/jul)* | 27/jul `e518429` (altura de linha dinâmica no PDF) |
+| **sih-frontend** | `release` | **0** | 0 ✅ *(23/jul)* | 27/jul `9e1faff` (P3.1 seletor de MP homologada) |
+| **syshalal-api** | `release` | **0** | 0 | 28/jul `e2b33ca` (PR #382 mergeado) |
 | **syshalal-external-api** | `staging` | 0 ✅ *(03/ago)* | **release 4 atrás de staging** | 03/ago `32bad4e` (docs v2: OpenAPI + estudo catálogo BRF/JBS — 65 KB de 27/jul que estavam **fora do git**; pushado) |
 | **syshalal-web** | `release` | 0 | 0 | 22/jun |
-| halalsphere-docs | `main` | 0 | — | 16/jul |
-| sih-docs | `main` | 1 untracked (`STATUS-EXECUTIVO-DIRETORIA-2026-07-22.md` — ❓ Renato: versionar ou descartar) | — | 23/jul `101a118` (pushado; sincronizado ✅) |
+| halalsphere-docs | `main` | 0 | — | 24/jul `49f31fd` (ADR F2 §8) |
+| sih-docs | `main` | **0** ✅ *(o untracked `STATUS-EXECUTIVO-DIRETORIA-2026-07-22.md` saiu da lista)* | — | 03/ago `20c4afc` |
 
 ✅ **`syshalal-api` — RESOLVIDO em 22/jul (era alarme falso na substância).** A investigação por git provou que o WIP não tinha **nenhum código de produção**: os 3 tracked modificados eram (a) o template `Industrializados_SIS_2020_DRAFT.html` **byte-idêntico ao `origin/release`** — re-aplicava à mão o fix dos portos que já estava em prod desde 23/jun (`f711d10`); (b) `puppeteer` em `package.json`/`pnpm-lock`, usado **só** pelos scripts soltos (nenhum `src/` importa). Os untracked eram 5 scripts de simulação (mai/jun, backup em scratchpad) + `output/` = **184 MB de PDF gerado**. **Ação executada [Claude]:** restaurados os 3 tracked, removidos scripts+output, `checkout release` + fast-forward → **árvore limpa, 0/0**. Descoberta de bônus: a branch `carta-correcao-brf-kuwait` **já fora mergeada em prod** via PR #381 (`160a16c`) — o trabalho estava no ar, não só "salvo". *(Lição: "WIP solto = maior risco" era hipótese; git desmentiu. Ainda restam ~8 branches locais stale — higiene, não risco.)*
 
@@ -169,7 +169,14 @@
 - ❓ **Rótulo da categoria diverge:** original diz `Category K – Production of biochemicals materials (drugs and medications)`; o `CATEGORIAS.docx` do Fuad (aplicado em `e363f18d`) diz `K Production of (Bio) Chemicals`. Confirmar com o Fuad qual é o oficial — e se o prefixo "Category" entra.
 - ❓ **Vigência ancorada no CICLO, não na emissão:** o original tem emissão 21/jul/2026, ciclo 20/mai/2024 e **validade 20/mai/2027** = ciclo + 3 anos. Nossa sugestão de formulário é emissão + 3 anos (decisão 3 de 30/jul: "manual por enquanto"). O gabarito sugere revisitar — no caso Phibro, a diferença passaria de 2 anos.
 
-**⚠️ O que continua aberto do LAYOUT industrializado (Fuad, 27/jul):** (a) nome de empresa longo **cobre o número** · (b) **endereço incompleto** · (c) **marca de produtos não aparece** · (d) **"número 2" indevido** acima do CNPJ (diagnosticar: é o `.2.`/índice ou artefato de render?). O Renato ia atacar pixel-a-pixel em 28-29/jul contra o original que o Fuad enviaria. **Prazo real = 12/ago (presencial).**
+**🎯 LOTE 8 — consolidação + 3 fechamentos (03/ago). EM PROD: back `7a38a363`→`258f0bb2`→`0f946f42` · front `a5e2f978`.**
+- ✅ **CONSOLIDAÇÃO dos renderers** (`certificate-common.ts`) — pedido do Renato ("consolide já") após 3 achados do dia terem a mesma raiz. Fundo, datas, vigilância, assinatura+QR e rodapé passam a ter fonte única; geometria que difere entra por parâmetro. **−215 linhas / +38.** Ao consolidar apareceram **4 divergências novas**, todas decisões de 07/jul que só existiam no renderer árabe e que o padrão vinha ignorando desde julho: linha do rodapé (0,8pt #444 × inexistente), corpo do rodapé (7,5 × 5,5), cores (#222/#555 × #333/#999) e assinatura (x=335/195 × x=350/175). *(A linha que eu havia adicionado em 31/jul com 0,4pt #999 era invenção minha — prevaleceu a do gabarito.)* E uma correção no sentido inverso: o **árabe** centralizava o QR pela caixa de quebra, o mesmo desvio reprovado no padrão; agora ambos centralizam pelo texto desenhado.
+- ✅ **Vigência ancorada no CICLO** — fecha a decisão 3 de 30/jul com fundamento, não por convenção. Renato: *"lembra da diferenciação entre Certificação e Certificado? aqui já te responde a pergunta"* — a validade é da **Certificação**; o **Certificado** é o documento, reemitível dentro do ciclo, e herda a validade. Confirmado pelo gabarito (Phibro: emissão 21/jul/2026, ciclo 20/mai/2024, vencimento **20/mai/2027**). A sugestão do formulário passa a ancorar em `initialCycleDate`, caindo na emissão só sem ciclo; o aviso de ">3 anos" mede da mesma âncora e diz de onde conta.
+- ✅ **Item (c) marca do produto — FECHADO.** Diagnosticado com a **página 2** do original: a coluna "Product Brand" é uma **célula mesclada** ("Phibro" uma vez, centralizado, cobrindo as 11 linhas). O nosso repetia linha a linha. `sharedBrandOf()` detecta marca idêntica em todos e desenha célula única; marcas diferentes ⇒ comportamento antigo. Vale no modo inline e no anexo paginado (a célula fecha e reabre na quebra de página).
+- ✅ **Roadmap público em dia** (`updatedAt` 13/jul → 03/ago, 4 entregas descritas em linguagem de negócio). ⚠️ **Regra descumprida por mim em 8 lotes:** o roadmap público deve ser atualizado **no mesmo commit** da entrega.
+- 🔴 **Item (d) "número 2" — ÚNICO do bloco do Fuad ainda aberto.** Falta a **página 1 do certificado GERADO** que ele reprovou (o original não serve: o defeito é nosso).
+
+**⚠️ O que continua aberto do LAYOUT industrializado (Fuad, 27/jul):** ~~(a) nome cobre o número~~ ✅ Lote 7 · ~~(b) endereço incompleto~~ ✅ Lote 7 · ~~(c) marca não aparece~~ ✅ Lote 8 · **(d) "número 2" indevido acima do CNPJ — ÚNICO ABERTO** (diagnosticar: é o `.2.`/índice ou artefato de render?). O Renato ia atacar pixel-a-pixel em 28-29/jul contra o original que o Fuad enviaria. **Prazo real = 12/ago (presencial).**
 
 **GC · Trilha A (emissão):**
 - ✅ **#3 multi-CATEGORIA — FECHADO (16/jul), nada a fazer.** Decisão: vale o **§5.8** (Clonar manual). O aviso ao operador **já existe** no guard-rail `e1f92785` (`ManualCertificateEmission.tsx`): templates diferentes (7.7.1×7.7.2) **bloqueia** com *"Emita certificados separados usando 'Clonar de um certificado'"*; mesmo template com tipos diferentes **avisa**. O split automático (base `####` por categoria, Minerva 1430×1431) foi **descartado** — é automação, não correção. Se um dia voltar: **não rodar em paralelo com `marketScopes`** (§2).
@@ -526,7 +533,7 @@ _Backlog de emissão (bugs dos testers — render/split, correm em paralelo ao k
 **Regra que nasce daqui (§0):** *"pushado" não é "entregue"* — **rodar `npx tsc -b` antes de todo push do front** e, quando possível, conferir o pipeline verde. Um `tsc` local de 40s teria evitado 3 dias de deploy parado.
 
 **✅ Alarme falso sobre o `halalsphere-verify-web-pipeline` — CORRIGIDO no mesmo dia.** Registrei que ele "não disparava" porque, minutos após o push de `02c251e0`, o console ainda mostrava a execução de 22 dias antes (`aa418b59`). **Estava errado:** o pipeline rodou normalmente no push seguinte (`27bcb0c8`) e o deploy saiu verde. Verificado por fora, sem depender do console: `GET cert.fambrashalal.com.br/verify/assets/VerifyCertificate-BWem2W5i.js` contém `"Not Issued"`, `"Cancelled Certificate"` e `messageEn` — strings que **só existem no build novo**. ⇒ **Lote 2 entregue nos dois endereços.**
-**Hipótese (não confirmada) para os 22 dias parados:** o pipeline parece ter **filtro de path** — `02c251e0` mexeu só em importação/Title Case e não o acionou; `27bcb0c8` tocou `VerifyCertificate.tsx` + `services/certificate.service.ts` + `types/certification.types.ts` e acionou. Se for isso, **gotcha a lembrar:** mudança em código compartilhado que afete a tela de verify pode não gerar rebuild. Confirmar na aba Source quando alguém abrir o console.
+✅ **RESPONDIDO pelo Renato (03/ago) — NÃO há filtro de path.** O pipeline do verify não rodava porque o **pipeline principal estava com erro**; assim que ele voltou ao normal, o do verify disparou sozinho. Ou seja, a causa dos 22 dias parados é a MESMA do deploy travado (o `tsc` derrubado pelo import não usado) — um único defeito segurou os dois. ⇒ nada a configurar; a hipótese do filtro de path fica **descartada**.
 **Lição de método (vale mais que o achado):** o console lista o estado *daquele instante* — concluir "não disparou" 2 minutos após um push é ler um retrato antes de a foto revelar. Verificação boa é a de fora: baixar o asset servido e procurar a string nova.
 
 ---
