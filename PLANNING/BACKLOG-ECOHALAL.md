@@ -36,12 +36,12 @@
 
 | Repo | Branch | WIP solto | release→base | Último commit |
 |---|---|---|---|---|
-| **halalsphere-backend** (GC) | `release` | 0 | **1** *(D/A/C após reconciliação `66043cfc`; ❓ manter develop?)* | 27/jul `ea1dcf19` (nacionais→GSO, pushado) — frigorífico 1/2/3 + segregação depto + normalização MAPA |
+| **halalsphere-backend** (GC) | `release` | 0 | **1** *(D/A/C após reconciliação `66043cfc`; ❓ manter develop?)* | ⚠️ **03/ago: 2 commits NÃO pushados** — `79553f48` (fix `specialtyArea` NULL) + `7a38a363` (refactor renderers). Antes: 31/jul `30aa732e` (Lote 7, pushado) |
 | **halalsphere-frontend** (GC) | `release` | 0 | **3** *(D/A/C após `032dc3e4`; ❓ manter develop?)* | 27/jul `4af0ad85` (multi-categoria, pushado) — frigorífico 1/2/3 + card + objeto + nacionais |
 | **sih-backend** | `release` | 0 | **0** ✅ *(23/jul, dev `6fe61c2`)* | 23/jul `39d0e92` (pushado, deploy disparado) — rota derivable-sources sem :id |
 | **sih-frontend** | `release` | 0 | **0** ✅ *(23/jul, dev `a29bb5c`)* | 23/jul `4deba7c` (pushado, deploy disparado) — fontes na criação + autofill multi-origem |
 | **syshalal-api** | `release` ✅ *(22/jul)* | 0 ✅ *(22/jul)* | 0 | `160a16c` (PR #381 carta-correção mergeada) |
-| **syshalal-external-api** | `staging` | 0 | **release 3 atrás de staging** | 06/jul `6d2c2e7` (rotas /integration p/ SIH — staging apenas, NÃO em prod) |
+| **syshalal-external-api** | `staging` | 0 ✅ *(03/ago)* | **release 4 atrás de staging** | 03/ago `32bad4e` (docs v2: OpenAPI + estudo catálogo BRF/JBS — 65 KB de 27/jul que estavam **fora do git**; pushado) |
 | **syshalal-web** | `release` | 0 | 0 | 22/jun |
 | halalsphere-docs | `main` | 0 | — | 16/jul |
 | sih-docs | `main` | 1 untracked (`STATUS-EXECUTIVO-DIRETORIA-2026-07-22.md` — ❓ Renato: versionar ou descartar) | — | 23/jul `101a118` (pushado; sincronizado ✅) |
@@ -93,6 +93,14 @@
 - 🔧 **Conferir a aba Source do `halalsphere-verify-web-pipeline`** — hipótese de filtro de path (§6); não urgente.
 - ⏭️ **Pós-go-live:** escopo diferente por categoria (Caio 2) — pedir à FAMBRAS um caso concreto K×CII com a lista de produtos de cada uma antes de dimensionar.
 
+**🔵 ABERTO EM 03/ago — pedido do Vitor (BRF Capinzal) e o que ele destampou (detalhe no bloco do §4.2):**
+- 🔧 **Push do `release` do GC** — commit `79553f48` (fix do `specialtyArea` NULL) está **commitado e não pushado**. Push = deploy. Junto vai o `7a38a363` (refactor dos renderers).
+- ❓ **A BRF Capinzal deve virar `ambos` no GC?** Hoje ela é `frigorifico` puro (13 plantas, 24 certificações, todas do André) — por isso os **12 analistas industriais não a enxergam**, e isso está tecnicamente correto. Mas o Vitor quer piloto **industrial** nela. Decisão do André/Fuad, não técnica. *(Registrado no §5 que processo-duplo é padrão e que a Capinzal é o exemplo canônico.)*
+- ❓ **A segregação deve gatear por planta ou por certificação?** As 3 listas do GC gateiam primeiro por `Plant.specialtyArea`, o que tensiona com a decisão de 24/jul ("por certificação"). É mudança de regra — se confirmar "por certificação", o fix é inverter a ordem dos ramos.
+- ❓ **Sync de cadastro GC→SIH** — não existe; toda planta do SIH é digitada à mão. É a causa raiz deste chamado. Feature nova × congelamento de escopo de agosto.
+- 🔧 **Vincular os supervisores do piloto do Vitor** à planta nova — me passar os e-mails.
+- ⚠️ **SIH `Plant.division` é escalar** ('IN'|'IND'): não existe planta bi-divisional. `capabilities` resolve só o filtro de formulário. Supervisor **IND** não vê a Capinzal no form de **abate**. ⇒ montar o piloto com supervisores **IN**, ou pedir o `extraPlantAccess`.
+
 - ✅ *(16/jul)* `CERTIFICATE_PDF_UNLOCK_KEY` na task def do GC.
 - 🔧 Validar: `.K.` bovino×aves · OIC/SMIIC **01/2019** · **993** só em abate · PDF protegido (abre livre, não copia, imprime) · busca por SIF · guard-rail (CV+HII bloqueia) · **Edição de escopo F1** (roteiro de 5 passos no handoff 13/jul) · **filtro de empresa em `/homologacao-mp`** — selecionar empresa → o **X limpa** → digitar outra → troca (`160b2cdd`; era o bug do filtro "Diana Food": o `[&_svg]:pointer-events-none` do Button engolia o clique no X).
 - 🔧 **SIH:** validar recuperação de senha E2E · ✅ *(16/jul)* **SES fora do sandbox — CONFIRMADO pelo Renato** (era o risco de quebrar o fluxo em campo; item fechado) · confirmar migration `20260713120000_password_reset_token` aplicada · validar "Ver PDF" (`d7e9eaa`).
@@ -130,9 +138,19 @@
 | 27/jul | Renato | Multi-categoria, "objeto da certificação", criticidade de MP (escala 4 níveis + gate) | §4.2 / §4.3 | ✅ decididos |
 | **30/jul** | **E-mails Guilherme Luz + Caio França** | 13 pontos (importação, layout, QR, datas, normas, reprovação, menu…) | §4.2 bloco "RETORNO DOS ANALISTAS 30/jul" | ✅ 6 lotes EM PROD 31/jul |
 | 31/jul | Achado ao subir os lotes | Deploy do front parado 3 dias (2 commits fora do ar) + perfil `qualidade` sem usuários | §6 + §4.1 | 🔴 o do perfil segue aberto |
+| **03/ago** | **WhatsApp Vitor** (pedido de planta) | BRF Capinzal SIF 466 no SIH; investigação abriu o gate de departamento e um bug do NULL | §4.2 bloco "GATE DE DEPARTAMENTO 03/ago" | ✅ planta EM PROD · fix commitado |
 | **10-14/ago** | **Presencial FAMBRAS** (frigorífico **12/ago**) | Âncora de prazo do ciclo | §4.2 | 📅 marcado |
 
 **🔁 O mesmo defeito por dois canais — vale como método:** o **layout sobrepondo DT/normas** foi reprovado pelo **Fuad em 27/jul** (itens e/f) e reportado pelo **Guilherme em 30/jul** ("uma das normas fica tampada"), com o Caio confirmando em 30/jul (item 7). Foi tratado uma vez só, no **Lote 3** (`71760b1a`). ⇒ **Antes de abrir frente nova, checar se o sintoma já não está descrito em outro bloco** — dois relatos independentes do mesmo defeito custam o dobro se virarem duas tarefas.
+
+**🎯 GATE DE DEPARTAMENTO + BRF CAPINZAL (03/ago). SIH: planta EM PROD. GC: fix `79553f48` commitado, ⚠️ NÃO pushado.**
+> Método: o pedido do Vitor era "cadastrar uma planta". Conferir contra o **banco dos dois sistemas** antes de responder separou **três** problemas que chegaram como um — e dois deles não eram o que o chamado dizia.
+- ✅ **A planta não existia — e o cadastro-mestre já tinha tudo.** SIF 466 não estava no SIH (só BRF Dourados SIF 18 e Nova Mutum SIF 4567). Mas o **GC tinha a planta completa**: `BRF S.A. — Capinzal/SC (SIF 466)`, CNPJ `01838723015400` (DV conferido), endereço, grupo. ⇒ **Antes de pedir dado ao cliente, consultar o GC.** Criada no SIH: id `fd29f4ef-25eb-4a03-8ac0-42250bc4653c`, `type=frigorifico` + `capabilities={processamento}` (entra no form de abate **e** no de produção industrializada), `species={ave}` (confirmado pelo Renato; o GC estava vazio), `division=IN`. SIH 126→127 plantas. Verificado por query nos filtros reais dos dropdowns.
+- 🕳️ **Não existe sync de cadastro GC→SIH.** `gc-integration.service` só tem `rawMaterialsByPlant` e `plantSummary`, e **ambos partem de planta que JÁ existe no SIH** (casam por SIF+CNPJ). Nenhuma rota cria planta a partir do GC ⇒ as 127 plantas do SIH foram digitadas à mão. **É a causa raiz deste chamado e dos próximos.** Feature nova, colide com o congelamento de escopo de agosto — ❓ decisão.
+- ✅ **BUG: planta com `specialtyArea` NULL sumia das listas do GC para todo o staff.** O gate de 24/jul filtra por `specialtyArea: { in: [dept,'ambos'] }` — e no Prisma **`in` não casa NULL**. Com 120 plantas de `specialty_area` nulo em prod, **88 dos 563 grupos ficavam invisíveis para qualquer usuário com departamento setado** (só admin/`ambos` via). Estava replicado em **3 serviços**: `company-group`, `company` e `certification`. Corrigido nos 3 com o ramo `{ specialtyArea: null }`. Medido no banco de prod: frigorífico **127→216**, industrial **370→456**. Testes 293/294 (a falha do `certificate-pdf.service.spec` é **pré-existente** — confirmado pondo o fix no stash). Sem rota nova ⇒ swagger/API Gateway não precisam ser regenerados.
+- ⚠️ **O fix NÃO resolve o caso BRF, e isso está correto.** As 13 plantas da BRF são `frigorifico` explícito (não NULL) e as 24 certificações são todas `department='frigorifico'` — coerente com "ambas do André" (§5). Logo analista `industrial` **não vê o GRUPO BRF por regra de negócio**, não por bug. Ver §4.1.
+- ❓ **Tensão com a decisão de 24/jul.** Ficou registrado que a segregação é **por CERTIFICAÇÃO, não por planta** — mas as 3 listas gateiam **primeiro** por `Plant.specialtyArea`; o ramo `certifications.some.department` vem depois. Na prática quem decide é a classificação da planta. Mudança de regra, não de bug ⇒ decisão do Renato.
+- 🧩 **PENDENTE:** vincular os supervisores do piloto do Vitor à planta (`_SupervisorPlants`) — aguarda os e-mails.
 
 **🎯 LOTE 7 — comparação com o CERTIFICADO ORIGINAL da FAMBRAS (Phibro × Química Real, 31/jul). EM PROD: back `5443be13`→`65285045`→`b1583244`→`d6e011a9`→`a07cf8ce`→`30aa732e` · front `9f098ce0`.**
 > Método que produziu tudo abaixo: o Renato mandou o **original da FAMBRAS**, o **gerado pelo sistema** e o **print do cadastro**. Comparar os três, em vez de ler o relato, deu causa raiz em cada item. ⚠️ **Contém MIGRATION** (`20260731120000_certificate_manufacturer`, 3 colunas aditivas em `certificates`) — conferir se aplicou no deploy.
