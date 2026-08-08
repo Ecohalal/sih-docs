@@ -81,7 +81,7 @@ Desligado = **soft state** (`status`), nunca delete — histórico exigido pela 
   desligados · 624 apontamentos SGQ · 21 regras** categoria×formação.
 - 🚨 Achado da carga: **54 avaliações periódicas de pessoal ATIVO já vencidas** (de 259
   com data) — mesmo padrão dos 188 de MP: avisar, qualidade regulariza.
-- Próximos: F2 (CRUD + **regen API GW**) → F3 (tela) → F4 (calendário).
+- ✅ F2 (back `5a43ea04`, CRUD + regen API GW no mesmo commit) e F3 (front `78a294be`, tela no menu qualidade) EXECUTADAS em 08/ago (local). Falta F4 (calendário) · F5 (export) · F6 (SIH).
 
 ## 4. Decisões em aberto (Renato/FAMBRAS)
 
