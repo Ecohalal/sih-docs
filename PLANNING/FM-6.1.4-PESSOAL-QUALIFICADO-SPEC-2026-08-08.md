@@ -50,6 +50,39 @@ Desligado = **soft state** (`status`), nunca delete — histórico exigido pela 
 | **F4** | Avaliações periódicas a vencer → eventos no **Calendário** (tipo novo `avaliacao`) | ¼ dia |
 | **F5** (pós-go-live) | Export do FM 6.1.4 (xlsx/PDF no layout oficial) p/ acreditadores — mesmo racional do site público (FM 781/782) | a estimar |
 
+## 4-bis. Sinergias com o SIH (avaliadas 08/ago, a pedido do Renato)
+
+**A população do SIH é MAIORIA do FM 6.1.4** — medido:
+
+- FM: **182 dos 307 ativos são "Supervisor muçulmano"** (112 bovino + 43 aves + 27
+  industrial) + 7 controladores de rastreabilidade + coordenadores islâmicos + sheikhs.
+- SIH prod (`system_users`): **73 supervisores** (48 IN + 24 IND + 1 sem division) +
+  4 controladores + 1 coordenador (Ayman).
+- **Cruzamento por nome normalizado: 45/73 (62%) casam** (33 exatos + 12 parciais);
+  **28 supervisores do SIH NÃO estão no FM** — grafia divergente, contratação pós-REV 4
+  (dez/2025) **ou gap real de qualificação**. 🚨 Lista para a Elaine triar.
+
+**Arquitetura decidida (padrões já estabelecidos):**
+1. **GC = master da QUALIFICAÇÃO** (este módulo) · **SIH = master do ACESSO operacional**
+   (login, vínculo a plantas). Nenhum absorve o outro.
+2. Junção **LÓGICA** por `name_normalized` (sem FK entre bancos — mesmo racional do
+   SIF+CNPJ). Campo `sih_system_user_id` reservado para reconciliação curada.
+3. **F6 (pós-go-live):** endpoint `/integration/qualified-personnel` no GC → SIH exibe
+   badge "qualificado FM 6.1.4" no perfil do supervisor e **avisa (não trava)** quando um
+   supervisor fora da lista é vinculado a planta/formulário.
+4. Mapeamento de divisão p/ checagem de consistência: Bovino/Aves → `IN` · Industrial → `IND`.
+
+## 4-ter. Estado da execução
+
+- ✅ **F1 EXECUTADA em 08/ago (local)** — back `4c839539`: migration
+  `20260808120000_qualified_personnel_fm614` (aditiva/idempotente, escrita à mão — o
+  `migrate diff` veio contaminado com drift pré-existente schema×prod, NÃO usar cru) +
+  ETL `prisma/import-fm614-qualified-personnel.ts`. Carga local: **306 ativos + 198
+  desligados · 624 apontamentos SGQ · 21 regras** categoria×formação.
+- 🚨 Achado da carga: **54 avaliações periódicas de pessoal ATIVO já vencidas** (de 259
+  com data) — mesmo padrão dos 188 de MP: avisar, qualidade regulariza.
+- Próximos: F2 (CRUD + **regen API GW**) → F3 (tela) → F4 (calendário).
+
 ## 4. Decisões em aberto (Renato/FAMBRAS)
 
 1. **Reconciliar os 34 auditores** da planilha com os `User` role `auditor` do GC agora
