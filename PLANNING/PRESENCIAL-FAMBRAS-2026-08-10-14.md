@@ -144,7 +144,7 @@ Legenda: ⬜ não passou · 🟡 passou com achado · ✅ passou OK
 | **FRG-27** | — | 🐛 tela branca provável | Analista → Contratos (busca) | `contract.company?.razaoSocial.toLowerCase()` — campo **não existe** (`legalName`) e **sem `?.` depois** ⇒ digitar na busca deve derrubar a tela | Claude → §4.2 | 🔴 **testável em 2s** |
 | **FRG-28** | 14 | 🧩 **GAP + spec recebida** | Analista → Solicitar documento | Solicitação é **1 por vez**; o processo real pede **~15 de uma vez**, em lista que **varia por segmento** (Bovino/Aves/Industrial). Padrão de comunicação recebido em `.odt` | Claude → §4.2 | 🔴 **lote grande, spec em mãos** |
 | **FRG-29** | 15 | 🚨 **processo para calado** | Empresa → dashboard | Documento solicitado **não gera alerta, notificação nem e-mail**. O módulo `document-request` **não tem nenhuma integração com notification/email**; o dashboard da empresa **não trata** o assunto | Claude → §4.2 | ✅ **EM PROD 11/ago `c1777de1`** — notificação + e-mail à empresa na criação (fatia (a)); (b) KPI no dashboard e (c) lembrete de prazo seguem abertos |
-| **FRG-30** | 16 | 🚨 **o silêncio é nos DOIS sentidos** | Analista → dashboard | Empresa **enviou** o documento e o analista **não é avisado**. Espelho exato do FRG-29 ⇒ o ciclo de documentos é **mudo de ida e de volta** | Claude → §4.2 | 🟡 **código EM PROD 11/ago `c1777de1`, mas NÃO dispara:** `fulfill` só é chamado por 2 componentes ÓRFÃOS; o upload real da empresa não fecha a solicitação (ver §4.1 do BACKLOG, 11/ago) |
+| **FRG-30** | 16 | 🚨 **o silêncio é nos DOIS sentidos** | Analista → dashboard | Empresa **enviou** o documento e o analista **não é avisado**. Espelho exato do FRG-29 ⇒ o ciclo de documentos é **mudo de ida e de volta** | Claude → §4.2 | ✅ **EM PROD 11/ago `c1777de1`** — notifica quem pediu + o analista atual da certificação. *(Cheguei a registrar que não dispararia; era alarme falso — o card "Documentos Solicitados" do `CertificationDetails` chama o `fulfill`. Ver §4.1 do BACKLOG.)* |
 | **FRG-31** | 17 | 🐛 **rejeição sem motivo** | Analista → rejeitar documento | O ✗ rejeita **sem pedir motivo** e sem devolver nada à empresa. **Back e modelo já suportam** (`validationNotes`); existe até componente que faz certo — **o botão usado é o errado dos dois** | Claude → §4.2 | 🟢 **pronto — só ligar o que existe** |
 | **FRG-32** | 18 | 🚨🏛️ **PDF × validação pública divergem** | QR / verify | `BRF.LRV.2604.1472.1.BRA`: PDF traz selo **ENAS**, a página do QR **não mostra selo**. Causa: o PDF **deriva** o selo na hora; o `verify()` lê a coluna `market_variant`, que está **NULL**. **180 certificados** na mesma condição | Claude → §4.2 | 🔴 **credibilidade externa** |
 
@@ -1309,6 +1309,420 @@ certificados cuja validação pública não exibe o selo.
 
 ---
 
+## 5-B. Achados — Dia 2 · **11/ago, 09h** · equipe **INDUSTRIALIZADOS**
+
+> 🏁 **MARCO: 11/08/2026 09h — início da validação com a equipe de Industrializados.**
+> Dia 1 (10/ago, Frigorífico) fechou com **32 achados**. Numeração deste dia: **`IND-nn`**.
+
+**Departamento:** Industrializados (Fuad · **Dib = pessoa, não sigla**) — o outro lado da segregação por
+`Certification.department`. A 1ª validação real de INDUSTRIALIZADO foi a da **Lina, em 04-05/ago** (8 de 8
+itens em prod), então este time chega com terreno mais pisado que o do Frigorífico.
+
+### ⚙️ O que MUDOU em produção desde ontem — não re-reportar
+
+Deploy de 10/ago (back `0a736a82`, migration aplicada 18:08:56). **Já corrigido e no ar:**
+
+| Achado do Dia 1 | Estado |
+|---|---|
+| **FRG-20 · FRG-24** — atribuir/reatribuir analista dava 400 | ✅ **em prod** — atribuição vale da assinatura do contrato em diante; reatribuir não mexe na fase |
+| **FRG-18** — assinar contrato não devolvia a posse do processo | ✅ **em prod** — sai de `aguardando_empresa` para `pendente`, na mesma fase |
+| **FRG-21** — `PATCH /workflows/:id` mudava fase sem rastro | ✅ **em prod** — a rota não aceita mais `currentPhase` |
+
+⚠️ **Ainda NÃO validado:** o espelho `certifications.analyst_id` (a atribuição da Minerva rodou minutos
+**antes** do deploy). **A primeira atribuição de analista que este time fizer serve de teste** — depois eu
+confiro no banco.
+
+### 🚫 O que NÃO demonstrar hoje
+
+**Catálogo de Ingredientes Restritos:** o **backend está em produção** (migration + módulo, desde ontem
+18:08), mas a **tela não** — o front `4aeadb8b` segue sem push. A funcionalidade existe e é invisível.
+⇒ **não abrir esse menu**; ele sobe junto com o próximo push do frontend (B2).
+
+### 👀 Watch-list específica de INDUSTRIALIZADOS
+
+O que muda em relação ao Frigorífico — vale dirigir a atenção do time para cá:
+
+| # | Ponto | Por quê |
+|---|---|---|
+| **I-1** | **Homologação de MP é A tela deles** | No Frigorífico ela fica vazia (W-3, questão em aberto: esconder o menu para In Natura?). Aqui é o coração do processo — e é onde aparecem as **188 evidências de MP vencidas** (75 de 335 MPs). Decidido em 05/ago: **avisar, não travar** — o analista regulariza. Se estranharem os badges vermelhos, é comportamento esperado; a fila é da FAMBRAS |
+| **I-2** | **Numeração `.K.` do IND é SEQUENCIAL** | Regra veio da base, não de e-mail (retorno da Lina, 04-05/ago). Conferir num certificado real deles |
+| **I-3** | **Separação automática por ingrediente restrito** (cochonilha) | Está em prod desde 05/ago e é **ponta a ponta**. Teste-chave: produto marcado com cochonilha + GSO + Indonésia → devem sair **2 certificados**, o GSO **sem** o produto |
+| **I-4** | **FM 7.8.1 ATIVOS nunca foi carregado** | O lote de 04AGO trouxe só `INDUSTRIAL_INATIVOS`. ⇒ **certificados industriais novos podem simplesmente não existir na base**. Se disserem "faltam certificados nossos", é isto — não é bug, é carga pendente da FAMBRAS |
+| **I-5** | **Categoria por norma no picker** (GSO × SMIIC divergem) | Gap conhecido de emissão para industrializados |
+| **I-6** | **Certificado de PRODUTO (DSM/IFF)** | Norma-por-habilitação, 1 produto por certificado — depende de digitalizar escopo de indústria |
+| **I-7** | **`BRF.TOL.2402.1090.4.BRA`** | Único certificado da base que aparece nas listas de cancelados/suspensos **e segue ativo**. Inconsistência do FM, ainda sem resposta da Soha/Elaine — se aparecer, é achado já registrado |
+
+⚠️ **Os defeitos de FLUXO do Dia 1 são agnósticos de segmento** — escopo herdado (FRG-12), caixa de entrada
+vazia (FRG-19), ciclo de documentos mudo (FRG-29/30/31), segregação de valores (FRG-22/25). **Devem
+reaparecer aqui.** Reaparecendo, registrar como *confirmação em 2º departamento* (fortalece a prioridade),
+**não** como achado novo.
+
+### Achados do Dia 2
+
+| ID | nº na sala | Tipo | Tela | Resumo | Dono | Estado |
+|---|---|---|---|---|---|---|
+| **IND-01** | 1 | 🎨 UX + 🐛 | Validação de documentos | Documento deve **abrir em visualização**, sem exigir download. E o botão "Visualizar" que existe usa **XHR→S3** — o anti-padrão que o §5.18 já proíbe | Claude → §4.2 | 🟢 **pronto** |
+| **IND-02** | 2 | 🐛 UI oferece o que a API nega | Empresas do Grupo → Vincular Usuário | 403 **Forbidden resource**: a rota é `@Roles('admin','gestor')` e a sessão é **`analista`**. A tela oferece o botão a quem não pode. **Não é bug de backend** | ❓Renato → §4.2 | 🟡 decisão: liberar × esconder |
+| **IND-03** | 3 | 🎨 texto + ❗**regra nova** | Wizard → Quantidade APPCC | Placeholder passa a ser *"Obrigatório maior que 0 para Produtos Alimentícios"*. ⚠️ O texto **anuncia uma validação que não existe** — e "Produtos Alimentícios" é literalmente o **Grupo C** | Claude → §4.2 | 🟢 texto pronto; regra é decisão |
+| **IND-04** | 4 | 🚨🏛️ **3 taxonomias sobrepostas** | Proposta → Tipo de Certificação | Lista C1–C6 é **taxonomia legada** que **contradiz** os grupos industriais (C2="Produtos Químicos" × Grupo C="Alimentícios"; químico é **K**). E ela **define o preço-base**. Migração de modelo de preço **parada no meio** | ❓Renato/FAMBRAS | 🔴 **decisão estrutural** |
+| **IND-05** | 5 | 🎨 terminologia | Proposta/Wizard → Tipo de Solicitação | "Nova Certificação" → **"Certificação Inicial"** | Claude → §4.2 | 🟢 pronto (rótulo, não enum) |
+| **IND-06** | 6 | 🧩 regra de fluxo | Comercial → Revisão de Qualidade | Revisão de qualidade **obrigatória e bloqueante** na Certificação Inicial. Módulo **já existe** (`QualityReview`) e nunca foi usado | Claude + ❓ | 🟡 **ver IND-07 antes** |
+| **IND-07** | — | 🚨🚨 **BLOQUEIO DE GO-LIVE** | Perfis em produção | **`comercial`, `auditor`, `juridico` e `gestor_auditoria` têm ZERO usuários.** O fluxo tem 3 etapas sem ninguém — e a Minerva já está em `planejamento_auditoria` | 🔧 **[Renato/FAMBRAS]** | 🔴 **achado meu — o mais grave do dia** |
+| **IND-08** | 7 | 🚨 **nunca funcionou** | Analista → Validação de Viabilidade (IT 7.4) | *"Apenas solicitações em rascunho podem ser atualizadas"*. **Defeito duplo:** a trava é categoricamente errada **e** o `update()` nem grava o campo. **0 de 2 solicitações têm checklist** | Claude → §4.2 | 🔴 **P0 — fix pequeno** |
+| **IND-09** | — | 🚨 auditoria/ISO 17065 | Reclamações/Apelos → status | `updateStatus` **não valida transição** (dá para ir de `registrada` a `resolvida` e voltar) e **não grava histórico** | Claude → **B1** | 🔴 mesma família do FRG-21 |
+| **IND-10** | — | 🚨 comunicação | Reclamações/Apelos | **Nenhuma notificação:** o reclamante não recebe acuse de recebimento nem a resposta. Módulo sem e-mail | Claude → **B3** | 🔴 exigência ISO 17065 |
+| **IND-11** | — | 🧩 GAP | Reclamações/Apelos | **Sem prazo na reclamação** — `deadline` só existe no parecer. Sem SLA de resposta nem alerta de vencimento | Claude + ❓ | 🟡 falta o SLA da FAMBRAS |
+| **IND-12** | — | ❓ decisão | Apelo × perfil `empresa` | **A empresa não vê o próprio apelo** (não está nas roles de leitura) — e apelo é, por definição, o instrumento dela | ❓FAMBRAS | 🟡 consequência do Lote 6.3 |
+
+---
+
+### IND-01 · Visualizar o documento sem baixar — e o "Visualizar" que existe está quebrado
+
+**Como veio:** *"ao fazer validação de documentos (solicitados por exemplo), abrir em visualização, sem
+necessidade de download especificamente do arquivo."*
+
+**Três camadas, e a do meio é um bug já conhecido do projeto:**
+
+**1. O botão do card da certificação baixa em vez de exibir.**
+`CertificationDetails.tsx:1003` → `documentService.downloadDocument()` → `window.open('/documents/:id/download')`.
+A rota **redireciona (302) para uma URL presigned** do S3 — e a presigned é gerada **sem
+`ResponseContentDisposition`** (`document.service.ts:479`). ⇒ o comportamento fica **à mercê dos metadados
+gravados no objeto**: às vezes exibe, às vezes baixa. Compare com o certificado, onde a disposição é
+**explícita** (`certificate-pdf.service.ts:203`: `attachment; filename=...`). ✅ O upload **já grava
+`ContentType: file.mimetype`** corretamente (`document.service.ts:166`), então a informação necessária existe
+— só não está sendo usada na hora de servir.
+
+**2. 🐛 Já existe um botão "Visualizar" — e ele usa o anti-padrão proibido.**
+`ProcessDocuments.tsx:94-113` (`handleView`) faz **`fetch` com `Authorization: Bearer` → a rota redireciona
+para o S3 → o navegador segue o redirect → blob → `createObjectURL`**. Isso é **exatamente** o que a decisão
+**§5.18 do BACKLOG** proíbe: *"via URL presigned + `window.open` — **nunca XHR→S3** (dá CORS)"*. Além do
+CORS, o header `Authorization` é encaminhado ao S3, que o rejeita. ⇒ **esse "Visualizar" quase certamente
+não funciona**; 🔧 **[Renato] vale clicar nele para confirmar** — se falhar, é bug confirmado, não hipótese.
+
+**3. O pedido real é maior que "abrir o arquivo": é validar vendo.** Hoje o analista precisa **baixar →
+abrir fora → voltar → clicar ✓/✗**. E o ✗ ainda **não pede motivo** (FRG-31). O fluxo correto é
+**ver → decidir → justificar**, na mesma tela.
+
+**Conserto (3 partes, todas pequenas):**
+1. **Back:** gerar a presigned com `ResponseContentDisposition: inline; filename="..."` e
+   `ResponseContentType: document.mimeType`. Passa a exibir de forma **determinística**, sem depender de
+   metadado gravado. Manter o caminho de download explícito para quem quiser o arquivo.
+2. **Front:** visualizador usando a **URL direta** (`<iframe>`/`<img>` conforme o mime), **nunca blob via
+   fetch**. Corrigir o `handleView` do `ProcessDocuments` pelo mesmo caminho — hoje ele é o anti-padrão.
+3. **UX:** o visualizador abre **junto das ações** aprovar/rejeitar — 🔗 casa com o **FRG-31** (motivo
+   obrigatório na rejeição), que já está no mesmo bloco.
+
+**Encaminhamento:** 🟢 back é fatia pequena em `document/*` (⚠️ **módulo sem trilha declarada** — 4ª
+ocorrência do "buraco do §2"); front vai para o **B5**, que já é dono do `CertificationDetails.tsx` e já
+carrega o FRG-31. **Mesma tela, mesmo lote.**
+
+---
+
+### IND-02 · "Erro ao vincular usuário / Forbidden resource" — a API está certa, a tela é que oferece demais
+
+**Como veio:** ao vincular a **Lina Ramadan** à empresa **Caramuru Alimentos S.A.** pela tela de Empresas do
+Grupo → toast **"Erro ao vincular usuário — Forbidden resource"**.
+
+**Não é bug de backend. É a guarda funcionando:**
+
+| | |
+|---|---|
+| Rota chamada | `POST /users/:id/link-company` (`group-user.service.ts:44`) |
+| `@Roles` da rota | **`admin`, `gestor`** (`user.controller.ts:166-167`) |
+| Sessão do print | **Renato Ribeiro de Oliveira** = `r.ribeiro@ecotrace.info` → papel **`analista`** *(consultado em prod: o Renato tem 4 contas — `admin` `r.ribeiro@ecohalal.digital`, `analista` `r.ribeiro@ecotrace.info`, e 2 `empresa`)* |
+
+⇒ 403 correto. **O defeito é a tela oferecer o botão "Vincular Existente" a um perfil que a API recusa** —
+é o padrão nomeado em 09/ago no BACKLOG, agora na direção inversa: lá o menu foi montado **por baixo** do que
+o backend permitia; aqui a tela oferece **acima**.
+
+✅ **Destrave imediato, se for só para seguir a demonstração:** repetir a ação logado com a conta **`admin`**
+(`r.ribeiro@ecohalal.digital`). A funcionalidade existe e funciona — é só perfil.
+
+❓ **Decisão sua, e ela não é óbvia:**
+- **(a) liberar `analista` na rota** — ⚠️ **não recomendo.** Vincular usuário a empresa é **conceder acesso
+  aos dados daquela empresa**: é ato de administração de acesso, não de análise técnica. Seriam **21
+  analistas** com esse poder. Vai na contramão do que a FAMBRAS pediu ontem (FRG-22/25: o analista está
+  **sobre-servido**, tem até controle total de contrato).
+- **(b) esconder/desabilitar a ação** para quem não é `admin`/`gestor`, com mensagem clara. ✅ **Recomendo.**
+
+⚠️ **Além do perfil, um alerta sobre o QUE se estava vinculando:** a **Lina é `analista`**, não `empresa`.
+O vínculo a empresa grava `companyId` + `companyGroupId`, campos que só são **consumidos para o perfil
+`empresa`** — para um analista não mudam o que ela enxerga (o recorte dela é por departamento). ⇒ vincular
+analista a empresa é **inócuo no acesso e sujo no dado**. Se a intenção era dar à Lina acesso a Caramuru, este
+não é o caminho; se era teste, sem problema — mas vale **não deixar o vínculo gravado**.
+
+🎨 **Terceiro ponto, pequeno:** o toast mostra **"Forbidden resource"** — texto cru do backend vazando para o
+usuário. Trocar por mensagem em pt-BR ("Seu perfil não permite vincular usuários a empresas").
+
+**Encaminhamento:** front (esconder a ação + mensagem) vai para o bloco de **segregação de visibilidade
+(B5)**, que já trata "quem vê/faz o quê". Nenhuma mudança de backend, salvo se você escolher (a).
+
+---
+
+### IND-03 · Texto do APPCC — e a regra que ele passa a anunciar
+
+**Como veio:** trocar o texto sugestivo de **"Ex: 3 (pode ser 0)"** para
+**"Obrigatório maior que 0 para Produtos Alimentícios"**.
+
+✅ **A troca de texto é trivial** e vai no lote do wizard. Mas ela **não é só cosmética**: o placeholder atual
+*permite* 0 sem ressalva, e o novo **enuncia uma regra**. Um campo que diz "obrigatório maior que 0" e aceita
+0 é pior que o texto de hoje — passa a prometer uma validação que não existe.
+
+🔑 **E a regra é implementável agora, porque o mapeamento é literal.** Consultei os grupos industriais em
+produção e **"Produtos Alimentícios" é exatamente o Grupo C**:
+
+| Grupo | Nome |
+|---|---|
+| A | Criação de animais |
+| B | Plantação agrícola |
+| **C** | **Produção de produtos alimentícios** ← |
+| D | Produção de ração animal |
+| E | Serviço de alimentação |
+| F | Distribuição · G Transporte e armazenamento · H Serviços · I Embalagem · J Fabricação de equipamentos · **K Bioquímica** · L Outros materiais de processamento |
+
+⇒ regra: **se a certificação inclui categoria do Grupo C, `quantidadeAPPCC` deve ser > 0**; nos demais grupos,
+0 é legítimo. *(Confere com o caso da Minerva de ontem: `CV - Abate de animais` é **Grupo C**, e o valor
+informado foi 1.)*
+
+❓ **Única ambiguidade, e é pergunta de uma linha para a sala:** a exigência vale **só para o Grupo C**, ou
+também para **D (ração animal)** e **E (serviço de alimentação)**? Plano APPCC costuma ser exigido em
+serviço de alimentação também. **Não vou inferir** — o texto diz "Produtos Alimentícios", que casa palavra
+por palavra com o C.
+
+🔗 **Interage com o FRG-17, que segue aberto:** o campo é **obrigatório**, **não entra na fórmula** de dias de
+auditoria (os insumos são categoria, nº de funcionários, tipo, filial e redução) e agora ganha uma regra de
+valor mínimo. Se a resposta ao FRG-17 for *"o `TH` varia com o número de planos APPCC"*, este campo passa a
+ter efeito em preço — e aí a validação deixa de ser conveniência e vira **controle**.
+
+**Encaminhamento:** 🟢 texto vai no **lote do wizard**. A **validação condicional por grupo** entra assim que
+a pergunta acima for respondida — é pequena e o dado necessário (grupo da categoria) já está na tela, que é
+onde o passo de Classificação Industrial acontece.
+
+---
+
+### IND-04 · 🚨 "Tipo de Certificação" — três taxonomias sobrepostas, e a legada é a que define o preço
+
+**Como veio:** *"a lista de tipos de certificação está errada, não faz sentido, tem que rever."*
+O time tem razão, e a incoerência é estrutural. **Levantei as três camadas:**
+
+**1. O enum tem DUAS GERAÇÕES convivendo** (`schema.prisma:52-62`):
+`C1` Alimentos processados · `C2` Produtos químicos · `C3` Cosméticos · `C4` Farmacêuticos · `C5` Embalagens
+· `C6` Serviços de alimentação — **mais** `produto` · `processo` · `servico`, estes marcados no próprio schema
+como *"NEW: for new implementation"*. **A tela oferece só a geração velha.**
+
+**2. As letras CONTRADIZEM a taxonomia real.** A classificação que vale (e que sai no certificado) é
+**grupo industrial A–L**. Nela, **`C` = "Produção de produtos alimentícios"** e **químico é `K` = Bioquímica**.
+⇒ a tela diz **"C2 - Produtos Químicos"** enquanto, na taxonomia que o time de Industrializados usa todo dia,
+**C é alimento e químico é K**. *É exatamente por isso que não faz sentido para eles.*
+
+**3. Medido em produção — as duas taxonomias não convivem, se alternam por geração:**
+
+| `certification_type` | Certificações | Tem grupo/categoria industrial? |
+|---|---|---|
+| **C1** | **940** | ❌ nenhuma |
+| C2 · C3 · C4 · C5 | 63 · 7 · 1 · 1 | ❌ nenhuma |
+| **`produto`** | **180** | ✅ **todas** (157 grupo C · 22 grupo K · 1 grupo G) |
+
+⇒ as **1.012 do acervo espelhado** carregam `C1–C6` e **nenhuma categoria industrial**; as **180 novas** usam
+`produto` + a taxonomia real. Ninguém usa `processo`/`servico`.
+
+**4. 💰 E a taxonomia legada é LOAD-BEARING: ela define o preço-base.**
+`calculator.service.ts:51-61` → `basePrices[input.certificationType]`. Na tabela de preços **ativa (v1.0)** as
+chaves são exatamente `{"C1":5000,"C2":7000,"C3":6000,"C4":8000,"C5":4000,"C6":5500}`.
+⇒ **é por isso que o dropdown não oferece `produto`**: se alguém escolher, o cálculo **estoura** com
+*"Tabela de preços não contém preço base para o tipo produto"*.
+
+**5. 🔍 E há uma migração de modelo de preço PARADA NO MEIO** — descoberta ao olhar as outras versões:
+
+| Versão | Ativa | Chaves de `base_prices` |
+|---|---|---|
+| **v1.0** | ✅ **sim** | `C1…C6` (por **tipo de certificação**) |
+| v1.1 | não | `nova` · `ampliacao` · `manutencao` — **todas null** |
+| v1.2 · v1.3 | não | `nova`: 1000 · `ampliacao`: **null** · `manutencao`: **null** |
+
+⇒ alguém começou a migrar o preço de **"tipo de certificação"** para **"tipo de solicitação"**, preencheu só
+`nova` e parou. As tabelas novas ficam **inativas porque estão incompletas**, e a produção segue na v1.0.
+
+🎯 **A frase que resume a incoerência:** **os dois cálculos que alimentam a mesma proposta usam taxonomias
+diferentes** — os **dias de auditoria** usam `categoryCode` (grupo/categoria real, GSO 2055-2) e o
+**preço-base** usa `certificationType` (C1–C6 legado). Não há como os dois estarem certos ao mesmo tempo.
+
+❓ **Decisão estrutural — é do Renato + FAMBRAS, não minha:**
+- **(a)** O preço-base passa a seguir a **taxonomia real** (grupo/categoria industrial), aposentando C1–C6 —
+  coerente com o certificado e com a fórmula de dias de auditoria; exige **nova tabela de preços por grupo**.
+- **(b)** O preço-base passa a seguir o **tipo de solicitação** (era a intenção das v1.1–v1.3) — exige
+  **completar** `ampliacao` e `manutencao` e ativar a tabela.
+- **(c)** Mantém C1–C6 por ora e só **corrige os rótulos** para não colidir com as letras dos grupos —
+  paliativo honesto se não houver tempo até 15/ago.
+
+⚠️ **Nenhuma dessas é mudança de tela: é mudança de modelo de precificação.** E o FRG-16 (levar a
+calculadora de dias de auditoria ao comercial) **depende desta decisão** — não faz sentido expor ao comercial
+uma proposta que soma duas taxonomias incompatíveis. **Recomendo tratar IND-04 e FRG-16 como um único tema.**
+
+---
+
+### IND-05 · "Nova Certificação" → "Certificação Inicial"
+
+**Como veio:** usar o termo **"Certificação Inicial"** no lugar de "Nova Certificação".
+
+✅ Mudança de **rótulo**, não de dado: o valor do enum `RequestType.nova` **permanece** — trocar o valor
+exigiria migration e quebraria as 1.190 certificações e os `base_prices` que usam a chave `nova`.
+
+⚠️ **Trocar no lugar certo, não em 15 lugares:** o rótulo aparece no dropdown de Tipo de Solicitação da
+proposta **e** no wizard. Seguir a lição já registrada (*"corrigir o const central e deixar o `tsc` varrer"*) —
+localizar o mapa de rótulos de `RequestType` e trocar **ali**; se houver string solta em componente, alinhar.
+⚠️ Conferir também **e-mails e PDFs** (o FM 7.2.1.1 é a "Solicitação para Certificação"): se o termo aparecer
+em documento gerado, muda lá também.
+
+**Encaminhamento:** 🟢 vai no **lote do wizard**, junto com IND-03 — mesma família de textos, e o
+`CertificationWizard.tsx` já é domínio daquele bloco. ⚠️ Não colide com o B4 apenas se rodar **depois** dele.
+
+---
+
+### IND-06 · Revisão de qualidade obrigatória e bloqueante na Certificação Inicial
+
+**Como veio:** *"no fluxo, quando em comercial, a chamada para revisão da qualidade tem que ser obrigatória
+quando for fluxo de nova certificação. Essa revisão é feita por pessoa do Comercial, e o fluxo não segue sem
+isso."*
+
+✅ **O módulo já existe inteiro e nunca foi usado.** `model QualityReview` traz `workflowId`,
+`certificationId`, `requestedById`, `assignedToId`, `status`, **`parecer`**, `observacoes`,
+`motivoSolicitacao`, `completedAt` — e o controller já separa os papéis:
+
+| Ação | Rota | Quem pode hoje |
+|---|---|---|
+| **Solicitar** | `POST /quality-reviews` | **`comercial`**, gestor, admin |
+| Atribuir | `PATCH /:id/assign` | qualidade, gestor, admin |
+| **Dar o parecer** | `PATCH /:id/complete` | **`qualidade`** (exclusivo) |
+
+📊 **`quality_reviews` em produção: NENHUMA linha.** O fluxo nunca foi exercitado.
+
+❓ **Uma frase sua precisa ser desambiguada antes de eu codar** — *"essa revisão é feita por pessoa do
+Comercial"*:
+- **Leitura (a):** quem **SOLICITA** ("a chamada") é o Comercial, e quem **dá o parecer** é a Qualidade.
+  **É exatamente o que o código já faz** — e é o que faz sentido para imparcialidade.
+- **Leitura (b):** quem **executa a revisão** é alguém do Comercial. Isso **contraria** o desenho atual
+  (`complete` é exclusivo de `qualidade`) e enfraquece a revisão — o comercial revisaria o próprio trabalho.
+
+**Assumo (a)** salvo correção sua. Nesse caso o que falta é só a **obrigatoriedade**, não o mecanismo.
+
+**O que implementar (assumindo (a)):**
+1. `requestType = nova` ⇒ **exigir** uma `QualityReview` com `parecer` favorável antes de avançar do bloco
+   comercial. O gate natural é o `advancePhase` (que já valida transição) — recusar a saída da fase comercial
+   enquanto não houver revisão concluída.
+2. Deixar **visível na tela** que o processo está retido por isso (senão vira o "ponto escuro" do FRG-19/29 de
+   novo: bloqueio silencioso é pior que nenhum bloqueio).
+3. Notificar a Qualidade quando a revisão é solicitada, e o Comercial quando o parecer sai — **mesma
+   infraestrutura do B3**.
+
+⚠️ **Não implementar antes de resolver o IND-07 abaixo.** Tornar bloqueante uma etapa cujo papel
+solicitante **não tem nenhum usuário** trava o fluxo no primeiro dia.
+
+---
+
+### IND-07 · 🚨🚨 Três papéis do fluxo têm ZERO usuários em produção (achado meu)
+
+**Não veio da sala.** Encontrei ao conferir quem poderia exercer o IND-06. **Consulta a produção, agora:**
+
+| Perfil | Usuários | Papel no fluxo |
+|---|---|---|
+| `analista` | **15** | análise documental ✅ |
+| `qualidade` | **5** | parecer de qualidade ✅ *(Elaine, Mariana, Barbara, Karoline, Osama)* |
+| `gestor` | 3 | atribuição/aprovação ✅ |
+| `admin` | 2 | — |
+| `empresa` | 2 | cliente |
+| **`comercial`** | **0** | ❌ **proposta e chamada da revisão de qualidade** |
+| **`auditor`** | **0** | ❌ **auditoria estágio 1 e 2** |
+| **`juridico`** | **0** | ❌ **contrato** |
+| **`gestor_auditoria`** | **0** | ❌ **alocação de auditor** |
+
+⇒ **a cadeia do processo tem 3 elos vazios**: comercial (proposta) → jurídico (contrato) → analista ✅ →
+**auditor** (auditoria) → comitê → emissão.
+
+🔴 **E isto já é concreto, não hipotético:** o processo da Minerva está **agora em `planejamento_auditoria`**
+— a próxima etapa exige **auditor**, e não existe nenhum cadastrado. **O fluxo de demonstração vai parar
+ali**, e por falta de gente, não por defeito de código.
+
+📌 **É a MESMA falha de método já registrada em 31/jul**, quando o perfil `qualidade` tinha zero usuários e
+mesmo assim o registro de reclamação foi restringido a ele. A lição ficou escrita: *"a restrição foi aplicada
+sem antes conferir se havia quem exercesse o papel."* ⇒ o IND-06 propõe exatamente isso de novo, agora com
+`comercial`. **Boa notícia: desta vez conferimos antes.**
+
+✅ **Ponto positivo confirmado:** o perfil `qualidade` **foi criado** (5 pessoas) — a pendência de 31/jul está
+resolvida. ⚠️ Pequena divergência com a lista combinada no follow-up de 03/ago (Elaine, Soha, Osama, Bárbara,
+Mari, Carol): **Soha e Carol não estão**, e **Karoline** entrou. Vale conferir se é intencional.
+
+🔧 **[Renato/FAMBRAS] — decisão operacional, não de código:**
+1. **Criar os usuários `auditor`** antes de qualquer demonstração passar de planejamento de auditoria.
+2. Definir se **`comercial` e `juridico`** terão gente própria ou se `gestor` acumula esses papéis no
+   go-live. **Isso muda o IND-06, o FRG-16 e o FRG-25** — os três assumem um comercial que hoje não existe.
+3. Se a resposta for "gestor acumula", então as regras devem citar `gestor` explicitamente, e não presumir
+   perfis vazios.
+
+---
+
+### IND-08 · 🚨 Validação de Viabilidade (IT 7.4) nunca foi salva — e por DOIS motivos
+
+**Como veio:** analista marca os 3 itens da **Validação de Viabilidade (IT 7.4)** e clica em *Salvar
+Verificação* → **"Apenas solicitações em rascunho podem ser atualizadas"**.
+Certificação `HS-2026151500508-01192` (`e2f87449-…`), categoria `CII - Processamento de produtos vegetais
+perecíveis`.
+
+📌 **Sobre "já havia sido comentado com o time de Frigorífico":** este erro **não está** entre os 32 achados
+do Dia 1 — ou não chegou até mim, ou passou no meio da sequência. Fica registrado agora, e o diagnóstico
+serve para os dois times.
+
+**O caminho está certo; o destino é que está quebrado.** O front chama corretamente
+`PATCH /certification-requests/:id/viability`, e a rota existe (`@Roles('admin','gestor','analista')`). Mas o
+handler delega para o `update()` genérico:
+
+```ts
+// certification-request.controller.ts:365
+return this.service.update(id, { viabilityChecklist: {...} } as any);
+```
+
+E o `update()` (`certification-request.service.ts:562-578`) tem **dois problemas independentes**:
+
+**1. Trava categoricamente errada.**
+```ts
+if (request.status !== RequestStatus.rascunho)
+  throw new BadRequestException('Apenas solicitações em rascunho podem ser atualizadas');
+```
+A viabilidade IT 7.4 é preenchida **pelo analista, depois que a solicitação chega** — por definição a
+solicitação **não é mais rascunho** nesse momento. A trava impede exatamente o uso pretendido.
+*(Medido: as 2 solicitações em prod estão em `em_analise`; **nenhuma** em rascunho.)*
+
+**2. 🚨 Ainda que a trava passasse, o campo NÃO seria gravado.** O `update()` só escreve
+`changeDescription` e `changeType` — **`viabilityChecklist` não aparece no `data`**. O `as any` do controller
+é o que esconde isso do compilador: sem o cast, o `tsc` teria acusado que o DTO não tem o campo.
+
+⇒ **em rascunho: salva "com sucesso" e descarta em silêncio. Fora de rascunho: erro 400.**
+**Não há estado em que a validação de viabilidade funcione.**
+
+📊 **Confirmado em produção:** `certification_requests` = **2 linhas**, com `viability_checklist` preenchido
+= **0**. Nunca foi salvo, nem uma vez.
+
+🏛️ **Peso:** IT 7.4 é a checagem de que a FAMBRAS **pode** aceitar o pedido — equipe técnica disponível e
+reconhecimento para a categoria. É registro de decisão de aceitação (ISO 17065): existe na tela, é marcado
+pelo analista e **não fica em lugar nenhum**.
+
+**Conserto (pequeno, mas em 2 pontos):**
+1. `saveViabilityChecklist` deve gravar **direto** o campo `viabilityChecklist` — sem passar pelo `update()`
+   genérico e **sem `as any`** (o cast é o que permitiu o bug).
+2. Não aplicar a trava de rascunho a este caminho. A trava faz sentido para editar o **conteúdo da
+   solicitação**; não faz para o **parecer interno da FAMBRAS sobre ela**.
+3. Gravar **quem** validou e **quando** — o handler já monta `checkedAt`/`checkedBy`, é só persistir.
+
+⚠️ **Lição de método:** `as any` num `service.update(...)` foi o que transformou dois defeitos em zero erros
+de compilação. Vale procurar outros `as any` em chamadas de serviço — mesma classe do FRG-19
+(`certification.company`) e do FRG-27 (`razaoSocial`): **o tipo existia e foi contornado.**
+
+**Encaminhamento:** 🔴 **P0** — é uma etapa obrigatória do processo que não registra nada. Back,
+`certification-request/*` (⚠️ sem trilha declarada — 5ª ocorrência do buraco do §2). **Bloco novo B11**, ou
+anexar ao B1 se a sessão back estiver livre: mesmo repo, arquivos diferentes.
+
+---
+
 ## 6. Validado OK ao vivo (base da aprovação formal)
 
 > Preencher conforme o time confirmar cada tela. **Isto é o que André precisa para dar aprovação.**
@@ -1334,7 +1748,7 @@ certificados cuja validação pública não exibe o selo.
 |---|---|---|---|
 | ✅ **B1 · Coluna vertebral do fluxo** (back) — **EM PROD 10/ago** (`a9fb46fb` · `23223b37` · `0a736a82`; detalhe no §4.1 do BACKLOG). Falta validar E2E | FRG-18 · 20 · 24 · 21 | `workflow/workflow.{service,controller}.ts` · `workflow/dto/update-workflow.dto.ts` · `contract/contract.service.ts` (**só** o método de assinatura) | Hoje: assinar não avança · atribuir analista é uso único · **reatribuir é impossível** · fase muda sem rastro. Sem isto nada mais importa |
 | ✅ **B2 · Caixas de entrada do analista** (front) — **EM PROD 11/ago `082a00eb`**. Falta validar | FRG-19 + varredura do vocabulário de fases | `pages/analyst/DocumentAnalysis.tsx` · `pages/analyst/AnalystDashboard.tsx` · `components/kanban/ProcessCard.tsx` · `types/certification.types.ts` | A tela central do analista **nunca funcionou**. Fix de 2 strings, impacto máximo |
-| ✅ **B3 · Notificação de documento solicitado** (back) — **EM PROD 11/ago `c1777de1`** (FRG-29 + FRG-30). ⚠️ a volta não dispara: `fulfill` sem tela | FRG-29 · 30 | `document-request/*` · template de e-mail · consumo do `notification/*` | Cobrança sai e **o cliente nunca sabe** ⇒ todo processo trava no passo mais repetido |
+| ✅ **B3 · Notificação de documento solicitado** (back) — **EM PROD 11/ago `c1777de1`** (FRG-29 + FRG-30, ida e volta). Falta validar | FRG-29 · 30 | `document-request/*` · template de e-mail · consumo do `notification/*` | Cobrança sai e **o cliente nunca sabe** ⇒ todo processo trava no passo mais repetido |
 | **B4 · Integridade do wizard** (front) | FRG-12 · 09 · 14 | `components/certification/CertificationWizard.tsx` · `components/wizard/TargetMarketsStep.tsx` · `components/proposal/ProposalCalculator.tsx` | Nova certificação **herda escopo** = documento errado sem sintoma |
 
 ### ONDA 2 — 3 sessões em paralelo · segregação e autorização
