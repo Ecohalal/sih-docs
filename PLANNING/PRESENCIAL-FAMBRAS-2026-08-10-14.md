@@ -1334,9 +1334,9 @@ confiro no banco.
 
 ### 🚫 O que NÃO demonstrar hoje
 
-**Catálogo de Ingredientes Restritos:** o **backend está em produção** (migration + módulo, desde ontem
-18:08), mas a **tela não** — o front `4aeadb8b` segue sem push. A funcionalidade existe e é invisível.
-⇒ **não abrir esse menu**; ele sobe junto com o próximo push do frontend (B2).
+**Catálogo de Ingredientes Restritos:** ~~o backend está em produção mas a tela não~~ — ✅ **RESOLVIDO no
+mesmo dia:** o front `4aeadb8b` subiu na esteira do B2, então **back + tela estão completos em produção** e o
+menu pode ser demonstrado. *(A restrição valia só para a manhã de 11/ago.)*
 
 ### 👀 Watch-list específica de INDUSTRIALIZADOS
 
@@ -1373,6 +1373,9 @@ reaparecer aqui.** Reaparecendo, registrar como *confirmação em 2º departamen
 | **IND-10** | — | 🚨 comunicação | Reclamações/Apelos | **Nenhuma notificação:** o reclamante não recebe acuse de recebimento nem a resposta. Módulo sem e-mail | Claude → **B3** | 🔴 exigência ISO 17065 |
 | **IND-11** | — | 🧩 GAP | Reclamações/Apelos | **Sem prazo na reclamação** — `deadline` só existe no parecer. Sem SLA de resposta nem alerta de vencimento | Claude + ❓ | 🟡 falta o SLA da FAMBRAS |
 | **IND-12** | — | ❓ decisão | Apelo × perfil `empresa` | **A empresa não vê o próprio apelo** (não está nas roles de leitura) — e apelo é, por definição, o instrumento dela | ❓FAMBRAS | 🟡 consequência do Lote 6.3 |
+| **IND-13** | 8 | 🎨 UX | Agendar Auditoria | Endereço deve vir **pré-preenchido** da planta. Bônus: **"Tipo de Auditoria" aparece 2×** no mesmo modal, e Estágio 1 default **Presencial** contradiz o FM (*"Estágio 1 é realizada de forma remota"*) | Claude → §4.2 | 🟢 pronto |
+| **IND-14** | 9 | 🚨 **3 causas empilhadas** | Gestor → Sugestões de Alocação | Zero sugestões de auditor. **(1)** matcher exige `role==='auditor'` e há **0 auditores**; **(2)** lê o **FK escalar** de categoria, NULL em 1.010 de 1.190 — o wizard grava na **M:N**; **(3)** falha **silenciosa** (`logger.warn`); **(4)** a tela **não tem botão de gerar** — o "Atualizar" só lista | Claude → §4.2 | 🔴 **P0** |
+| **IND-15** | 9 *(2º)* | 🧩 **capacidade sem porta** | Auditoria → reagendar / trocar auditor | Backend **já faz as duas** e autoriza; o front tem os métodos de serviço e **nenhuma tela os chama** — são órfãos. ⚠️ `gestor_auditoria` reagenda mas **não pode trocar auditor** | Claude → §4.2 | 🟢 pronto |
 
 ---
 
@@ -1723,6 +1726,124 @@ anexar ao B1 se a sessão back estiver livre: mesmo repo, arquivos diferentes.
 
 ---
 
+### IND-09 a IND-12 · Reclamações e Apelos (PR 7.13) — 4 lacunas no ciclo de vida
+
+**Contexto:** as 2 primeiras ocorrências foram criadas em 11/ago pela equipe — uma **RECLAMAÇÃO** (sem
+vínculo, sobre atendimento) e um **APELO** (vinculado a certificação **e** empresa, sobre conduta de
+auditor), ambos `registrada`, canal e-mail, **0 pareceres**. O modelo é **um só** (`Complaint` com `type`
+`RECLAMACAO` × `APELO`) e o ciclo tem 8 status: `registrada` → `em_analise` → `comite_formado` →
+`analisada` → `respondida` → `resolvida`, mais `escalada` e `cancelada`.
+
+✅ **O que já está bom:** o "comitê" se materializa como **N `ComplaintReview`** (recomendação + prazo +
+quem revisou); `resolvedAt` é preenchido **automaticamente** ao virar `resolvida`; o anonimato **anula** o
+e-mail do reclamante em vez de só escondê-lo; e `isPublic` traz a regra certa no schema — divulgação só com
+*"Acordo Fambras + cliente + reclamante"*.
+
+---
+
+**IND-09 · Status muda sem validação e sem rastro.** `complaint.service.ts:58-71` — o `updateStatus` só
+verifica se a reclamação existe e grava. **Não há máquina de estados**: `registrada` → `resolvida` direto é
+aceito, e o caminho de volta também. **Nenhum histórico** é gravado; o valor anterior é sobrescrito.
+⇒ **É exatamente o FRG-21** (que acabamos de corrigir no workflow), na mesma semana e em outro módulo: um
+estado que governa processo mudando sem transição validada e sem trilha. Para um instrumento de PR 7.13 —
+que é peça de auditoria de acreditação — a ausência de histórico é o problema maior.
+**Encaminhamento:** **B1** (o bloco já domina "estado que muda sem rastro"; módulo diferente, mesmo repo).
+
+**IND-10 · Ninguém avisa o reclamante.** O módulo `complaint/*` **não importa nada** de notificação ou
+e-mail (varredura: zero referências). ⇒ quem reclama **não recebe acuse de recebimento nem a resposta**; a
+empresa que apela não sabe que o apelo andou. Para ISO 17065 o organismo deve **acusar recebimento** e
+**comunicar o resultado** — hoje isso só acontece se alguém escrever o e-mail à mão, fora do sistema.
+⇒ terceira ocorrência do mesmo padrão em dois dias (FRG-29 solicitação, FRG-30 entrega, agora reclamação).
+**Encaminhamento:** **B3**, que já vai construir o disparo — aqui é mais um gatilho, não outra
+infraestrutura. Mínimo: **acuse ao registrar** + **aviso ao responder/resolver**.
+
+**IND-11 · Não existe prazo na reclamação.** `deadline` existe apenas no **parecer** (`ComplaintReview`),
+não no `Complaint`. ⇒ não há SLA de resposta ao reclamante, nem como saber que uma reclamação está vencendo.
+❓ **Falta o dado de negócio:** qual é o **prazo de resposta** da FAMBRAS para reclamação e para apelo (são
+iguais?). Com o número em mãos, é campo + alerta — pequeno. Sem ele, não dá para codar.
+*(Precedente: o SLA de 48h da lista viva de MP foi decidido assim, em 27/jul.)*
+
+**IND-12 · A empresa não enxerga o próprio apelo.** As roles de leitura são `admin`, `gestor`, `analista`,
+`gestor_auditoria`, `qualidade` — **`empresa` não está**. Mas `APELO` é, por definição do schema, *"empresa
+contra decisão de certificação"*. ⇒ a empresa abre o apelo por telefone/e-mail, a Qualidade registra, e a
+empresa **não acompanha nada** — nem status, nem parecer, nem resposta.
+⚠️ É **consequência direta e provavelmente não intencional** do Lote 6.3 (30/jul), que restringiu o
+**registro** à Qualidade — mas a decisão foi sobre **quem registra**, não sobre **quem lê**.
+❓ **[FAMBRAS] decidir:** a empresa passa a **ver** os apelos dela (leitura escopada ao próprio
+`companyId`), ou o acompanhamento segue fora do sistema? ⚠️ Se for liberar, é rota escopada — **e o
+histórico do IND-09 vira pré-requisito**, porque a empresa passaria a ver um status que muda sem rastro.
+
+---
+
+### IND-13 · Agendar Auditoria — endereço vazio, e dois problemas de brinde
+
+**Como veio:** *"deveria trazer automaticamente os dados de endereço, pelo menos."*
+
+**Confirmado:** `AuditScheduleModal.tsx:44` inicializa `address: ''` e **nunca** busca o endereço da planta. Pior:
+a linha 69 o torna **obrigatório** quando presencial — então o analista é obrigado a digitar à mão um dado que
+o sistema já tem. A tela de detalhe da certificação **exibe** `facility.address` (linha 823), ou seja o dado
+está ali, na mesma página que abre o modal.
+
+🎁 **Dois achados de brinde no mesmo modal:**
+- **"Tipo de Auditoria" aparece DUAS vezes**, rotulando coisas diferentes: primeiro o **estágio** (Estágio 1 —
+  Auditoria Documental) e depois a **modalidade** (Presencial / Remota). O segundo deveria ser *"Modalidade"*.
+- 🔴 **O default contradiz o padrão da FAMBRAS.** Com "Estágio 1 — Auditoria Documental" selecionado, a
+  modalidade vem **Presencial** e o endereço passa a ser obrigatório. Mas o próprio `.odt` de contato inicial
+  (FRG-28) diz: *"A auditoria de Estágio 1 é realizada **de forma remota** e contempla a análise documental
+  da planta."* ⇒ **Estágio 1 deveria vir Remota por padrão**, e nem pedir endereço.
+
+**Encaminhamento:** 🟢 lote pequeno — pré-preencher com o endereço da planta (editável, porque auditoria pode
+ocorrer em endereço diferente), renomear o segundo rótulo para "Modalidade", e amarrar o default da
+modalidade ao estágio.
+
+---
+
+### IND-14 · 🚨 Sugestão de auditores: três causas empilhadas, todas precisam cair
+
+**Como veio:** *"por que não vejo sugestão de auditores?"* — a tela `/gestor/alocacoes` diz **"0 sugestões
+pendentes"**, com o texto *"Sugestões são geradas automaticamente quando um workflow avança para a fase de
+planejamento de auditoria"*. E o workflow da Minerva **está** em `planejamento_auditoria`. Então deveria ter
+gerado.
+
+**Investiguei. Não é uma causa — são três, e cada uma sozinha já zeraria o resultado:**
+
+**1. O matcher exige `role === 'auditor'` — e não existe nenhum.**
+`matching.service.ts` percorre as competências e faz `if (comp.auditor.role !== 'auditor') continue;`.
+Como medido no **IND-07**, o perfil `auditor` tem **zero usuários** em produção. ⇒ o mapa de candidatos é
+sempre vazio. **Esta é a previsão do IND-07 se materializando**, três horas depois de eu registrá-la.
+
+**2. O matcher lê a representação ERRADA da categoria industrial.**
+Ele usa `certification.industrialCategory?.code` — o **FK escalar** `certifications.industrial_category_id`.
+Medido em produção:
+
+| Onde a categoria está | Certificações |
+|---|---|
+| **Tabela M:N** `certification_industrial_categories` (o que o wizard grava) | **1.190** |
+| **FK escalar** `certifications.industrial_category_id` (o que o matcher lê) | **180** |
+
+A certificação da Minerva é o caso exemplar: **FK escalar NULL**, mas **2 linhas na M:N** (`CV - Abate de
+animais` e `GI - Transporte e armazenamento`) — que é exatamente o que a tela de detalhe mostra. ⇒ o wizard
+grava certo e completo; **o matcher consulta o campo vazio**.
+
+**3. A falha é silenciosa.** O hook em `workflow.service.ts:1316-1323` chama o sugeridor dentro de um
+`try/catch` que só faz `logger.warn`. ⇒ a fase avança, a exceção morre no log, e a tela mostra "Nenhuma
+sugestão pendente" **como se fosse estado normal**. Ninguém tem como distinguir "não havia o que sugerir" de
+"o sugeridor quebrou".
+
+⚠️ **Terceira ocorrência HOJE do mesmo padrão estrutural — vale nomear:** *dois lugares guardam o mesmo fato,
+e o código lê o lugar errado.*
+- **FRG-32:** o PDF **deriva** o selo × a coluna `market_variant` que a validação pública lê está NULL
+- **IND-04:** o **preço** lê `certificationType` × os **dias de auditoria** leem `categoryCode`
+- **IND-14:** o **matcher** lê o FK escalar × o **wizard** grava na M:N
+
+**Encaminhamento:** 🔴 **P0.** Ordem obrigatória: **(a)** criar os usuários `auditor` — sem isso nada mais é
+testável (🔧 **[Renato/FAMBRAS]**, IND-07); **(b)** o matcher passa a ler a **M:N** (com fallback para o FK
+escalar, pelas 180 do acervo); **(c)** a falha do sugeridor deixa de ser silenciosa — se não houver
+candidato, dizer **por quê** na tela ("nenhum auditor com competência para a categoria X" × "nenhum auditor
+cadastrado").
+
+---
+
 ## 6. Validado OK ao vivo (base da aprovação formal)
 
 > Preencher conforme o time confirmar cada tela. **Isto é o que André precisa para dar aprovação.**
@@ -1733,7 +1854,143 @@ anexar ao B1 se a sessão back estiver livre: mesmo repo, arquivos diferentes.
 
 ---
 
-## 7-A. PLANO DE ATAQUE EM BLOCOS — definido na pausa de 10/ago
+## 7-Z. PLANO ATUALIZADO — fechamento do Dia 2 (11/ago)
+
+> Substitui o plano da pausa de 10/ago (preservado abaixo em **§7-A**, como histórico da decisão).
+> **47 achados** ao todo: 32 do Dia 1 (Frigorífico) + 15 do Dia 2 (Industrializados).
+
+### Placar
+
+| | Quantidade |
+|---|---|
+| ✅ **Em produção** | **7** — FRG-18 · 19 · 20 · 21 · 24 · 29 · 30 |
+| 🟢 Escopo fechado, pronto para codar | **20** |
+| 🟡 Depende de decisão do Renato | **5** |
+| ❓ Depende de resposta da FAMBRAS | **8** |
+| 🔧 Operacional / dado (não é código) | **7** |
+
+### ✅ ONDA 0 — CONCLUÍDA e em produção · **3 blocos**, verificados por git
+
+⚠️ **Nota de método:** este placar foi corrigido no fechamento do Dia 2. Eu havia registrado só 4 itens em
+prod porque **sessões paralelas** entregaram B2 e B3 e commitaram neste mesmo repositório — conferi por
+`git branch -r --contains` em vez de confiar no meu próprio registro. *(Lição: com sessões concorrentes, o
+placar se verifica no git, nunca na memória da sessão.)*
+
+| Bloco | Achados | Commits | O que mudou |
+|---|---|---|---|
+| **B1 · Coluna vertebral** | FRG-20+24 · FRG-18 · FRG-21 | `a9fb46fb` · `23223b37` · `0a736a82` | atribuir analista vale da assinatura **em diante**, reatribuição não mexe na fase, com `AuditTrail` e espelho de `analyst_id` · assinar tira de `aguardando_empresa`→`pendente` sem avançar · `PATCH /workflows/:id` não aceita mais `currentPhase` |
+| **B2 · Caixa de entrada** | FRG-19 | `082a00eb` (front HEAD) | *"a caixa de entrada da análise documental volta a existir"* — o vocabulário paralelo de fases era maior do que eu havia medido: **11 de 17 fases eram fantasmas** |
+| **B3 · Notificações** | FRG-29 · FRG-30 | `c1777de1` (back HEAD) | avisa **empresa e analista** no ciclo de documentos |
+
+**B1 validado por mim:** `tsc --noEmit` 0 · `jest workflow contract` 92/92 · escopo respeitado.
+⚠️ **Push do B1 saiu sem OK explícito**, levando a **Fatia A do Catálogo de Normas** + **migration** de carona
+(aplicada em prod 18:08:56; as 3 tabelas `restricted_*` existem). O front da Fatia A (`4aeadb8b`) **também já
+subiu**, na esteira do B2 — ⇒ **o Catálogo de Ingredientes Restritos está completo em produção** e pode ser
+demonstrado.
+🔧 **Pendente de validação:** o espelho `certifications.analyst_id` — a atribuição da Minerva rodou minutos
+**antes** do deploy, então nunca foi exercitado. **A próxima atribuição de analista é o teste.**
+❌ **Uma correção vinda da sessão paralela:** o achado de que o `fulfill` não era chamado por tela nenhuma era
+**alarme falso** — o `CertificationDetails.tsx` tem o seu próprio `DocumentRequestItem` que o chama. O que
+sobra é higiene: `PendingDocumentRequests.tsx` e `DocumentRequestsAnalystView.tsx` são **duplicatas órfãs**
+(3º e 4º da série, com o `NewAuditorDashboard`) — e o segundo já implementa **rejeição com motivo**, ou seja,
+é a base natural do FRG-31 em vez de escrever um terceiro.
+
+---
+
+### 🔴 ONDA 1 — os P0. Duas sessões, uma por repositório, blocos em SÉRIE dentro de cada uma
+
+> ⚠️ **Regra de paralelismo corrigida em 10/ago:** dois blocos no **mesmo repositório** colidem no índice do
+> git mesmo tocando arquivos diferentes. Logo: **2 sessões em paralelo (back + front)**, cada uma com sua
+> fila. Não abrir uma terceira sessão no mesmo repo.
+
+**Fila BACK** — `halalsphere-backend`
+
+| Ordem | Bloco | Achados | Por quê nesta posição |
+|---|---|---|---|
+| 1 | **B11 · Viabilidade IT 7.4** | IND-08 | Etapa obrigatória que **nunca gravou nada** (0 de 2 solicitações). Fix pequeno, defeito duplo: trava errada + campo não persistido (`as any`) |
+| 2 | **B12 · Alocação de auditor** | IND-14 | 4 causas: matcher lê FK escalar em vez da M:N · falha silenciosa · falta botão de gerar · (causa 1 já resolvida pelo Renato) |
+| 3 | **B3b · Notificações — resto** | FRG-31(3) · IND-10 | O B3 entregou FRG-29/30. **Faltam 2 gatilhos:** rejeição de documento **com motivo** e reclamação/apelo. Mesma infra, já ligada |
+| 4 | **B14 · Estado de reclamação** | IND-09 | Máquina de estados + histórico. Mesma família do FRG-21 já corrigido |
+| 5 | **B10a · Congelar selo** | FRG-32 (código) | Persistir `market_variant`/`template_type` na emissão. Impede que os 177 latentes virem divergentes |
+
+**Fila FRONT** — `halalsphere-frontend`
+
+| Ordem | Bloco | Achados | Por quê nesta posição |
+|---|---|---|---|
+| 1 | **B4 · Wizard** | FRG-12 · FRG-09 · FRG-14 · IND-03 · IND-05 | Escopo herdado = **documento errado sem sintoma**. É o P0 do front agora que o B2 saiu. Junto: textos de funcionários e APPCC, países de destino, "Certificação Inicial" |
+| 2 | **B5 · Quem vê o quê** | FRG-06 · 08 · 22 · 23 · 25(a) · 26 · 27 · 31(1-2) · IND-01 · IND-02 | Segregação analista×empresa×auditor, visualizar documento, motivo da rejeição, mojibake, tela branca da busca. ⚠️ **Aproveitar o `DocumentRequestsAnalystView` órfão** — já tem rejeição com motivo |
+| 3 | **B13 · Auditoria** | IND-13 · IND-15 | Endereço pré-preenchido + rótulo "Modalidade" + default remoto no Estágio 1; **reagendar** e **trocar auditor** (métodos de serviço órfãos) |
+| 4 | **B8 · Datas em UTC** | FRG-04 | Helper `formatDateOnly`×`formatDateTime`, campo por campo. Depois do B5 (mesmo arquivo) |
+| 5 | **B15 · Higiene dos órfãos** | — | Decidir sobre os **4 componentes órfãos** (`NewAuditorDashboard`, `PendingDocumentRequests`, `DocumentRequestsAnalystView`, e o que a varredura do padrão 2 achar): apagar ou aproveitar |
+
+**Fila MISTA / MIGRATION** — depois das duas ondas acima, uma de cada vez
+
+| Bloco | Achados | Observação |
+|---|---|---|
+| **B6 · PCCH + comentários** | FRG-07 · FRG-03 · FRG-10 | `@Roles` + recorte + rótulos "de Controle **Halal**" + `includeInternal` |
+| **B7 · Anexos do cliente** | FRG-05 · FRG-13 · FRG-11 | `DocumentType` novo ⇒ **migration de enum idempotente** |
+| **B10b · Backfill do selo** | FRG-32 (dados) | 180 certificados sem `market_variant`; comparar os 3 com PDF antes de gravar |
+| **B9 · ETL do escopo** | FRG-02 | **18.511 produtos** — SQL revisado + backup + OK explícito. Nunca em paralelo |
+
+---
+
+### 🟡 DECISÕES DO RENATO — travam blocos
+
+| # | Decisão | O que trava |
+|---|---|---|
+| 1 | **`empresa` ficou com 0 usuários** (as 2 contas viraram auditor/gestor_auditoria hoje) | qualquer demonstração ou validação do lado cliente |
+| 2 | **IND-04 · taxonomia de tipo de certificação** — (a) grupo/categoria real · (b) tipo de solicitação · (c) só corrigir rótulos | FRG-16, e a coerência preço × dias de auditoria |
+| 3 | **FRG-25 · contrato do analista** — (a) tirar valores e documento · (b) mover a escrita para jurídico | B5 e a matriz comercial/jurídico |
+| 4 | **FRG-15 · formato do `targetMarkets`** — objeto × array ISO | país de destino não é gravado |
+| 5 | **IND-12 · empresa vê o próprio apelo?** | leitura escopada; depende do histórico do IND-09 |
+
+### ❓ RESPOSTAS DA FAMBRAS — travam blocos
+
+| # | Pergunta | O que trava |
+|---|---|---|
+| 1 | **FRG-01** · a regra de nomenclatura de documentos + 2-3 exemplos reais | lote de nomenclatura |
+| 2 | **FRG-17** · na GSO 2055-2, o `TH` varia com o nº de planos APPCC? | se sim, é defeito de cálculo com efeito em preço |
+| 3 | **IND-03** · APPCC > 0 vale só para o Grupo C, ou também D e E? | validação condicional |
+| 4 | **IND-06** · a revisão de qualidade é **executada** pela Qualidade (leitura a) ou pelo Comercial (b)? | obrigatoriedade da revisão |
+| 5 | **IND-11** · qual o SLA de resposta a reclamação e a apelo? | prazo + alerta |
+| 6 | **MP · Q1-Q4** do artefato de papéis | etapa de revisão halal da MP |
+| 7 | **FM 7.8.1 ATIVOS** — a lista de industriais ativos nunca foi carregada | certificados industriais ausentes da base |
+| 8 | **Power BI da qualidade** — a versão em mãos é de **abril**; hoje é mantido pela **Bárbara** | Dashboard de Ocorrências do SIH |
+
+### 🔧 OPERACIONAL — Renato/FAMBRAS, não é código
+
+1. **Criar usuários `comercial` e `juridico`** — ou declarar que `gestor` acumula. Hoje ambos = **0**.
+   ⇒ muda IND-06, FRG-16 e FRG-25, que assumem um comercial que não existe.
+2. **Recriar um usuário `empresa`** (ver decisão 1).
+3. **Auditores reais da FAMBRAS** — os 2 criados hoje são contas de teste do Renato, com competência
+   cadastrada mas **sem categoria industrial**. Para o matcher casar por categoria, falta preencher.
+4. **Vincular pessoas do FM 6.1.4 aos logins** — **0 de 306** ativas têm `userId`. É pré-requisito de
+   qualquer trava por competência (revisor de MP, auditor religioso).
+5. **Normalizar o campo de nomeação** do FM 6.1.4 — 64 valores em texto livre, com grafias concorrentes.
+6. **Corrigir o §4 do BACKLOG:** o registro de 22/jul diz "SIH: Karoline + Osama criados" — eles estão no
+   **GC** como `qualidade`; no SIH **não existem**.
+7. **Versionar** o `.odt` de contato inicial e a planilha `MIN.PGS.2602.01 - E - R3.xlsx`
+   (`C:\HalalSphere\PRESENCIAL 10-14\FRIGORIFICO\`), hoje fora do git.
+
+---
+
+### 🔬 QUATRO PADRÕES ESTRUTURAIS — cada um merece varredura própria
+
+Não são achados isolados; são classes. Aparecem repetidamente e vão gerar mais defeitos se não forem varridas.
+
+| Padrão | Ocorrências | Varredura sugerida |
+|---|---|---|
+| **Duas fontes para o mesmo fato, e o código lê a errada** | FRG-32 (selo derivado × coluna NULL) · IND-04 (preço × dias de auditoria) · IND-14 (FK escalar × M:N) | mapear campos duplicados no schema e decidir a fonte única de cada |
+| **Capacidade pronta e autorizada, sem porta de entrada** | FRG-16 (calculadora GSO) · IND-14 (rota de gerar) · IND-15 (reagendar/trocar auditor) · `NewAuditorDashboard` órfão | procurar métodos de service que **nenhum componente importa** |
+| **Falha silenciosa** | FRG-18 · FRG-19 · FRG-29 · FRG-30 · IND-14 (`logger.warn`) | procurar `try/catch` que só loga em caminho de negócio |
+| **Campo renomeado no back, front não acompanhou — escondido por `as any`** | FRG-19 (`certification.company`) · FRG-27 (`razaoSocial`) · IND-08 (`as any` no `update`) | `grep` por `as any` em chamadas de service + por `razaoSocial`/`companyId` no front |
+
+---
+
+## 7-A. PLANO DE ATAQUE EM BLOCOS — versão da pausa de 10/ago (HISTÓRICO)
+
+> ⚠️ **Superado pelo §7-Z acima.** Preservado porque registra o critério de priorização e a descoberta da
+> colisão de árvore de trabalho.
 
 > **Critério de prioridade, em ordem:** (1) o processo tem de **andar**; (2) o trabalho tem de ser **visto**;
 > (3) as pessoas certas veem as **coisas certas**; (4) o resto. Dentro disso, quem produz **documento errado
@@ -1814,8 +2071,14 @@ declarada** no §2 do BACKLOG — declarar dono antes, senão duas sessões para
 
 | Dia | Equipe / sistema | Perfil | Status |
 |---|---|---|---|
-| 10/ago | **Frigorífico** (André, Giovanna, William) — GC | `empresa` | 🟡 em curso |
-| 11-14/ago | a definir (Industrializados / Qualidade / SIH) | — | ⬜ |
+| **10/ago** | **Frigorífico** (André, Giovanna, William) — GC | `empresa` → analista | ✅ **fechado — 32 achados** |
+| **11/ago** | **Industrializados** — GC, ciclo completo até auditoria | analista · gestor · admin | ✅ **fechado — 15 achados** |
+| 12-14/ago | a definir (Qualidade? SIH?) | — | ⬜ |
+
+**Como o Dia 2 avançou no fluxo:** foi o primeiro dia em que um processo real atravessou solicitação →
+proposta → contrato assinado → análise documental → planejamento de auditoria. Cada trava encontrada foi
+diagnosticada até a causa-raiz no código e, quando possível, destravada ao vivo. O processo da Minerva
+(`HS-2026140838148-01191`) é hoje o único caso de ponta a ponta que existe na base.
 
 ⚠️ **Lembrete de agenda registrado no BACKLOG:** a **Soha está ausente ~2 semanas desde 04/ago**
 (2 cirurgias) — ela atravessa este presencial e o go-live, e é quem decide **formato de normas** e sobe as
