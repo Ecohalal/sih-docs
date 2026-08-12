@@ -1869,7 +1869,7 @@ dependências que não são de código:
 | ✅ Já em produção | **21** | — |
 | 🟢 Posso fazer sozinho | **~10** | tempo de sessão |
 | ❓ **Travado em resposta da FAMBRAS** | **8** | FRG-01 (regra de nomenclatura + exemplos) · FRG-17 (`TH` × APPCC) · IND-03 (grupo C, ou D/E?) · IND-06 (quem executa a revisão) · IND-11 (SLA) · MP Q1-Q4 · FM 7.8.1 ATIVOS · Power BI |
-| 🔧 **Travado em cadastro operacional** | — | `empresa`=0 · `comercial`=0 · `juridico`=0 · auditores sem categoria industrial · 0/306 do FM 6.1.4 com login |
+| 🔧 **Travado em cadastro operacional** | — | `empresa`=0 · `comercial`=0 · `juridico`=0 · ~~auditores sem categoria industrial~~ *(falso — ver 12/ago)* · 0/306 do FM 6.1.4 com login |
 | 🔴 Risco alto na véspera | 3 | B7 (**migration** de enum) · B9 (**18.511 produtos**) · B10b (180 selos) |
 
 ⇒ **O gargalo deixou de ser código.** Dos 26 restantes, 8 não podem ser codificados sem resposta da
@@ -1926,9 +1926,11 @@ para gestor/admin): seletor de auditor + motivo obrigatório, no mesmo padrão d
 2. Certificação Inicial **não** herda escopo (entrar pela Minerva, que tem 3 certificações)
 3. Rejeição de documento **exige motivo** e a empresa **vê** o motivo
 4. PDF/imagem **abrem** em vez de baixar
-5. "Gerar sugestões de auditor" no card de Planejamento (Minerva está em `planejamento_auditoria`)
-   — ⚠️ deve responder *"nenhum elegível para a categoria CV"* enquanto as competências dos auditores
-   estiverem **sem categoria industrial**. Isso é a mensagem correta, não sucesso.
+5. "Gerar sugestões de auditor" no card de Planejamento — ✅ **JÁ FUNCIONOU** (11/ago 22:56: 2 sugestões,
+   scores 69,80 e 68,75). ~~deve responder "nenhum elegível para a categoria CV" enquanto as competências
+   estiverem sem categoria industrial~~ ❌ premissa falsa, corrigida em 12/ago: elegibilidade é por
+   **formação**, não pela categoria da competência. ⚠️ O Minerva já saiu do planejamento (está em
+   `auditoria_estagio1`) — o card só reaparece ali por causa do fix `71246f92`.
 6. Reagendar auditoria · endereço pré-preenchido · rótulo "Modalidade" · Estágio 1 nascendo **remoto**
 7. Espelho `certifications.analyst_id` (a 1ª atribuição de analista nova é o teste — nunca foi exercitado)
 
@@ -2058,8 +2060,11 @@ sobra é higiene: `PendingDocumentRequests.tsx` e `DocumentRequestsAnalystView.t
 1. **Criar usuários `comercial` e `juridico`** — ou declarar que `gestor` acumula. Hoje ambos = **0**.
    ⇒ muda IND-06, FRG-16 e FRG-25, que assumem um comercial que não existe.
 2. **Recriar um usuário `empresa`** (ver decisão 1).
-3. **Auditores reais da FAMBRAS** — os 2 criados hoje são contas de teste do Renato, com competência
-   cadastrada mas **sem categoria industrial**. Para o matcher casar por categoria, falta preencher.
+3. **Auditores reais da FAMBRAS** — os 2 criados hoje são contas de teste do Renato.
+   ~~com competência cadastrada mas **sem categoria industrial**. Para o matcher casar por categoria,
+   falta preencher.~~ ❌ **PREMISSA FALSA, corrigida em 12/ago:** o matcher **não lê** a categoria da
+   competência — casa pela **formação** (matriz do FM 6.1.4). As 2 sugestões de 11/ago saíram com as
+   competências sem categoria. O que falta aqui é só **gente de verdade**, não configuração.
 4. **Vincular pessoas do FM 6.1.4 aos logins** — **0 de 306** ativas têm `userId`. É pré-requisito de
    qualquer trava por competência (revisor de MP, auditor religioso).
 5. **Normalizar o campo de nomeação** do FM 6.1.4 — 64 valores em texto livre, com grafias concorrentes.
