@@ -1869,7 +1869,7 @@ dependências que não são de código:
 | ✅ Já em produção | **21** | — |
 | 🟢 Posso fazer sozinho | **~10** | tempo de sessão |
 | ❓ **Travado em resposta da FAMBRAS** | **8** | FRG-01 (regra de nomenclatura + exemplos) · FRG-17 (`TH` × APPCC) · IND-03 (grupo C, ou D/E?) · IND-06 (quem executa a revisão) · IND-11 (SLA) · MP Q1-Q4 · FM 7.8.1 ATIVOS · Power BI |
-| 🔧 **Travado em cadastro operacional** | — | `empresa`=0 · `comercial`=0 · `juridico`=0 · ~~auditores sem categoria industrial~~ *(falso — ver 12/ago)* · 0/306 do FM 6.1.4 com login |
+| 🔧 **Travado em cadastro operacional** | — | ✅ **12/ago: `empresa`, `comercial` e `juridico` agora têm 1 usuário cada** (eram 0) e `qualidade` tem **5** · ~~auditores sem categoria industrial~~ *(premissa falsa — ver 12/ago)* · **0 de 504 pessoas do FM 6.1.4 com login** (306 ativas) |
 | 🔴 Risco alto na véspera | 3 | B7 (**migration** de enum) · B9 (**18.511 produtos**) · B10b (180 selos) |
 
 ⇒ **O gargalo deixou de ser código.** Dos 26 restantes, 8 não podem ser codificados sem resposta da
@@ -1921,7 +1921,7 @@ para gestor/admin): seletor de auditor + motivo obrigatório, no mesmo padrão d
 
 ### 🔧 VALIDAÇÃO PENDENTE EM PRODUÇÃO (Renato) — nada foi exercitado na UI real
 
-1. Viabilidade IT 7.4 grava (cert. `HS-2026151500508-01192`) — hoje **0 de 2** solicitações têm checklist;
+1. Viabilidade IT 7.4 grava (cert. `HS-2026151500508-01192`) — **reconferido 12/ago: segue 0 de 2**;
    o número mudar é prova definitiva
 2. Certificação Inicial **não** herda escopo (entrar pela Minerva, que tem 3 certificações)
 3. Rejeição de documento **exige motivo** e a empresa **vê** o motivo
@@ -1933,6 +1933,22 @@ para gestor/admin): seletor de auditor + motivo obrigatório, no mesmo padrão d
    `auditoria_estagio1`) — o card só reaparece ali por causa do fix `71246f92`.
 6. Reagendar auditoria · endereço pré-preenchido · rótulo "Modalidade" · Estágio 1 nascendo **remoto**
 7. Espelho `certifications.analyst_id` (a 1ª atribuição de analista nova é o teste — nunca foi exercitado)
+
+### 📊 ESTADO MEDIDO EM PRODUÇÃO — 12/ago (substitui números anteriores)
+
+| Fato | Número | Leitura |
+|---|---|---|
+| Usuários por perfil | analista **15** · qualidade **5** · gestor 2 · admin 1 · **empresa 1** · **comercial 1** · **juridico 1** · auditor 1 · gestor_auditoria 1 | ✅ o bloqueio de cadastro de 11/ago **caiu** |
+| Espelho `analyst_id` | **1 de 2** workflows com a certificação preenchida | ✅ **o espelho FUNCIONOU** na atribuição nova; o Minerva (fase `auditoria_estagio1`) segue NULL |
+| Viabilidade IT 7.4 | 2 solicitações, **0 com checklist** | 🔧 B11 nunca exercitado |
+| Solicitações de documento | 1, `atendido` (de 10/ago) | 🔧 B3/B3b nunca exercitados desde o deploy |
+| Documentos | 9 aprovados · 2 pendentes · **0 rejeitados** | 🔧 FRG-31 p3 sem caso real ainda |
+| **Reclamações** | **3 registradas** (2 RECLAMACAO + 1 APELO), todas de **11/ago**, todas com e-mail e **nenhuma anônima** | 🎯 **são anteriores ao deploy do B3b** ⇒ não tiveram acuse. **Responder qualquer uma agora dispara o e-mail de resultado** — caso de teste pronto para o Dia 3 |
+| Alocação de auditor | 1 `aprovada` + 1 `sugerida`; **as duas com `workflow_id` NULL** | ⚠️ a aprovada é anterior ao fix — **não se auto-corrige**; aprovar a `sugerida` OU trocar auditor pelo card designa |
+| Auditorias | 2 agendadas (estágio 1 e 2), **ambas sem auditor** | ⚠️ consequência do acima |
+| Certificados sem selo | **180 de 1.433**, sendo **3 com PDF** | ✅ parte 1 em prod impede novos; os 3 seguem divergentes |
+| Competências de auditor | 3, **nenhuma com categoria** | ✅ irrelevante para o matcher (elegibilidade é por formação) |
+| FM 6.1.4 | 504 pessoas · 306 ativas · **0 com login** | 🔧 pré-requisito de trava por competência |
 
 ### 🚨 PENDÊNCIAS QUE NÃO SÃO CÓDIGO E BLOQUEIAM MAIS QUE ELE
 
