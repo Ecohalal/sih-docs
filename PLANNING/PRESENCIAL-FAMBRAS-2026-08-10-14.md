@@ -1844,6 +1844,229 @@ cadastrado").
 
 ---
 
+## 5-C. Achados — Dia 3 · **12/ago** · equipe **CONTROLADORIA INDUSTRIAL**
+
+> 🏁 **MARCO: 12/08/2026 — terceiro dia do presencial.** Dia 1 (Frigorífico) = **32** achados `FRG-nn`;
+> Dia 2 (Industrializados) = **15** `IND-nn`. Numeração deste dia: **`CTR-nn`**.
+> Valem as mesmas regras do §0 (zero código na sala; pergunta que der para resolver na hora, pergunte)
+> e a classificação do §1.
+
+### 🖥️ Ambiente sob validação — CONFIRMADO DE FORA (12/ago, ~09h25)
+
+| Camada | Em produção | Prova (asset servido / sonda, não a listagem do console) |
+|---|---|---|
+| **GC front** | **`2dff97a4`** (build `index-CkGmw16Z.js`) | `"Produtos químicos"` no bundle ⇒ rótulos C1–C6 (IND-04 c) · chunk `CertificationDetails-CU8Xgtzn.js` (144 KB) contém **"Trocar auditor"** e **"Motivo da troca"** (IND-15) e **"Controle Halal"** com **zero** ocorrência do termo antigo (FRG-03) |
+| **GC back** | **`6ebb03c5`** | `release` com `0 ahead / 0 behind`; API viva e guardada — rota real → **401** do guard, rota inexistente → **404** do Nest |
+| **URL** | `https://gestaodecertificacoes.ecohalal.solutions` | — |
+
+📌 **Correção ao §1 do BACKLOG:** o front `2dff97a4` (IND-04 c) constava como *"1 commit local"* — **está pushado
+e no ar**. Atualizar o retrato.
+
+🚨 **Deploy em voo às 09h23–09h26 — e a armadilha que ele deixa para a sala.** Enquanto sondava, o
+`index.html` ainda apontava para o build anterior (`index-B5BffeBP.js`) cujos **chunks de rota já tinham sido
+apagados do S3**: `/assets/CertificationDetails-Dyd1cuyE.js` respondia **200 com o `index.html`**
+(`Content-Type: text/html`) — 404 mascarado de sucesso pelo fallback de SPA. Já normalizou no build novo.
+⇒ **Regra do dia: todo mundo dá `Ctrl+F5` antes de começar, e de novo depois de qualquer deploy.** Quem ficar
+com a aba aberta de um build antigo toma *"Failed to fetch dynamically imported module"* / tela branca ao
+navegar — e isso vira achado falso.
+
+### ⚙️ O que MUDOU em produção desde ontem — não re-reportar
+
+Seis lotes + IND-15 subiram em 12/ago. **Nenhum tem rota nova ⇒ nenhum tem observável externo próprio; a
+prova é funcional.**
+
+| Achado | Estado |
+|---|---|
+| **FRG-07 · FRG-10** — PCCH sem `@Roles`/sem recorte + comentário interno vazando por query param | ✅ em prod (`3529aa7a`) — leitura = equipe FAMBRAS, escrita = analista/gestor/admin, `empresa` fora |
+| **FRG-03** — termo proibido na Matriz PCCH | ✅ em prod (`b5cb53f4`) — "Pontos Críticos **de Controle Halal**" |
+| **FRG-31 p3 · IND-10** — rejeitar documento e ciclo de reclamação mudos | ✅ em prod (`3fba0320`) — rejeição notifica **com motivo**; reclamação tem acuse + aviso à qualidade |
+| **FRG-04** — vigência/emissão exibindo 1 dia antes | ✅ em prod (`78668f64` + `e8671895` TZ=UTC) |
+| **FRG-32 p1** — PDF e QR discordando do selo | ✅ em prod (`6ebb03c5`) — selo congelado na geração. ⚠️ **corrige os novos, não os 3 que já divergem** |
+| **IND-04 (c)** — rótulos C1–C6 (4 listas divergentes no front) | ✅ em prod (`2dff97a4`) — fonte única; enum mantido (o preço-base depende dele) |
+| **IND-15** — trocar auditor / reagendar | ✅ em prod (`60eee058` + `c395d07b` + `71246f92`) — motivo **obrigatório** + `AuditTrail`; card não some mais fora do planejamento |
+| **Aprovar sugestão de alocação não designava ninguém** | ✅ em prod (`10d7c77c`) — corrigido na origem e no destino; cobre as 2 alocações órfãs que já existem |
+
+### 🚫 O que NÃO demonstrar (ou demonstrar avisando)
+
+- **Verificação pública do QR nos 3 certificados que já nasceram sem selo** (dos 180 sem `market_variant`,
+  3 têm PDF): a parte 2 do FRG-32 é **dado**, não foi feita — o papel e a validação online ainda divergem ali.
+- **Trocar o auditor entre as sugestões ANTES de aprovar** (`modify`): a rota existe, **nenhuma tela a chama**.
+  O caminho que funciona é aprovar e depois trocar com motivo. ❓ decisão do Renato se entra.
+
+### 👀 Watch-list específica — CONTROLADORIA INDUSTRIAL
+
+| # | Ponto | Por quê |
+|---|---|---|
+| **W-1** | ⚠️ **`controlador` é real no SIH e cego no GC — não confundir os dois sistemas.** | **No SIH (validado hoje) o perfil existe de verdade:** menu "Controladoria" (`Sidebar.tsx:72`), rota `/controladoria` e 3 rotas de backend `@Roles('controlador')` — fila, histórico e métricas. **No GC é o oposto:** `controlador` está no enum `UserRole` e tem badge, mas **não tem `case` no `Sidebar.tsx`** → `default: []` = **menu vazio** (mesmo caso de `financeiro`, `supervisor`, `secretaria`; pendência do §4.1 desde 09/ago, sem decisão). ⇒ se esta equipe também precisar entrar no **GC**, o login dela nasce cego lá |
+| **W-2** | **Casos de teste prontos, que só este dia pode exercitar** | (a) **3 reclamações de 11/ago** (2 reclamação + 1 apelo, todas identificadas) são **anteriores** ao B3b ⇒ não tiveram acuse; **responder qualquer uma agora dispara o e-mail de resultado** · (b) alocação **`sugerida`** pendente → **aprovar designa o auditor**; a `aprovada` de 11/ago é anterior ao fix e **não se auto-corrige** · (c) **1ª atribuição/reatribuição de analista** cura `certifications.analyst_id` (Minerva segue **NULL**) · (d) **Viabilidade IT 7.4: 0 de 2** com checklist — gravar uma é a prova do B11 |
+| **W-3** | **FM 7.8.1 ATIVOS nunca foi carregado** | Se disserem "faltam certificados industriais nossos", **é carga pendente da FAMBRAS**, não bug |
+| **W-4** | **0 de 306 pessoas ativas do FM 6.1.4 têm login** | Pré-requisito de qualquer trava por competência. Se cobrarem "o sistema devia barrar quem não é qualificado", é isto |
+| **W-5** | **Defeitos de fluxo dos Dias 1 e 2 são agnósticos de segmento** | Reaparecendo, registrar como *confirmação em 3º departamento* (fortalece prioridade), **não** como achado novo |
+
+### Achados do Dia 3
+
+> **Sistema sob validação hoje: SIH** (`supervisao-industrial.ecohalal.solutions`), não o GC.
+> Sessão do supervisor **Pablo Rodrigues Santos** (`pablo.santos@fambrashalal.com.br`, divisão **IND**).
+
+| ID | nº na sala | Tipo | Tela | Resumo | Dono | Estado |
+|---|---|---|---|---|---|---|
+| **CTR-01** | 1 | 🔧 cadastro + 🎨 UX | Produção → Novo (FM 7.1.3.1) | Supervisor não vê **nenhuma planta**. **Não é bug:** as 2 plantas dele são `frigorifico` (IN) e `curtume` (IND), e Fabricação exige `processamento` — o filtro casa `type` **ou** `capabilities` e está correto. Sobra um problema de texto: o aviso manda **"solicite ao administrador o vínculo de uma planta"**, mas ele **tem** vínculo — o que falta é a planta declarar a atividade | 🔧 Renato/FAMBRAS + Claude (texto) | 🟢 diagnosticado |
+| **CTR-02** | 2 | 🧩 GAP — **capacidade pronta, porta ruim** | Embarque → Produtos | Produtos/quantidades deveriam vir **de uma lista de relatórios de produção, item a item**. O vínculo **já existe** (M:N + A2 + "aplicar composição derivada") mas: **(i)** a composição só existe **depois de salvar** — na criação não há lista para escolher; **(ii)** aplicar é **tudo ou nada**; **(iii)** a **quantidade não vem** da produção (`quantity: 0`; só o peso agregado) | Claude → §4.2 | 🟡 3 fatias sobre base pronta |
+| **CTR-03** | 3 | 🧩 GAP + ❓ | Embarque → Exportador/Importador | Dados de empresa deveriam vir **pré-preenchidos**. `exporter`/`importer` são **texto livre**; o SIH **não tem model Company** — a identidade vive na planta (`cnpj`, `name`, `externalCompanyId` do GC) | Claude + ❓Renato | 🟡 decidir a fonte: planta × GC |
+| **CTR-04** | 4 | 🐛 + 🧩 | Embarque → Origem/Destino | Origem deveria ser **pré-preenchida** e escolhida **da base** por SIF/CNPJ/nome. **(i) 🐛** o prefill existe mas compara `plant.type` direto: só frigorífico/abatedouro preenchem *Abatedouro*, só processamento preenche *Unidade de Produção* ⇒ **`curtume` não preenche nenhum dos dois** (o caso Sol Couros do print), e planta com `capabilities` também fica de fora. **(ii) 🧩** origem é **texto livre** enquanto o **destino já escolhe da base** (seletor de planta + prefill de endereço/CNPJ + `lookupCnpj`) — assimetria, com o padrão a reusar no mesmo arquivo | Claude → §4.2 | 🟢 **(i) é fix pequeno** |
+
+| **CTR-05** | 5 | 🧩 GAP + ❓ **estrutural** | Config → FM × anexos | Tela para **correlacionar FM x.x.x.x com anexos obrigatórios** e montar o formulário conforme. Metade da espinha existe: há **registry por FM** (`FmConfig`) que já monta as verificações da tela. Do lado do anexo **não há nada**: `category` é string **nullable** contra lista fixa no service, **sem** obrigatoriedade e **sem** relação com o FM | Claude + ❓Renato/FAMBRAS | 🟡 **tamanho depende de 2 decisões** |
+
+### 📦 ENTREGUE EM 12/ago — commitado, **ainda NÃO pushado** (aguarda OK)
+
+| Repo | Commit | Achados |
+|---|---|---|
+| **sih-frontend** | `7fac2ad` | **CTR-04(i)** prefill lê `capabilities` e cobre curtume · **CTR-03** exportador vem da planta · **CTR-01(b)** aviso com os dois caminhos |
+| **sih-backend** | `6192cec` | **CTR-05 back** — model + migration idempotente + CRUD + trava aditiva no `sign` de produção e embarque · swagger + **3 JSONs do API GW** regenerados no mesmo commit |
+| **sih-frontend** | `65d28e5` | **CTR-05 front** — tela `/anexos-obrigatorios` + checklist de pendência dentro dos formulários |
+
+Validação local: back `tsc --noEmit` 0 · **jest 37/37** (5 casos novos) · front `tsc -b` 0 e `vite build` limpo.
+
+✅ **EM PRODUÇÃO — validado DE FORA em 12/ago ~13h32 (não pela listagem do console):**
+
+| Prova | Resultado |
+|---|---|
+| Rota nova, sem token | `/fm-required-attachments` **404 → 401** do guard (era 404 do Nest antigo) ⇒ código novo no ar |
+| Preflight `OPTIONS` | **200** com `Access-Control-Allow-Origin` correto ⇒ **sem import manual no API Gateway** |
+| Migration | `20260812130000_fm_required_attachments` gravada em `_prisma_migrations` às **16:32:37 UTC**, 1 passo, sem rollback |
+| Matriz | tabela existe e tem **0 linhas** — nasce vazia, como decidido |
+| Enum | `FmReportKind` = `producao`, `embarque` (abate fora, por desenho) |
+| Front | bundle `index-q9XdjYtL.js` contém "Anexos Obrigatórios", a rota e o texto novo do aviso; **não** contém "Buscar na base" (CTR-04(ii), não pushado) — o zero é o controle da sonda |
+
+📌 **Lição do dia (método):** o **API Gateway do SIH não precisou de import** e a prova é o CORPO do 404, não o
+código. `/fm-required-attachments` devolvia 404 **do NestJS** (`"Cannot GET"`, com `timestamp` e `path`) e
+headers `x-amzn-Remapped-*` ⇒ o gateway já proxyava; um prefixo de fato desconhecido devolve
+`{"message":"Missing Authentication Token"}`, que é resposta **do gateway**. Distinguir os dois 404 evitou
+diagnosticar "falta rota no gateway" quando o que faltava era o deploy do ECS terminar.
+
+⚠️ **Janela de risco observada:** o **front subiu antes do back** — por ~1h o menu "Anexos Obrigatórios"
+existia sem as rotas correspondentes. Não quebrou nada (o checklist some quando a consulta falha), mas a
+tela de configuração daria 404 a quem abrisse. **Em deploy de par back+front, avisar a sala.**
+
+⚠️ **Duas decisões que eu tomei ao implementar, ambas reversíveis, ambas precisam do seu aval:**
+
+1. **Abate ficou FORA da matriz** — não por esquecimento: `report_attachments` só tem FK para
+   embarque e produção. Exigir anexo em FM de abate criaria regra **incumprível**. Se abate precisar de
+   anexo, é item novo (FK + upload + tela), não configuração.
+2. **Escrita é `admin` + `coordenador`, não "Qualidade"** — o SIH **não tem** o perfil `qualidade` no enum
+   `UserRole` (só `admin`, `coordenador`, `supervisor`, `operador`, `controlador`; em prod: admin 5 ·
+   coordenador 1 · supervisor 73 · controlador 6). Restringir a um perfil sem usuários foi exatamente o erro
+   do GC em 31/jul, que deixou a reclamação inacessível por semanas. Criar um `qualidade` de verdade no SIH
+   é item separado (enum + menu + usuários); a troca depois é de uma linha.
+
+### ✅ DECISÕES DA SALA — 12/ago (respostas do Renato). **Não re-litigar.**
+
+| # | Pergunta | Decisão | O que ela custa |
+|---|---|---|---|
+| **D1** | Embarque consome **parcial** de uma produção? | ✅ **SIM, parcial.** E precisa de **tela de pendências**: quais relatórios de produção ainda têm saldo não relacionado a embarque | 🔴 **migration** — o vínculo hoje **não tem quantidade** (PK `shippingReportId+productionReportId` e nada mais). Sem coluna de consumo não existe saldo nem pendência |
+| **D2** | Matriz FM × anexo é fixa ou configurável? | ✅ **Configurável em tela** | 🔴 tabela nova + CRUD + tela. ⚠️ deixa o modelo **partido**: anexos viram dado, `verifications` continuam código |
+| **D3** | Anexo faltando trava ou avisa? | ✅ **TRAVA na assinatura do supervisor** | 🟡 validação no `PATCH /:id/sign`. ⚠️ **risco operacional** — ver mitigação abaixo |
+
+**🛡️ Mitigação recomendada para o D3 (decisão do Renato pendente):** a matriz **nasce vazia** e a Controladoria
+liga anexo por anexo. Assim a trava entra sem parar a operação no dia 1 — hoje **nenhum** relatório do acervo
+tem anexo obrigatório, e ligar a matriz cheia de uma vez trava toda assinatura em campo, com supervisor em
+planta e sem suporte. É o mesmo raciocínio que fez o GC escolher "avisar" nas 188 evidências vencidas, só que
+aqui a trava é a decisão — o que se controla é **quando cada linha passa a valer**.
+
+**✅ 3 perguntas de desdobramento — RESPONDIDAS na mesma sessão:**
+
+| # | Pergunta | Decisão | Consequência |
+|---|---|---|---|
+| **D4** | Unidade do saldo | ✅ **Por produto / lote** | A chave é `(productCode, productBatch)`. Direto para os tipos com produto em coluna; **raspa, tripas e gelatina guardam vários produtos finais dentro de `customFields` (Json)** ⇒ para esses, estruturar o Json entra no caminho crítico (é o **GAP-3 de 14/jun**, já registrado como pré-requisito) |
+| **D5** | Rascunho reserva saldo? | ✅ **NÃO reserva** — só o consumo efetivo conta. Justificativa do Renato: **não há mais de 1 supervisor por planta** responsável pelos relatórios ⇒ sem corrida por saldo | Simplifica muito: nada de reserva, expiração de rascunho ou lock. ⚠️ **A premissa fica registrada**: se um dia houver 2 supervisores na mesma planta, o saldo passa a poder ser vendido duas vezes |
+| **D6** | Quem edita a matriz FM × anexo | ✅ **Qualidade + Admin** | Escrita = `qualidade` e `admin`; leitura = quem preenche relatório. ⚠️ `controlador` **não** edita — ele consome a exigência na fila de conferência |
+
+### CTR-02 · O vínculo embarque⇄produção já está construído — falta a porta e o item
+
+Decisão do PO de **14/jun** (GAP-1: *"embarque vincula aos ProductionReport e deriva a composição; NÃO captura
+manual"*) foi implementada em boa parte. **O que existe hoje:**
+
+- `ShippingReportProduction` (M:N `shipping_report_productions`) e `ShippingReportSource` (A2, `sourceType`
+  = `abate` | `producao`) — [schema.prisma:596-630](../sih-backend/prisma/schema.prisma#L596-L630).
+- Componente **`LinkedSourcesField`** no form, com botão que aplica a **composição derivada** —
+  [ShippingReportForm.tsx:1071-1116](../sih-frontend/src/pages/shipping/ShippingReportForm.tsx#L1071-L1116).
+  Ele já resolve o multi-origem do FM 7.1.7.1: junta SIFs distintos e calcula a faixa min→max de data de abate.
+
+**As 3 lacunas, na ordem em que doem:**
+
+1. **A composição derivada só chega depois de salvar** — está escrito no próprio código (*"a composição derivada
+   só aparece após salvar; os vínculos vão no POST"*). Quem está **criando** um embarque não tem lista de onde
+   escolher; é exatamente a tela do print. ⇒ o pedido da sala é, em grande parte, **antecipar isso para a criação**.
+2. **Aplicar é tudo-ou-nada.** `onApplyDerived` substitui a tabela inteira por 1 linha por produto. O pedido é
+   **escolher item a item** — checkbox por produto/origem.
+3. **A quantidade não vem da produção:** o mapeamento grava `quantity: 0` e só traz `netWeightKg` agregado
+   ([linha 1106-1107](../sih-frontend/src/pages/shipping/ShippingReportForm.tsx#L1106-L1107)). A sala pediu
+   **produtos *e* quantidades** — hoje a quantidade continua digitada à mão.
+
+✅ **RESPONDIDO (D1): consumo parcial, SIM — e com tela de pendências.** Consequências medidas:
+
+- **A derivação já é ao vivo, não só pós-salvar** — corrijo o que eu havia escrito: o service deriva a
+  composição na hora (`sources.length ? deriveComposition(sources) : null`) e **só congela em
+  `productionSnapshot` depois de assinado** ([shipping-report.service.ts:114-120](../sih-backend/src/shipping-report/shipping-report.service.ts#L114-L120)).
+  O que falta é uma rota de **prévia sem relatório salvo** (a derivação hoje depende de um `id` que na criação
+  ainda não existe). ⚠️ **Rota nova ⇒ regenerar swagger + os 3 JSONs do API Gateway no MESMO commit.**
+- **O saldo precisa de coluna:** `ShippingReportProduction` é só a PK composta, **sem quantidade**
+  ([schema.prisma:596-608](../sih-backend/prisma/schema.prisma#L596-L608)). Consumo parcial ⇒ **migration
+  aditiva** com a quantidade consumida por vínculo (e por item, se for saldo por item — pergunta 1 acima).
+- **Pendência = produzido − Σ consumido.** A tela pedida é a lista de produções com saldo > 0; o cálculo tem de
+  ler os **vínculos persistidos**, nunca o `productionSnapshot` (que é congelado e só existe no assinado).
+
+### CTR-04 · O prefill da origem ignora curtume — e o destino já faz o que a origem não faz
+
+O `handlePlantChange` ([linhas 354-380](../sih-frontend/src/pages/shipping/ShippingReportForm.tsx#L354-L380))
+decide o prefill por igualdade de `plant.type`:
+
+| Campo | Preenche quando | Sol Couros (`curtume`) |
+|---|---|---|
+| **Abatedouro / Frigorífico** (`slaughterhouseInfo`) | `frigorifico` ou `abatedouro` (ou qualquer planta, se for transferência) | ❌ |
+| **Unidade de Produção** (`productionUnitInfo`) | `processamento` | ❌ |
+| **Endereço de Carregamento** | sempre (sobrescreve — lição do "Passo Fundo" de 17/jul) | ✅ |
+
+⇒ no print, o endereço veio da base e os outros dois foram digitados. **Dois consertos independentes:**
+
+- **(i)** o prefill precisa cobrir `curtume` e ler **`capabilities`**, não só `type` — usar o `plantMatchesTypes`
+  que já centraliza essa regra ([plants.service.ts:43](../sih-frontend/src/services/plants.service.ts#L43)).
+  É a 4ª aparição do padrão *"duas fontes para o mesmo fato e o código lê a errada"*.
+- **(ii)** trocar os campos de origem por **seletor da base** (SIF/CNPJ/nome). O padrão existe **no mesmo
+  arquivo**, do lado do destino: `handleDestinationPlantChange` já preenche endereço + CNPJ a partir da planta
+  cadastrada, e há `lookupCnpj` para o caso externo. Origem ficou texto livre.
+
+### CTR-05 · FM × anexos obrigatórios — metade da espinha já existe, e duas decisões definem o tamanho
+
+**O que já existe (e é reaproveitável inteiro):** um **registry por FM** — `FmConfig { formNumber, revision,
+revisionDate, titlePt, titleEn, verifications[] }` em
+[fm-metadata.ts](../sih-backend/src/common/constants/fm-metadata.ts), com `PRODUCTION_FM`, `SHIPPING_FM` e
+`SLAUGHTER_FM`, exposto pelo módulo `fm-metadata` e consumido pelo front. **É exatamente o mecanismo de "montar
+a tela conforme o FM"** — só que hoje ele governa apenas o checklist de verificações.
+
+**O que não existe:** qualquer relação FM → anexo. `ReportAttachment.category` é `String?` **nullable**
+([schema.prisma:1187](../sih-backend/prisma/schema.prisma#L1187)), validada contra uma lista fixa no service —
+`CSI · CSN · DCPOA · INVOICE · BL · NOTA_FISCAL · ROMANEIO · CROQUI · OUTRO`
+([attachments.service.ts:9](../sih-backend/src/attachments/attachments.service.ts#L9)). **Nenhum anexo é
+obrigatório e nenhum está amarrado a um formulário.** ⇒ hoje o relatório assina sem nada anexado.
+
+📌 **Não é assunto novo:** é o **gap F** do levantamento de 14/jun (*"anexo DCPOA/CSN/Croqui; falta categoria
+Croqui"*) chegando por outro canal — a categoria Croqui, aliás, já entrou. Vale registrar como reincidência,
+que é sinal de prioridade real.
+
+✅ **RESPONDIDO (D2 + D3): configurável em tela, e TRAVA na assinatura do supervisor.** O que isso define:
+
+- **A matriz vira dado:** tabela nova (FM/tipo de relatório × categoria de anexo × obrigatório) + CRUD + tela de
+  configuração. ❓ falta só **quem edita** (`controlador` · `admin` · Qualidade).
+- ⚠️ **O modelo do FM fica partido:** anexos passam a ser dado configurável enquanto as `verifications` do mesmo
+  `FmConfig` continuam **constante em código**. Conviver assim é aceitável, mas é decisão consciente — quando a
+  FAMBRAS pedir para editar uma verificação (vai pedir), a resposta terá de ser a mesma migração.
+- **A trava mora no `PATCH /:id/sign`** de produção e embarque (e o mesmo vale para abate, se a matriz cobrir os
+  FMs de abate). Sem rota nova ⇒ sem regen do API Gateway nesta parte.
+- 🛡️ **Matriz nasce vazia** (mitigação acima): a trava só morde onde a Controladoria já ligou a exigência.
+
+---
+
 ## 6. Validado OK ao vivo (base da aprovação formal)
 
 > Preencher conforme o time confirmar cada tela. **Isto é o que André precisa para dar aprovação.**
@@ -1975,6 +2198,9 @@ Artefato dos papéis de homologação de MP (com a Q5 medida): `claude.ai/code/a
 
 ### Placar
 
+> ⚠️ **O placar abaixo é de 11/ago e está VENCIDO.** A reconciliação de **12/ago** (contra git, não memória)
+> está logo em seguida — use aquela.
+
 | | Quantidade |
 |---|---|
 | ✅ **Em produção** | **7** — FRG-18 · 19 · 20 · 21 · 24 · 29 · 30 |
@@ -1982,6 +2208,27 @@ Artefato dos papéis de homologação de MP (com a Q5 medida): `claude.ai/code/a
 | 🟡 Depende de decisão do Renato | **5** |
 | ❓ Depende de resposta da FAMBRAS | **8** |
 | 🔧 Operacional / dado (não é código) | **7** |
+
+### 📊 RECONCILIAÇÃO 12/ago — os 47, item a item (verificado por git)
+
+**28 fechados · 7 parciais · 12 abertos.** Parcial = uma fatia está em prod e outra, declarada no próprio
+achado, não está — conta como pendente na fila.
+
+| Grupo | IDs | Total |
+|---|---|---|
+| ✅ **Fechados** | FRG-03 · 04 · 06 · 07 · 08 · 09 · 10 · 12 · 14 · 18 · 19 · 20 · 21 · 22 · 23 · 24 · 26 · 27 · 30 · 31 · IND-01 · 02 · 05 · 08 · 10 · 13 · 14 · 15 | **28** |
+| 🟠 **Parciais** | FRG-05 *(empresa deixou de ver a matriz ✅ · envio pelo cliente ❌ = B7)* · FRG-25 *(a ✅ · b ❌ pós-go-live)* · FRG-29 *(notificação ✅ · KPI + lembrete ❌)* · FRG-32 *(p1 código ✅ · p2 backfill de 180 selos ❌)* · IND-03 *(texto ✅ · regra ❌ FAMBRAS)* · IND-04 *(rótulos C1–C6 ✅ · taxonomia + migração de preço ❌)* · IND-07 *(empresa/comercial/jurídico criados ✅ · auditores REAIS e 0 de 306 logins do FM 6.1.4 ❌)* | **7** |
+| 🔴 **Abertos** | FRG-01 · 02 · 11 · 13 · 15 · 16 · 17 · 28 · IND-06 · 09 · 11 · 12 | **12** |
+
+**Os 19 pendentes por natureza do bloqueio:**
+
+| Bloqueio | IDs | O que destrava |
+|---|---|---|
+| ❓ **Resposta da FAMBRAS** — não codificável | FRG-01 · FRG-17 · IND-03(regra) · IND-06 · IND-11 | regra de nomenclatura + exemplos · `TH` × nº de planos APPCC na GSO 2055-2 · APPCC>0 só no grupo C? · quem **executa** a revisão de qualidade · SLA de reclamação/apelo |
+| 🟡 **Decisão do Renato** | FRG-15 · IND-04(a,b) · IND-12 | formato do `targetMarkets` · taxonomia de tipo de certificação (o preço lê `certificationType`, os dias leem `categoryCode`, e há migração de tabela de preço **parada no meio**) · empresa vê o próprio apelo |
+| 🟢 **Código, escopo fechado** | FRG-05 · 11 · 13 *(= **B7**, migration de enum `DocumentType`)* · FRG-16 *(calculadora GSO sem tela)* · FRG-28 *(solicitação em LOTE, spec `.odt` em mãos)* · FRG-29(b,c) · IND-09 *(**B14** máquina de estados da reclamação)* | é onde a fila anda sozinha |
+| 🔧 **Dado / operacional** | FRG-02 *(**B9** — 18.511 produtos, 94% sem `packing_size`)* · FRG-32 p2 *(**B10b** — 180 selos)* · IND-07 *(auditores reais + vincular FM 6.1.4 aos logins)* | 🔴 os 2 primeiros são **risco alto na véspera**; o terceiro é FAMBRAS |
+| ⏭️ **Já decidido para depois** | FRG-25(b) | mover escrita do contrato ao jurídico — 1ª semana pós-go-live (decisão de 11/ago) |
 
 ### ✅ ONDA 0 — CONCLUÍDA e em produção · **3 blocos**, verificados por git
 
@@ -2190,7 +2437,8 @@ declarada** no §2 do BACKLOG — declarar dono antes, senão duas sessões para
 |---|---|---|---|
 | **10/ago** | **Frigorífico** (André, Giovanna, William) — GC | `empresa` → analista | ✅ **fechado — 32 achados** |
 | **11/ago** | **Industrializados** — GC, ciclo completo até auditoria | analista · gestor · admin | ✅ **fechado — 15 achados** |
-| 12-14/ago | a definir (Qualidade? SIH?) | — | ⬜ |
+| **12/ago** | **Controladoria Industrial** — GC | a confirmar na sala (⚠️ W-1: `controlador` tem menu vazio) | 🟡 **em curso — `CTR-nn` (§5-C)** |
+| 13-14/ago | a definir (Qualidade? SIH?) | — | ⬜ |
 
 **Como o Dia 2 avançou no fluxo:** foi o primeiro dia em que um processo real atravessou solicitação →
 proposta → contrato assinado → análise documental → planejamento de auditoria. Cada trava encontrada foi
