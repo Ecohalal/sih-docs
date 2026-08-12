@@ -1375,7 +1375,7 @@ reaparecer aqui.** Reaparecendo, registrar como *confirmação em 2º departamen
 | **IND-12** | — | ❓ decisão | Apelo × perfil `empresa` | **A empresa não vê o próprio apelo** (não está nas roles de leitura) — e apelo é, por definição, o instrumento dela | ❓FAMBRAS | 🟡 consequência do Lote 6.3 |
 | **IND-13** | 8 | 🎨 UX | Agendar Auditoria | Endereço deve vir **pré-preenchido** da planta. Bônus: **"Tipo de Auditoria" aparece 2×** no mesmo modal, e Estágio 1 default **Presencial** contradiz o FM (*"Estágio 1 é realizada de forma remota"*) | Claude → §4.2 | 🟢 pronto |
 | **IND-14** | 9 | 🚨 **3 causas empilhadas** | Gestor → Sugestões de Alocação | Zero sugestões de auditor. **(1)** matcher exige `role==='auditor'` e há **0 auditores**; **(2)** lê o **FK escalar** de categoria, NULL em 1.010 de 1.190 — o wizard grava na **M:N**; **(3)** falha **silenciosa** (`logger.warn`); **(4)** a tela **não tem botão de gerar** — o "Atualizar" só lista | Claude → §4.2 | 🔴 **P0** |
-| **IND-15** | 9 *(2º)* | 🧩 **capacidade sem porta** | Auditoria → reagendar / trocar auditor | Backend **já faz as duas** e autoriza; o front tem os métodos de serviço e **nenhuma tela os chama** — são órfãos. ⚠️ `gestor_auditoria` reagenda mas **não pode trocar auditor** | Claude → §4.2 | 🟢 pronto |
+| **IND-15** | 9 *(2º)* | 🧩 **capacidade sem porta** | Auditoria → reagendar / trocar auditor | Backend **já faz as duas** e autoriza; o front tem os métodos de serviço e **nenhuma tela os chama** — são órfãos. ⚠️ `gestor_auditoria` reagenda mas **não pode trocar auditor** | Claude → §4.2 | ✅ **EM PROD 12/ago** — reagendar `e5d16566` (11/ago) · trocar auditor com motivo obrigatório + `AuditTrail` back `60eee058` front `c395d07b` · card deixa de sumir fora do planejamento `71246f92`. Falta validar |
 
 ---
 
@@ -1888,7 +1888,7 @@ não como fila normal.
 | **Escopo herdado — ampliação** | A empresa **deve ver o escopo antigo como CONTEXTO**. ⇒ não limpar; **falta deixar visualmente claro o que é pré-existente × o que é novo** (os passos se chamam "Novos Produtos"/"Novas Instalações" e hoje não distinguem). |
 | **Escopo herdado — manutenção** | **OK como está.** |
 | **FRG-25 contrato** | **(a) agora** (só UI, feito) + risco registrado; **(b)** — mover escrita ao jurídico — **na 1ª semana pós-go-live**, junto da criação dos perfis. ⚠️ (b) antes de existir gente em `juridico` travaria a emissão de contrato no dia 1. |
-| **Tela de aprovação de alocação** | Menos urgente **por consequência da decisão do `assign-auditor`**: com a designação direta, ela passa a ser necessária só para o 1º auditor. Fica **pós-go-live**. |
+| **Tela de aprovação de alocação** | ~~Menos urgente **por consequência da decisão do `assign-auditor`**: com a designação direta, ela passa a ser necessária só para o 1º auditor. Fica **pós-go-live**.~~ ❌ **PREMISSA FALSA (corrigido 12/ago): a tela EXISTE e funciona.** Quem chama as rotas é o componente FILHO — `SuggestionCard.tsx:33` (`approve`) e `:50` (`reject`); o registro anterior olhou só o `AllocationSuggestions.tsx` (pai). Prod confirma: alocação aprovada em 11/ago 22:58 com `allocated_by`. O que faltava era a aprovação **designar o auditor**, consertado em `10d7c77c`. **Não reconstruir.** Sem porta de entrada mesmo está só a rota **`modify`** (trocar entre as sugestões, antes de aprovar) — ❓ decisão se entra. |
 
 ### 📦 O QUE FOI ENTREGUE EM 11/ago — 21 achados em produção
 
