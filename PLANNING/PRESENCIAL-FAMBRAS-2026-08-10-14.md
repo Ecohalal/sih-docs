@@ -1854,6 +1854,102 @@ cadastrado").
 
 ---
 
+## 7-W. HANDOFF — 11/ago fim do dia · **LEIA ISTO PRIMEIRO**
+
+> Escrito por falta de contexto na sessão, não por fim de trabalho. **Nada em andamento**:
+> os dois repos estão limpos e com `0 ahead`. A próxima sessão começa do zero.
+
+### 🎯 DIRETRIZ DO RENATO (11/ago): atacar **TODOS os 47 achados antes do go-live**
+
+⚠️ **Leitura honesta do que isso implica** — a diretriz é do decisor e vale, mas o cronograma tem
+dependências que não são de código:
+
+| Categoria | Qtd | Depende de |
+|---|---|---|
+| ✅ Já em produção | **21** | — |
+| 🟢 Posso fazer sozinho | **~10** | tempo de sessão |
+| ❓ **Travado em resposta da FAMBRAS** | **8** | FRG-01 (regra de nomenclatura + exemplos) · FRG-17 (`TH` × APPCC) · IND-03 (grupo C, ou D/E?) · IND-06 (quem executa a revisão) · IND-11 (SLA) · MP Q1-Q4 · FM 7.8.1 ATIVOS · Power BI |
+| 🔧 **Travado em cadastro operacional** | — | `empresa`=0 · `comercial`=0 · `juridico`=0 · auditores sem categoria industrial · 0/306 do FM 6.1.4 com login |
+| 🔴 Risco alto na véspera | 3 | B7 (**migration** de enum) · B9 (**18.511 produtos**) · B10b (180 selos) |
+
+⇒ **O gargalo deixou de ser código.** Dos 26 restantes, 8 não podem ser codificados sem resposta da
+FAMBRAS, e vários dos já corrigidos **não são testáveis** sem os usuários reais. Recomendação: perseguir as
+8 respostas e os cadastros **em paralelo** ao código, e tratar B7/B9/B10b como decisão consciente de risco —
+não como fila normal.
+
+### ✅ DECISÕES TOMADAS EM 11/ago (não re-litigar)
+
+| # | Decisão |
+|---|---|
+| **Trocar auditor** | Usar **`PATCH /workflows/:id/assign-auditor`** (caminho direto), **não** o `modify` da alocação. Fato que fecha a questão: `modifyAllocation` **lança se o status ≠ `sugerida`**, ou seja é incapaz de servir reatribuição pós-aprovação. São **momentos diferentes**, não alternativas. ⚠️ Condição do Renato: **registrar o motivo**. |
+| **Sincronizar alocação** | Ao trocar o auditor, **ATUALIZAR a alocação existente** marcando o motivo (não criar registro novo). |
+| **IND-04 taxonomia** | **Opção (c)**: só **corrigir os rótulos** de C1–C6 antes do go-live, para parar de contradizer as letras dos grupos industriais. (a) — preço por grupo/categoria real — vira **projeto próprio pós-go-live**. |
+| **Escopo herdado — renovação** | **Mantém** herdando. Correto por desenho (passo 2 = "Confirmação de Escopo"). |
+| **Escopo herdado — ampliação** | A empresa **deve ver o escopo antigo como CONTEXTO**. ⇒ não limpar; **falta deixar visualmente claro o que é pré-existente × o que é novo** (os passos se chamam "Novos Produtos"/"Novas Instalações" e hoje não distinguem). |
+| **Escopo herdado — manutenção** | **OK como está.** |
+| **FRG-25 contrato** | **(a) agora** (só UI, feito) + risco registrado; **(b)** — mover escrita ao jurídico — **na 1ª semana pós-go-live**, junto da criação dos perfis. ⚠️ (b) antes de existir gente em `juridico` travaria a emissão de contrato no dia 1. |
+| **Tela de aprovação de alocação** | Menos urgente **por consequência da decisão do `assign-auditor`**: com a designação direta, ela passa a ser necessária só para o 1º auditor. Fica **pós-go-live**. |
+
+### 📦 O QUE FOI ENTREGUE EM 11/ago — 21 achados em produção
+
+| Repo | Range | Blocos |
+|---|---|---|
+| **halalsphere-backend** | `c1777de1..0daaf30f` | B11 (IND-08) · IND-01 · B12 back (IND-14) |
+| **halalsphere-frontend** | `082a00eb..e5d16566` | B4 (FRG-12/09/14, IND-03/05) · B5 (FRG-08/23/25a/26/27/06/22/31, IND-02) · B12 front · B13 (IND-13/15 parcial) |
+
+Todos com `tsc -b` / `tsc --noEmit` limpos e testes verdes. **`0 ahead` nos dois repos.**
+
+### ▶️ PRÓXIMO PASSO IMEDIATO — trocar auditor (decisão acima, nada codado)
+
+**Back** (`workflow/*`): `AssignAuditorToWorkflowDto` ganha **`reason` obrigatório** · `assignAuditor` grava
+**`AuditTrail`** com before/after do `auditorId` + motivo (padrão do `assignAnalyst`, B1) · **atualizar a
+alocação aprovada** da certificação com o motivo. Hoje **não grava trilha nenhuma** e o DTO só tem
+`auditorId` — a troca é silenciosa.
+**Front** (`CertificationDetails.tsx`, card "Planejamento da Auditoria", que já existe e já foi ampliado
+para gestor/admin): seletor de auditor + motivo obrigatório, no mesmo padrão da rejeição de documento.
+
+### 📋 FILA DEPOIS DISSO (ordem recomendada, §7-Z tem o detalhe)
+
+1. **B3b** (back) — notificação de rejeição de documento (FRG-31 p3) e de reclamação/apelo (IND-10)
+2. **B6** (misto) — PCCH: `@Roles`+recorte (**escrita cross-tenant**, FRG-07) · `includeInternal` (FRG-10) ·
+   rótulos **"de Controle Halal"** (FRG-03, regra absoluta de termos)
+3. **IND-04 (c)** — rótulos de C1–C6
+4. **Ampliação** — marcar visualmente o escopo pré-existente
+5. **B10a** (back) — congelar `market_variant` na emissão (FRG-32)
+6. **B8** (front) — datas date-only em UTC (FRG-04)
+7. **Tela de aprovação de alocação** · **B7** (migration) · **B14** · **B9/B10b** (dados)
+
+### 🔧 VALIDAÇÃO PENDENTE EM PRODUÇÃO (Renato) — nada foi exercitado na UI real
+
+1. Viabilidade IT 7.4 grava (cert. `HS-2026151500508-01192`) — hoje **0 de 2** solicitações têm checklist;
+   o número mudar é prova definitiva
+2. Certificação Inicial **não** herda escopo (entrar pela Minerva, que tem 3 certificações)
+3. Rejeição de documento **exige motivo** e a empresa **vê** o motivo
+4. PDF/imagem **abrem** em vez de baixar
+5. "Gerar sugestões de auditor" no card de Planejamento (Minerva está em `planejamento_auditoria`)
+   — ⚠️ deve responder *"nenhum elegível para a categoria CV"* enquanto as competências dos auditores
+   estiverem **sem categoria industrial**. Isso é a mensagem correta, não sucesso.
+6. Reagendar auditoria · endereço pré-preenchido · rótulo "Modalidade" · Estágio 1 nascendo **remoto**
+7. Espelho `certifications.analyst_id` (a 1ª atribuição de analista nova é o teste — nunca foi exercitado)
+
+### 🚨 PENDÊNCIAS QUE NÃO SÃO CÓDIGO E BLOQUEIAM MAIS QUE ELE
+
+`empresa` = **0 usuários** (as 2 contas viraram auditor/gestor_auditoria em 11/ago) · `comercial` = **0** ·
+`juridico` = **0** · os 2 auditores são **contas de teste** e as competências estão **sem categoria
+industrial** · **0 de 306** pessoas do FM 6.1.4 vinculadas a login · **FM 7.8.1 ATIVOS** nunca carregado ·
+**Power BI da qualidade** só na versão de abril (hoje mantido pela **Bárbara**, que já é `qualidade` no GC).
+
+### 📁 ONDE ESTÁ O RESTO
+
+Prompts prontos e não usados em
+`C:\Users\ecotrace\AppData\Local\Temp\claude\c--Projetos-Ecohalal-sih-docs\92ec04a2-*\scratchpad\`:
+`PROMPT-B2-caixas-entrada.md` · `PROMPT-B3-notificacao.md` (⚠️ **já ampliado** com FRG-30 e FRG-31 p3) ·
+`PROMPT-B4-wizard.md` · `PROMPT-B11-viabilidade.md`. B2/B4/B11 **já foram executados**; o do B3 serve para o
+**B3b**.
+Artefato dos papéis de homologação de MP (com a Q5 medida): `claude.ai/code/artifact/fc9fb502-047c-4163-b059-c1236e42aa27`.
+
+---
+
 ## 7-Z. PLANO ATUALIZADO — fechamento do Dia 2 (11/ago)
 
 > Substitui o plano da pausa de 10/ago (preservado abaixo em **§7-A**, como histórico da decisão).
