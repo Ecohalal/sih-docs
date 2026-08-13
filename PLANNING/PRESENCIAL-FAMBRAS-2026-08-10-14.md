@@ -2375,6 +2375,170 @@ que é sinal de prioridade real.
 
 ---
 
+## 5-D. Achados — Dia 4 · **13/ago** · equipe **QUALIDADE** (2ª rodada)
+
+> Continuação do bloco `QA-nn` aberto na tarde de 12/ago (§5-C). Tema do dia: **revisão do fluxo de
+> certificação sob a ótica de quem é dono de cada ato.**
+
+### 📊 Medido em produção agora (13/ago, base GC) — os números que sustentam esta seção
+
+| Tabela | Linhas | Leitura |
+|---|---|---|
+| `certification_requests` | 3 · **2 com `viability_checklist`** | ✅ o fix do **IND-08** (`e8c469b8`) funcionou — ontem era **0** |
+| `request_review_reports` (FM 7.1.9) | **0** | ⚠️ a tela subiu hoje (`c3c9a818`); **ninguém preencheu ainda** |
+| `seal_usage_controls` | 1 | 1 registro de teste; `seal_verifications` = 0 |
+| `committee_reviews` / `committee_decisions` | **0 / 0** | o módulo de comitê **nunca rodou** |
+| usuários por perfil | `analista` 15 · **`qualidade` 6** · `gestor` 3 · `admin` 1 · `auditor` 1 · `juridico` 1 · `gestor_auditoria` 1 | **`comercial` = 0** e **`empresa` = 0** (⇒ IND-07 continua de pé) |
+
+---
+
+### QA-07 · IT 7.4 e FM 7.1.1 — dois painéis na tela do analista que não são dele
+
+**Como veio:** *"onde tem IT 7.4 o analista não tem ação, pois os dados vêm do 7.1.9 já preenchido
+anteriormente — aqui é só mostrar"* e *"o checklist de processo (7.1.1) é atribuição do comitê; analista não
+tem ação, apenas os usuários a quem forem delegadas as ações de comitê"*.
+
+**São dois problemas de naturezas diferentes.** O primeiro é duplicação de dado; o segundo é um painel que
+**não grava nada**. Separei em QA-07a e QA-07b porque o encaminhamento diverge.
+
+---
+
+#### QA-07a · 🔀 A IT 7.4 duplica, palavra por palavra, as 3 conformidades do FM 7.1.9
+
+**O time está certo, e a evidência é literal — as mesmas 3 perguntas existem em dois lugares:**
+
+| | IT 7.4 (`ViabilityChecklist`) | FM 7.1.9 (`RequestReviewReportCard`) |
+|---|---|---|
+| Onde | detalhe da certificação (`CertificationDetails.tsx:1236`) | fase **comercial** (`ProcessProposal.tsx:448`) |
+| Campos | `formComplete` · `teamAvailable` · `categoryRecognized` (`ViabilityChecklist.tsx:23-36`) | `applicationComplete` · `technicalStaffAvailable` · `categoryRecognized` (`RequestReviewReportCard.tsx:500-517`) |
+| Onde grava | `certification_requests.viability_checklist` — **Json solto** | `request_review_reports` — **3 colunas tipadas** (`schema.prisma:3511-3513`) |
+| Quem edita | `admin`, `gestor`, `analista` | `admin`, `analista`, `comercial` |
+
+⚠️ **Nota de honestidade:** ontem (12/ago) eu tratei o **IND-08** como P0 e consertei a IT 7.4 para que ela
+**gravasse** (`e8c469b8`, em prod — e os 2 registros medidos acima provam que grava). Hoje a Qualidade diz
+que ela **não deve ser preenchida ali**. O conserto não foi perdido — o registro tem de existir e o ato de
+quem verificou também —, mas **o lugar da edição muda**. O que sobra do IND-08 é a lição do `as any`.
+
+🚨 **O que impede aplicar a mudança hoje, tal como pedida:** `request_review_reports` tem **0 linhas** e
+`comercial` tem **0 usuários**. Se a IT 7.4 virar espelho read-only do 7.1.9 agora, **o painel fica vazio
+para todo mundo** — inclusive para as 2 certificações que já têm a viabilidade preenchida. Mesma armadilha
+do CTR-02 (a base vazia inverte a recomendação). ⇒ a ordem correta é **7.1.9 primeiro, espelho depois**.
+
+**Conserto proposto (front, pequeno) — em duas etapas:**
+1. **Agora:** IT 7.4 continua editável, mas passa a **ler o FM 7.1.9 quando ele existir** (endpoint pronto:
+   `GET /request-review-reports/by-request/:requestId`) e a mostrar de onde veio. Sem 7.1.9, comportamento atual.
+2. **Depois que a FAMBRAS começar a preencher o 7.1.9:** `readOnly` fixo — hoje está **hardcoded
+   `readOnly={false}`** em `CertificationDetails.tsx:1237`. O componente já renderiza texto/ícone quando
+   `canEdit=false` (`ViabilityChecklist.tsx:112-125`), então não vira `select disabled`.
+3. **Fonte única:** decidir se `viability_checklist` (Json) é **descontinuado** em favor das 3 colunas do
+   7.1.9. Enquanto os dois existirem, há duas verdades para o mesmo registro de aceitação (ISO 17065).
+
+❓ **Decisão necessária (D-QA07a):** com `comercial` = 0 usuários em prod, **quem preenche o FM 7.1.9** —
+o próprio analista (e aí a IT 7.4 é redundância pura) ou a FAMBRAS vai criar os usuários comerciais?
+Note que `gestor` **não está** nos `@Roles` do `request-review-reports` (só `admin`, `analista`, `comercial`)
+— hoje o gestor edita a IT 7.4 e **perderia o acesso** ao migrar para o 7.1.9.
+
+**Encaminhamento:** 🟢 front-only, pequeno — mas **depende de D-QA07a e da base deixar de estar vazia**.
+
+---
+
+#### QA-07b · 🚨🚨 O Check List FM 7.1.1 não é "do analista" — ele não é de ninguém: **não grava nada**
+
+O pedido da sala é justo, mas o defeito é maior do que o pedido. **Levantei os três lados e nenhum se
+sustenta:**
+
+**1. O painel na tela não persiste uma única marcação.**
+```tsx
+// CertificationDetails.tsx:1268 — montado SEM NENHUMA PROP
+{!isCompanyUser && <CommitteeChecklistPanel />}
+```
+Sem `checklist`, sem `onChange`, `readOnly` no default `false`. O componente é `useState` local
+(`CommitteeChecklistPanel.tsx:40-57`): **não há chamada de API, não há botão Salvar**. Quem marca C/NC/NA
+perde tudo no refresh. O *"0/9 respondidos"* do print é **permanente e sempre será**. Não existe campo
+`committeeChecklist` em lugar nenhum do backend (grep nos dois repos).
+
+**2. O módulo de comitê existe no backend, é mais rico que o painel — e o front nunca o chama.**
+`POST /committee/review` (`committee.controller.ts:33`) recebe **`checklist` Json por revisor**, com 4
+revisões sequenciais obrigatórias (`revisao_tecnica` → `revisao_religiosa_1` → `revisao_religiosa_2` →
+`aprovacao_rt`), exigência de **unanimidade** e `CommitteeDecision` no fim. **Zero chamadas a `/committee/*`
+no frontend** — o único vizinho é `manager.service.ts:290`, que posta em `/manager/committee/decision`.
+📊 Confirmado pelo dado: `committee_reviews` = **0**, `committee_decisions` = **0**.
+⇒ **Mesma classe do `fulfill` órfão de 11/ago:** motor construído, nenhuma tela ligada nele.
+
+**3. Existem DUAS listas divergentes de "os 9 itens do FM 7.1.1" — e nenhuma lê dado gravado.**
+A do painel (`CommitteeChecklistPanel.tsx:15-25`) e a do PDF (`fambras-pdf.service.ts:264-273`) **não têm um
+item em comum na redação**; o PDF imprime `[ ] Conforme [ ] Não Conforme [ ] N/A` **em branco**, como
+formulário de papel. Sem o FM 7.1.1 original na mão, não dá para saber qual das duas é a correta —
+provavelmente **nenhuma**.
+
+**4. "Delegar ações de comitê" não tem onde morar.** `UserRole` tem 13 valores e **nenhum é `comite`**
+(`schema.prisma:19-33`). O que mais se aproxima da delegação pedida é o `CommitteeReviewType` (4 papéis
+nominais). E hoje `POST /committee/review` aceita **`analista`** — exatamente quem a Qualidade diz que não
+deveria agir ali.
+
+❓ **Decisões necessárias (D-QA07b), nesta ordem:**
+| # | Pergunta | Por que trava |
+|---|---|---|
+| a | **O FM 7.1.1 é um checklist por membro do comitê** (4×, dentro de `CommitteeReview.checklist`, que já existe) **ou um só por certificação?** | define schema e tela |
+| b | Qual das duas listas de 9 itens é o FM 7.1.1 real? | 📄 **precisamos do papel** — nem 7.1.1 nem 7.4.2.4 estão nos repos |
+| c | Delegação = **perfil novo `comite`** ou **designação nominal por certificação** (como o auditor)? | perfil novo = migration + gate; nominal = reaproveita `CommitteeReview` |
+| d | O analista **deixa de ver** (como a empresa, FRG-06) ou **vê read-only** como evidência do processo? | 1 linha vs. 1 linha — mas é decisão de segregação |
+
+**Encaminhamento:** 🔴 **não é item pequeno.** Registrar como *"esconder do analista"* esconderia um painel
+que **nunca funcionou** — e daria a impressão de que o FM 7.1.1 está resolvido. Proposta em 2 tempos:
+1. **Agora, honesto e barato:** o painel vira **read-only para todos** (1 linha), até existir onde gravar.
+   Melhor um checklist que não se pode marcar do que um que aceita a marcação e a joga fora.
+2. **Bloco próprio (B12):** a tela do comitê ligada no módulo que já existe — 4 revisões sequenciais,
+   checklist por revisor, decisão. **Depende de (a)-(d) e do papel.** Pós-go-live é defensável, desde que
+   fique dito que **hoje o comitê não tem registro nenhum no sistema** (`committee_reviews` = 0).
+
+---
+
+### QA-08 · Controle do Selo — o modelo existe, o **dono do parecer** não
+
+**Como veio:** *"1. analista solicita à empresa o preenchimento do FM 7.4.2.4 e o envio do selo em si;
+2. analista recebe e envia à qualidade, que analisa e devolve um parecer com aprovação ou não"* — e o Renato
+já enxerga **um dashboard para a Qualidade acompanhar**.
+
+**Boa notícia: diferente do comitê, este módulo está ligado ponta a ponta.** `SealUsageControl`
+(`schema.prisma:3877-3899`) tem tipo (PRODUTO/INSTITUCIONAL), descrição, `layoutUrl`, status
+`pendente/aprovado/rejeitado/revogado`, `approvedById`, `approvalDate`, `rejectionReason`; `SealVerification`
+cobre a verificação periódica do FM 4.3.1; e a tela existe e chama a API (`SealManagementTab.tsx`).
+
+**Quatro lacunas contra o fluxo pedido:**
+
+| # | Lacuna | Evidência | Tamanho |
+|---|---|---|---|
+| 1 | 🚨 **O parecer é da Qualidade — e `qualidade` não pode dar parecer** | `PUT /seal-usage/:id/review` = `@Roles('admin','gestor','analista')` (`seal-usage.controller.ts:37`); o front espelha (`SealManagementTab.tsx:142`). `qualidade` só **lê**. **Matriz invertida, igual ao FRG-25** | 🟢 pequeno (roles) — mas ver decisão abaixo |
+| 2 | 🧩 **Não existe o passo "analista solicita"** | hoje qualquer um cria o registro direto — inclusive `empresa` (`controller:17`, `SealManagementTab.tsx:141`). Não há solicitação que **avise** a empresa | 🟡 o encanamento existe: o ciclo de documentos ficou audível em 11/ago (FRG-29/30, `c1777de1`) |
+| 3 | 📎 **"O envio do selo em si" não tem upload** | `layoutUrl` é `VarChar(500)` e o modal pede *"https://…"* (`SealManagementTab.tsx:542`) — a empresa teria de hospedar a arte em algum lugar. **Mesmo defeito do FRG-13**… que foi **consertado ontem** (`3f21ab91` / `97e34101`) | 🟢 reaproveita o upload do FRG-13 |
+| 4 | 📊 **O dashboard da Qualidade não tem de onde ler** | só existem `GET /certifications/:id/seal-usage` e `GET /seal-usage/:id` — **nenhuma consulta transversal**. Uma fila "selos pendentes" precisa de endpoint novo (filtro por status + paginação) | 🟡 endpoint + card; a área `/qualidade` já existe (7 telas) |
+
+📄 **Falta o papel — e essa é a lição nº 2 do Dia 3.** O **FM 7.4.2.4 não está em nenhum repo**: varri
+`fambras-references-2026-04/` e `sih-docs/Reuniões/` e temos 7.4.2.1, .2, .7, .14, .15, .16 e .T — **o .4
+não**. Dimensionar sem o documento deu errado no FM 7.1.9 (o papel tinha o dobro do que o código modelava).
+⇒ **pedir o FM 7.4.2.4 à FAMBRAS antes de escrever a spec.**
+
+⚠️ **Já sabíamos que o 7.4.2.4 ia doer:** ele aparece no CTR-05 como o item 15 do FM-de-anexos, e é
+**OU exclusivo** com o 7.4.2.5 (controle de **não uso** do selo) — §5-C, linha *"Item 15 é OU exclusivo"*.
+E o `DocumentType` (15 valores genéricos) **não tem** o código FM. As duas coisas se encontram aqui.
+
+❓ **Decisões para a discussão (D-QA08):**
+1. **O analista deixa de aprovar selo, ou aprova junto com a Qualidade?** Se o parecer é só da QA, é trocar
+   os `@Roles` — mas isso **tira uma capacidade de 15 analistas** e entrega a **6 usuários `qualidade`**.
+   *(Mesmo tema do QA-07: quem é dono de cada ato.)*
+2. **A empresa continua podendo criar o registro sozinha**, ou só responde a uma solicitação do analista?
+3. **O parecer da QA é texto livre ou um formulário estruturado** (o FM 7.4.2.4 responde — precisamos dele)?
+4. **O dashboard é fila de trabalho** (o que está pendente de parecer meu) **ou painel de acompanhamento**
+   (quantos selos, quantos reprovados, por empresa)? Os dois são fáceis, mas são telas diferentes.
+
+**Encaminhamento:** 🟡 **discutir antes de codar.** Fatiamento sugerido, do mais barato ao mais caro:
+**S1** `qualidade` passa a dar parecer (roles back+front) · **S2** upload da arte reusando o FRG-13 ·
+**S3** solicitação do analista → e-mail para a empresa (encanamento do FRG-29/30) · **S4** dashboard da
+Qualidade (endpoint transversal + card em `/qualidade`). **S1 cabe antes do go-live; S3/S4 provavelmente não.**
+
+---
+
 ## 7-Y. HANDOFF — fim do Dia 3 + madrugada de 13/ago. **LEIA ANTES DE COMEÇAR.**
 
 > Escrito por falta de contexto na sessão, não por fim de trabalho.
