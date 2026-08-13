@@ -1981,6 +1981,209 @@ aqui a trava é a decisão — o que se controla é **quando cada linha passa a 
 | **D5** | Rascunho reserva saldo? | ✅ **NÃO reserva** — só o consumo efetivo conta. Justificativa do Renato: **não há mais de 1 supervisor por planta** responsável pelos relatórios ⇒ sem corrida por saldo | Simplifica muito: nada de reserva, expiração de rascunho ou lock. ⚠️ **A premissa fica registrada**: se um dia houver 2 supervisores na mesma planta, o saldo passa a poder ser vendido duas vezes |
 | **D6** | Quem edita a matriz FM × anexo | ✅ **Qualidade + Admin** | Escrita = `qualidade` e `admin`; leitura = quem preenche relatório. ⚠️ `controlador` **não** edita — ele consome a exigência na fila de conferência |
 
+### 🧪 Bloco da tarde — equipe **QUALIDADE** (mesmo dia 12/ago). Numeração `QA-nn`.
+
+| ID | nº na sala | Tipo | Tela | Resumo | Dono | Estado |
+|---|---|---|---|---|---|---|
+| **QA-01** | 1 | 🧩 GAP + 🏛️ perfil novo | SIH → Ocorrências | **Perfil `qualidade` no SIH** aprovando ocorrência (FM 20.1 aves e **20.2 industrializados**): supervisor preenche, anexa, assina → QA aprova ou reprova **com justificativa** → supervisor **reabre e ajusta**. Mais um **campo de comentário do QA** que vai para o BI da empresa. **Metade da máquina existe** (status/`approve`/`reject`/`reopen` do embarque), mas **nada disso alcança a ocorrência** — e há 3 impossibilidades hoje: perfil, anexo e o FM 20.2 | Claude → §4.2 | 🟡 4 fatias, 1 delas nova |
+| **QA-02** | 2 | 🧩 GAP + 🔀 **integração em sentido novo** | GC → Painel de Produção | Painel **no GC** (a empresa já tem acesso lá; **não se quer dar acesso de empresa no SIH**) com os comentários do QA, indicadores de NC e **Atas de Comitê Halal** lançadas pelos supervisores no SIH. ⚠️ Hoje a integração é **GC → SIH**; isto exige **SIH → GC**, que não existe. **Ata de Comitê não existe em lugar nenhum** (grep vazio nos dois repos) | Claude + ❓ | 🔴 depende do modelo da **Carol** |
+| **QA-03** | 3 | 🧩 GAP (tela nova) | SIH → monitoramento | **Calendário por planta** evidenciando a existência do relatório de ocorrência dia a dia, para acompanhar se o supervisor cumpre a entrega diária. Modelo visual trazido na sala (heatmap por SIF, com "lag típico" e "último dado") | Claude → §4.2 | 🟢 dado existe; falta agregação + tela |
+
+| **QA-04** | 4 | 🧩 GAP (módulo novo) — **declarado "não é agora"** | GC → biblioteca normativa | Após aprovação no comercial, a empresa recebe por e-mail a **lista de documentos que precisa tomar conhecimento** (PDFs de normas e DTs). Passar isso para o sistema, **sempre na versão mais recente e com essa garantia**; e a cada atualização de norma, **mala direta por categoria** + **alerta em tela no próximo login**, que só some quando a empresa acessa a documentação nova | Claude + ❓ | ⏭️ **pós-go-live** |
+
+| **QA-05** | 5 | 🐛 fonte de dados | **GC** → Calendário | QA precisa ver o **calendário de auditorias**, e os eventos devem **permanecer historicamente** (padrão Google/Outlook). **O perfil já tem o menu** — o defeito é a consulta: a tela busca `getUpcomingAudits(90)` + `em_andamento`, ou seja, **só futuro e em curso**. Auditoria **concluída desaparece** do calendário | Claude → §4.2 | 🟢 **fix pequeno, front** |
+
+### ❌🔍 CORREÇÃO DO IND-06 (12/ago, tarde) — a premissa estava errada
+
+O IND-06 do Dia 2 registrou *"revisão de qualidade obrigatória e bloqueante na Certificação Inicial"* com a
+pergunta aberta **"quem executa a revisão"**. A resposta veio da própria Qualidade, na sala: **não é a equipe
+de QA quem faz essa revisão.** ⇒ o escopo da tela `/qualidade/revisoes` **precisa mudar**; ela está no menu do
+perfil errado.
+
+✅ **RESPONDIDO na mesma tarde (Renato):** o instrumento é o **FM 7.1.9**, que deve ser tratado **dentro do
+perfil comercial, como uma SUB-FASE**; o executor é **um analista do departamento COMERCIAL** — que
+eventualmente tira dúvida com a QA, mas não é da QA. O nome "revisão de qualidade" é o erro de origem.
+
+🔍 **E a verificação encontrou o que ninguém tinha percebido: o FM 7.1.9 JÁ ESTÁ CONSTRUÍDO no GC, em três
+módulos, com três donos diferentes em código — e nenhum deles tem tela.**
+
+| Módulo | O que faz | `@Roles` | Tem tela? |
+|---|---|---|---|
+| **`request-review-report`** | O relatório do FM 7.1.9: **1:1 com a solicitação**, com os parâmetros (turnos, funcionários, categorias, produtos, fornecedores, APPCC), o cálculo (dias base GSO/SMIIC, **redução de 0-30%**, dias finais, notas) e a **decisão** — `pending · approved · needs_changes · rejected` com notas e revisor | `admin`, **`analista`** | ❌ **ZERO consumidores** (varri `src/` inteiro do front) |
+| **`audit-days`** | A calculadora "dias de auditoria conforme FM 7.1.9 + IT 7.4" | `analista`, `gestor`, `admin`, **`comercial`**, `gestor_auditoria` | ❌ o front só usa dias-por-categoria da classificação industrial, que é outro caminho — **é o FRG-16** |
+| **`quality-reviews`** | A "revisão de qualidade" — solicitada por comercial/gestor/admin, **concluída SÓ por `qualidade`** | `qualidade` no `complete` | ✅ tem tela, e é a do **perfil errado** |
+
+⇒ **A "sub-fase do comercial" é LIGAR o que existe, não construir.** Uma tela na fase comercial que preencha
+os parâmetros, calcule os dias e registre a decisão é literalmente o que o `RequestReviewReport` já modela —
+inclusive o `needs_changes`, que é o "devolve para ajuste" do fluxo. **E isso fecha o FRG-16 junto**, porque a
+sugestão de dias que o comercial não enxerga é a saída desse mesmo cálculo.
+
+📌 **A causa-raiz da confusão está no código, não na sala:** três implementações do mesmo instrumento, cada
+uma autorizando um papel diferente. O `@Roles('qualidade')` no `complete` criou um dono que nunca foi o dono.
+É o padrão estrutural **(1) duas fontes para o mesmo fato** somado ao **(2) capacidade sem porta de entrada** —
+5º e 6º casos deste último.
+
+❓ **O que ainda decide o desenho:** o executor entra como **`comercial`** ou como **`analista`**? (o
+`request-review-report` hoje autoriza `analista`; a calculadora autoriza os dois) · a QA fica só com
+**leitura** para consulta, ou entra formalmente com comentário? · **preciso do FM 7.1.9 preenchido** para
+conferir se os parâmetros do modelo batem com o formulário de hoje · e a tela `/qualidade/revisoes`:
+**renomeia, apaga ou vira o chamado do QA-06?**
+
+📊 **Medido em produção hoje:** `quality_reviews` = **0 linhas**. O módulo **nunca foi usado**, o que explica o
+achado ter sobrevivido tanto tempo com a premissa errada: ninguém exercitou para descobrir.
+
+**Como o módulo funciona hoje** (levantado para responder ao Renato, vale como registro): a revisão é
+solicitada na tela de **Proposta** (`/certificacoes/:id/proposta`), por **comercial/gestor/admin**, e **só na
+fase `elaboracao_proposta`** — processo adiantado não tem porta. Depois: QA **assume** (`assign`) → `em
+análise` → **conclui** com parecer + observações (`complete`, **exclusivo de `qualidade`**).
+
+### QA-06 · Chamados para a equipe de Qualidade — a tela serve, o modelo não
+
+**O pedido:** registrar solicitações dirigidas à QA — alteração de layout, **novo FM**, alteração de FM, novo
+procedimento, dúvida — com **atribuição a uma pessoa da QA**, **prazo definido por ela**, **anexos**,
+**comentários** dentro do chamado e **acompanhamento de status pelo solicitante**. É, na descrição do próprio
+Renato, um **sistema de chamados**.
+
+**O que dá para reaproveitar de verdade:**
+
+| Peça | Reaproveita? |
+|---|---|
+| Layout da caixa de entrada (Pendentes · Em Análise · Concluídas) + filtro por status | ✅ direto |
+| Máquina de estados `pendente → em análise → concluída` com `assign` e `complete` | ✅ direto |
+| Tela de detalhe com parecer/observações | ✅ com renomeação dos campos |
+| **O modelo `QualityReview`** | ❌ **não serve** — `workflowId` e `certificationId` são **NOT NULL**, e um chamado de "novo formulário FM" não tem certificação nem workflow |
+| `Comment` para os comentários do chamado | 🟡 quase — hoje só se liga a `certificationId` (nullable). Precisa de vínculo ao chamado; o `isInternal` que ele já tem serve para separar recado interno da QA × resposta ao solicitante |
+| Anexos | 🟡 mesma história do SIH: o anexo do GC hoje pende de certificação/documento |
+
+**O que não existe em lugar nenhum e é do pedido:** **prazo** (o `QualityReview` não tem data de
+compromisso), **categoria** do chamado, e a **visão do solicitante** acompanhando o próprio pedido.
+
+❓ **Quatro perguntas que definem o desenho — nenhuma é detalhe:**
+
+1. **Onde mora: GC ou SIH?** A QA vive no GC, mas **quem mais vai abrir chamado é o supervisor** — que só
+   existe no SIH e não tem login no GC. Ou o módulo nasce no GC e os supervisores ganham acesso, ou o SIH
+   ganha a tela de abertura e o chamado viaja para o GC (a mesma direção **SIH → GC** que o QA-02 exige e
+   que **não existe hoje**). ⇒ **QA-02 e QA-06 compartilham essa decisão de arquitetura.**
+2. **A empresa abre chamado?** Ela tem perfil no GC. Se sim, muda a visibilidade dos comentários e o texto de
+   tudo.
+3. **Prazo:** definido caso a caso por quem atende (foi o que a sala disse), ou existe SLA por categoria? Tem
+   alerta de vencimento?
+4. **A tela atual vira o chamado, ou convivem as duas?** Se a revisão de qualidade continua existindo (com
+   outro executor), são dois módulos parecidos no mesmo menu — e aí o nome de cada um importa.
+
+### QA-05 · O calendário não perde histórico por regra — perde por consulta
+
+Medido no GC: o `qualidade` **já tem** "Calendário" no menu (`Sidebar.tsx`, case `qualidade`), então não é
+permissão. A tela monta os eventos de auditoria a partir de **duas consultas que só olham para frente**
+([Calendar.tsx:79-89](../halalsphere-frontend/src/pages/Calendar.tsx#L79-L89)):
+`auditService.getUpcomingAudits(90)` e `getAuditsByStatus('em_andamento')`. ⇒ **auditoria concluída some da
+tela** — e é justamente o histórico que a Qualidade quer consultar.
+
+**O backend já tem o que falta:** `GET /audits` aceita filtros e existe `by-status`; não é rota nova, é trocar
+a fonte por uma busca **por intervalo do mês exibido**, incluindo `concluido`. Cuidado único: o calendário
+hoje carrega 90 dias de uma vez — com histórico, a busca precisa acompanhar a navegação de mês, senão vira
+consulta crescente. ⚠️ Vale checar de passagem se **NC e solicitações de documento** têm o mesmo recorte de
+"só em aberto": se tiverem, o histórico fica pela metade e a queixa volta.
+
+### ✅ DECISÕES DA SALA — QUALIDADE, 12/ago tarde. **Não re-litigar.**
+
+| # | Pergunta | Decisão |
+|---|---|---|
+| **Q1** | FM 20.2 industrializados | ✅ **Solicitado à FAMBRAS** — sem ele eu não invento os campos |
+| **Q2** | O que a empresa enxerga do relatório | ✅ **Só o que o QA registrar.** A Qualidade **filtra/edita** o que o supervisor escreveu; o texto do supervisor **não** vai cru para o BI ⇒ o campo do QA é camada **editorial**, não cópia |
+| **Q3** | Anexo em ocorrência | ✅ **Necessário** — entra com FK nova + upload |
+| **Q4** | Calendário: o que é cor | ✅ **Verde** = dia útil com relatório · **Cinza** = fim de semana/feriado · **Vermelho** = dia útil **sem** relatório |
+| **Q5** | Perfil `qualidade` no SIH | ✅ **Confirmado criar** ⇒ e a escrita da matriz FM × anexo (CTR-05) migra de `admin`+`coordenador` para **`qualidade`+`admin`** |
+
+❓ **Duas que a Q4 abriu e ainda não têm dono:** de onde vem a lista de **feriados** (nacional basta, ou
+municipal — a planta é que define o feriado local?) e se **sábado** conta como dia útil em planta que abate
+aos sábados. Enquanto não houver resposta, o cinza sai de fim de semana + feriado **nacional**.
+
+### QA-04 · A biblioteca normativa não existe — e o que existe resolve outro problema
+
+Medido no GC: **não há modelo de documento normativo publicável**. O que existe é o
+`RequiredDocumentTemplate` (categoria × norma × ciclo × departamento, com `version`), que descreve **quais
+documentos a EMPRESA precisa ENVIAR** — o sentido oposto do pedido, que é a FAMBRAS **disponibilizar** norma e
+DT para a empresa **ler**. Não dá para reaproveitar o modelo; dá para reaproveitar o **vocabulário**
+(categoria e norma), que é justamente o critério de segmentação da mala direta.
+
+O que o pedido exige, e nenhuma parte existe hoje: **(1)** documento normativo com **versão** e arquivo em S3;
+**(2)** regra de **quem recebe o quê** (por categoria/norma da certificação); **(3)** registro de **ciência**
+por empresa — é ele que faz o alerta sumir e é a evidência de que o cliente tomou conhecimento (vale para
+auditoria); **(4)** disparo de e-mail em massa na publicação de uma versão nova. O `NotificationService` do GC
+já faz in-app + e-mail, então a fatia (4) é ligação, não construção.
+
+⚠️ **A garantia de "sempre a versão mais recente" é a parte que costuma ser subestimada:** ela obriga
+versionamento explícito e um link que aponta para "a corrente", nunca para o arquivo. Sem isso, o PDF que a
+empresa baixou em janeiro continua sendo o que ela considera válido — e é exatamente esse o risco que o pedido
+quer eliminar.
+
+### QA-01 · O fluxo pedido já existe — para OUTRO relatório e OUTRO perfil
+
+**O que já está pronto e é reaproveitável inteiro:** o embarque tem
+`PATCH /:id/approve`, `/:id/reject` (com `reason`) e **`/:id/reopen`**, o enum
+`ReportStatus { rascunho · assinado · aprovado · rejeitado · cancelado }`, `statusHistory`, e no front o
+`RejectDialog` + a faixa *"Relatório rejeitado pela Controladoria — Motivo: …"*. **É exatamente o fluxo que a
+Qualidade descreveu**, só que hoje o ator é o `controlador` e o objeto é embarque/produção/abate.
+
+**As quatro coisas que faltam, medidas:**
+
+1. 🏛️ **O perfil `qualidade` não existe no SIH.** O enum `UserRole` tem `admin · coordenador · supervisor ·
+   operador · controlador` (em prod: admin 5 · coordenador 1 · supervisor 73 · controlador 6 · operador 0).
+   ⇒ migration de enum idempotente + menu + opção no cadastro + **usuários criados**. 📌 **Isto responde a
+   pendência que ficou aberta no CTR-05 de manhã** — quando o perfil existir, a escrita da matriz FM × anexo
+   passa de `admin`+`coordenador` para **`qualidade`+`admin`**, como a sala já tinha decidido.
+2. 🔌 **A ocorrência está fora do circuito de aprovação.** `bird_occurrence_reports` **já tem** `status`,
+   `statusHistory`, `signedById/signedAt` e `assignedToId`, e o controller já tem `sign` e `assign` — mas
+   **não tem `approve`/`reject`/`reopen`**, e a **fila da Controladoria só varre abate, produção e embarque**.
+   O objeto está pronto; falta ligá-lo.
+3. 🚫 **Ocorrência NÃO ACEITA ANEXO.** `report_attachments` só tem FK para embarque e produção — é a **mesma
+   limitação que tirou o abate do CTR-05**, aparecendo pela segunda vez no mesmo dia. O pedido *"o supervisor
+   pode anexar documentos"* exige **FK nova + upload + tela**, não é configuração.
+4. 📄 **O FM 20.2 (industrializados) não existe.** Só há **FM 20.1 (aves)** — `BirdOccurrenceReport`, com
+   `species` fixo em `ave` e seções de abate mecânico, insensibilização, paradas de linha e pendura, que são
+   de aviário. Industrializados é **formulário novo**, com campos próprios. ❓ **Pedir o FM 20.2 preenchido
+   de verdade**, como foi feito com os outros arquétipos — sem ele eu inventaria os campos.
+
+➕ **O campo de comentário do QA** é o mais barato dos quatro, mas tem uma consequência que a sala precisa
+assumir: ele nasce **destinado à empresa** (vai ao BI). ❓ **É visível para a empresa sempre, ou só quando o
+relatório é aprovado?** Comentário de reprovação circulando antes do ajuste do supervisor é o tipo de coisa
+que gera atrito com o cliente.
+
+### QA-02 · O painel é no GC, mas o dado nasce no SIH — e essa direção não existe
+
+**A decisão de produto está certa e vale registrar:** o painel vive no **GC** porque a empresa já tem acesso
+lá, e **não se quer abrir acesso de empresa no SIH**. Isso mantém o SIH como sistema de campo.
+
+**A consequência técnica é grande:** hoje a integração é de **mão única, GC → SIH** — o SIH lê cadastro,
+certificação e MP homologada do GC via `/integration` com `x-api-key`. **SIH → GC não existe.** Duas saídas:
+
+- **(a) O GC consulta uma API de leitura do SIH** — espelho exato do que o SIH já faz com o GC, com o mesmo
+  padrão de chave. **Recomendo esta**: o padrão é conhecido nos dois lados e o dado não se duplica.
+- **(b) O SIH publica/espelha os dados no banco do GC** — evita chamada em tempo real, mas cria segunda
+  verdade e um job de sincronismo. Já vimos o custo disso no espelho GC→SIH.
+
+🚧 **Bloqueios reais deste item:** **(1)** a **Ata de Comitê Halal não existe** — não é campo, é entidade nova
+(quem lança, o que tem dentro, anexo?), e depende do **modelo que a Carol vai enviar**; **(2)** o painel
+precisa de definição de indicador — "indicadores de NC" pode ser contagem, taxa por auditoria, tempo de
+fechamento; **(3)** é escopo de **duas trilhas** (SIH e GC) ao mesmo tempo, e o §2 do BACKLOG proíbe duas
+sessões no mesmo repo. ⇒ **Este item não cabe antes do go-live.** Recomendo tratá-lo como o primeiro grande
+lote pós-15/ago, com a spec escrita assim que o modelo da Carol chegar.
+
+### QA-03 · O calendário de entregas — o dado já existe, falta a agregação
+
+`bird_occurrence_reports` tem `date` (data-only), `plantId` e `status`. ⇒ o calendário é **agregação +
+tela**, sem modelo novo: uma rota que devolva, por planta e por dia, se houve relatório e em que estado.
+
+❓ **Três definições que a sala precisa dar, senão eu escolho por conta:**
+
+1. **O que é "dia esperado"?** Todo dia corrido, só dia com abate/produção lançada, ou a escala do supervisor
+   (`user_schedules` existe)? Sem isso, todo domingo vira vermelho.
+2. **O que cada cor significa?** Sugestão: verde = assinado/aprovado · amarelo = rascunho (existe, não
+   assinou) · vermelho = nenhum relatório · cinza = fora da escala.
+3. **Quem enxerga?** Qualidade e Controladoria com certeza; **supervisor vê o próprio**? (recomendo que sim —
+   cobrança que aparece só para o chefe vira surpresa).
+
 ### CTR-02 · O vínculo embarque⇄produção já está construído — falta a porta e o item
 
 Decisão do PO de **14/jun** (GAP-1: *"embarque vincula aos ProductionReport e deriva a composição; NÃO captura
