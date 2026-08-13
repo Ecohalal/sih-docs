@@ -2013,6 +2013,26 @@ módulos, com três donos diferentes em código — e nenhum deles tem tela.**
 | **`audit-days`** | A calculadora "dias de auditoria conforme FM 7.1.9 + IT 7.4" | `analista`, `gestor`, `admin`, **`comercial`**, `gestor_auditoria` | ❌ o front só usa dias-por-categoria da classificação industrial, que é outro caminho — **é o FRG-16** |
 | **`quality-reviews`** | A "revisão de qualidade" — solicitada por comercial/gestor/admin, **concluída SÓ por `qualidade`** | `qualidade` no `complete` | ✅ tem tela, e é a do **perfil errado** |
 
+❌🔍 **CORREÇÃO (13/ago, com o FM em mãos): "é só ligar" está ERRADO.** O Renato enviou o
+`FM 7.1.9 - REVISÃO DA SOLICITAÇÃO E CALCULO DIAS DE AUDITORIA (REV 11)`. Lido campo a campo contra o
+`RequestReviewReport`, o modelo do GC cobre **uma fração** do formulário:
+
+| No FM REV 11 | No modelo do GC |
+|---|---|
+| Nº de APPCC (**número**) · nº de colaboradores no maior turno · categoria (A–K, "a de maior dificuldade") | ⚠️ `hasAPPCC` é **booleano**, não número · `numEmployees` ✅ · categoria ✅ |
+| **Com inclusão do Golfo?** (S/N) — e o Golfo **proíbe estágio 1 e 2 no mesmo dia** | ❌ não existe |
+| **A empresa tem filiais?** + quais — o cálculo tem linhas próprias de **filial** | ❌ não existe |
+| **Existe sistema de gestão certificado?** | ❌ não existe |
+| **3 itens de conformidade da revisão** (campos do FM 7.2.1 completos · equipe técnica apta · FAMBRAS reconhecida na categoria), cada um Conforme/Não Conforme | ❌ só existe a decisão final (`decision` + `decisionNotes`) |
+| **Responsável pelo preenchimento** × **Responsável Técnico da Área** (Lina ou Islam) | ⚠️ só `reviewedById` |
+| **9 durações calculadas**: estágio 1 (30%) e estágio 2 (70%) com arredondamento · filial inicial · manutenção matriz (1/3) e filial · renovação matriz (2/3) e filial · **HD (homem/dia)** | ❌ só **um** `finalAuditDays` |
+| **Dados finais da auditoria**: supervisão (**fixo × por campanha**), nº de **auditores muçulmanos**, nº de especialistas técnicos, total da equipe | ❌ nada disso existe |
+
+⇒ **Revisão do encaminhamento:** ligar a tela resolve a **entrada e a decisão**; o **cálculo do REV 11 exige
+estender o modelo** (as 9 durações, o Golfo, as filiais e a composição da equipe). Continua valendo que a base
+existe e que o FRG-16 sai junto — mas não é um lote pequeno, e prometer "é só ligar" seria repetir o erro de
+avaliar sem o documento na mão. *(Lição: eu classifiquei o tamanho olhando só o código; o papel tinha o dobro.)*
+
 ⇒ **A "sub-fase do comercial" é LIGAR o que existe, não construir.** Uma tela na fase comercial que preencha
 os parâmetros, calcule os dias e registre a decisão é literalmente o que o `RequestReviewReport` já modela —
 inclusive o `needs_changes`, que é o "devolve para ajuste" do fluxo. **E isso fecha o FRG-16 junto**, porque a
@@ -2070,6 +2090,91 @@ compromisso), **categoria** do chamado, e a **visão do solicitante** acompanhan
    alerta de vencimento?
 4. **A tela atual vira o chamado, ou convivem as duas?** Se a revisão de qualidade continua existindo (com
    outro executor), são dois módulos parecidos no mesmo menu — e aí o nome de cada um importa.
+
+### ✅ DECISÕES DA NOITE DE 12/ago (Renato). **Não re-litigar.**
+
+| # | Tema | Decisão | Consequência |
+|---|---|---|---|
+| **Q6** | FM 7.1.9 / IND-06 | **Executor = perfil `comercial`**; **QA fica com LEITURA** | Somar `comercial` às rotas do `request-review-report` (hoje `admin`+`analista`) e dar leitura a `qualidade`. A tela nasce na fase comercial |
+| **Q7** | QA-03 · dia útil | **Seg a sex.** E **cria-se uma tela de gestão de datas**, com a **QA como dona** | Feriado deixa de ser lista fixa em código e vira **dado editável** — mesma escolha do CTR-05. Escrita = `qualidade`+`admin` |
+| **Q8** | QA-01 · quem é a QA no SIH | **Equipe QA do GC = equipe QA do SIH** (mesmas pessoas) | Renato cria os usuários **pela UI** (o hash é bcrypt; não dá por SQL). Hoje `qualidade` tem **0** no SIH |
+| **Q9** | QA-02 · modelo da Ata | Carol envia os dados | — |
+
+### QA-06 · Abrir chamado dos DOIS sistemas — dá, e sem duplicar módulo
+
+Pergunta do Renato: *"não poderíamos ter chamadas para isso a partir de ambos?"* **Dá — desde que o módulo
+seja UM só.** Duplicar o módulo nos dois sistemas criaria duas filas para a mesma equipe, que é a pior
+saída possível para quem atende.
+
+**O detalhe que decide a direção já está pronto no SIH:** ele **já é cliente do GC** (`gc-integration`, com
+`x-api-key` e a chave `GC_INTEGRATION_API_KEY` na task definition, em prod desde julho). Ou seja, **SIH → GC
+é a direção que tem encanamento**; GC → SIH não tem nada.
+
+⇒ **Desenho recomendado:** o módulo vive no **GC** (onde a QA e a empresa já têm login), e o **SIH ganha uma
+tela fina de abertura e acompanhamento** que fala com o GC pelo cliente que já existe. Uma ponta nova de cada
+lado, não dois módulos. **Bônus:** é a mesma direção que o **QA-02** precisa para o painel de produção — as
+duas demandas passam a compartilhar a mesma estrada, em vez de abrir duas.
+
+⚠️ **A modelagem tem um detalhe que morde depois se for ignorado:** o supervisor **não tem usuário no GC**,
+então o `requestedBy` do chamado **não pode ser um FK de `User` do GC** para chamado aberto no SIH. Precisa de
+`origin` (`gc` | `sih`), FK nullable e a identidade do solicitante em texto + id do SIH. Sem isso, ou o
+chamado do supervisor não grava, ou alguém cria usuário-fantasma no GC para tapar o buraco.
+
+### 📄 MATERIAL DA CAROL — lido e transformado em spec (12/ago, noite)
+
+Arquivos em `C:\HalalSphere\PRESENCIAL 10-14\QUALIDADE\` (fonte externa, **fora do git** — versionar).
+
+**✅ FM 20.1: o implementado é FIEL ao papel.** Conferência campo a campo contra o modelo preenchido
+(JBS Nova Veneza, SIF 1155, 03/08/2026):
+
+| No papel | No banco |
+|---|---|
+| Testes de disco: TURNO · HORÁRIO · LINHA · VELOCIDADE (aves/h) · MAL SANGRADO · NÃO SANGRADO | `BirdDiscTest`: `shift, time, line, speedPerHour, poorlyBled, notBled` ✅ |
+| Insensibilização: LINHA × TURNO × 1º/2º monitoramento — Voltagem, Amperagem, Frequência, Tempo de cuba, Tempo de retorno | `BirdStunningParam`: `line, shift, monitoring, voltage, amperage, frequency, cubeTime, returnTime` ✅ |
+| Cabeçalho: JBS/Seara → `qualidade@` + `mohamed.elsharif@` · BRF e outras → `qualidade@` + `adel@` | `notification_routes` **em prod**: `jbs_seara` (matchSifs `1155`) e default "BRF e Outras" ✅ |
+
+⇒ **nada a corrigir no 20.1.** Falta nele o fluxo de aprovação (QA-01) e o **anexo** — que o próprio FM exige
+(*"forneça evidências, como fotos"*), confirmando por escrito a decisão Q3.
+
+**🆕 FM 20.2 — REGISTRO DE OCORRÊNCIAS INTERNAS (REV 1), DIÁRIO (decisão Q10).** Estrutura completa:
+
+| Bloco | Campos |
+|---|---|
+| **Identificação** | Empresa (nome e cidade) · SIF · Data · Nome do supervisor · **"Você foi presencialmente na unidade hoje?" (S/N)** |
+| **Matérias-primas** | recebeu MP hoje? · MP cárnea com Certificado Halal **ou** Relatório de Transferência? · demais MPs constam no **FM 7.4.2.7**? · descritivo de MP sem documentação válida |
+| **Produto** | houve produção Halal hoje? · higienização antes do início? · armazenado segregado e identificado? · selo apropriado ao mercado destino? · descritivo de risco de contaminação |
+| **Expedição** | houve expedição hoje? · mercado interno? · outro país? · **quais países** (texto) · foi para entreposto? · contêiner exclusivamente Halal? · descritivo das condições de transporte |
+| **Outros** | descritivo livre + **evidências (fotos)** |
+| **Correção/Ação corretiva** | ação adotada pelo supervisor |
+
+**Roteamento próprio** (≠ do 20.1): BRF → `qualidade@` + `adel@` · outras → `qualidade@` + `lina.ramadan@` +
+`fuad@`. Como `notification_routes` é **por escopo**, o 20.2 entra como escopo novo = **cadastro, não código**.
+
+📌 **Ponte com o QA-03:** o campo *"foi presencialmente hoje?"* permite o calendário distinguir **entregou o
+relatório** de **esteve na planta** — informação melhor para cobrar entrega do que a mera existência do doc.
+
+🏗️ **Decisão de modelagem:** **modelo próprio** (`IndustrialOccurrenceReport`), não generalizar o de aves —
+os conteúdos não se cruzam (disco/insensibilização × MP/produto/expedição). O esqueleto (série, planta, data,
+supervisor, status, assinatura, `statusHistory`) é o mesmo dos outros relatórios do SIH.
+
+**🆕 ATA DE COMITÊ HALAL — padrão = modelo de 2024 (decisão Q12).** O PDF de 31/03/2026 é **manuscrito e menos
+completo**; fica de fora. *(Registro honesto: a extração de texto daquele PDF saiu ilegível aqui — a decisão
+veio do Renato, não da minha leitura.)*
+
+Estrutura: **Localização e data** · **Dia da reunião** · **Planta (nome e cidade)** · **Membros participantes**
+(tabela Nome | Cargo) · **Pauta** (itens numerados) · **Decisão por item da pauta**.
+
+⚠️ **Divergência deliberada do papel (decisão Q11):** no modelo a decisão traz ação e responsável **dentro do
+texto corrido**. No sistema serão **campos separados — ação · responsável · prazo** — porque **o destino é o
+BI**: texto corrido não vira indicador, nem acompanhamento, nem cobrança.
+
+### ✅ DECISÕES DA NOITE — 2ª rodada
+
+| # | Tema | Decisão |
+|---|---|---|
+| **Q10** | FM 20.2 | **Diário**, como o 20.1 ⇒ entra no calendário do QA-03 |
+| **Q11** | Ata: ação/responsável/prazo | **Campos separados** — a mira é o BI |
+| **Q12** | Modelo de ata | **O de 2024 é o padrão**; o de 2026 é manuscrito e menos completo |
 
 ### QA-05 · O calendário não perde histórico por regra — perde por consulta
 
@@ -2267,6 +2372,86 @@ que é sinal de prioridade real.
 - **A trava mora no `PATCH /:id/sign`** de produção e embarque (e o mesmo vale para abate, se a matriz cobrir os
   FMs de abate). Sem rota nova ⇒ sem regen do API Gateway nesta parte.
 - 🛡️ **Matriz nasce vazia** (mitigação acima): a trava só morde onde a Controladoria já ligou a exigência.
+
+---
+
+## 7-Y. HANDOFF — fim do Dia 3 + madrugada de 13/ago. **LEIA ANTES DE COMEÇAR.**
+
+> Escrito por falta de contexto na sessão, não por fim de trabalho.
+> **Nada pela metade:** os 4 repos de código estão sem WIP solto (`wip=0`).
+
+### 📍 Retrato por repo (medido agora)
+
+| Repo | Branch | HEAD | Estado |
+|---|---|---|---|
+| **sih-backend** | `release` | `1322bb8` | ✅ pushado · **EM PROD** |
+| **sih-frontend** | `release` | `d4d9900` | ✅ pushado · **EM PROD** |
+| **halalsphere-backend** (GC) | `release` | `fa3bc9cd` | ⚠️ **1 commit à frente — NÃO pushado** (FM 7.1.9 fase 1) |
+| **halalsphere-frontend** (GC) | `release` | `50135cc1` | ✅ pushado (QA-05) |
+| **sih-docs** | `main` | este commit | ⚠️ **local**, nunca pushado (decisão do Renato pendente) |
+
+### ✅ ENTREGUE E VERIFICADO EM PRODUÇÃO (12-13/ago)
+
+Todos provados **de fora** — bundle servido, rota 404→401, migration em `_prisma_migrations`, coluna no banco.
+
+| Item | Commits | Prova |
+|---|---|---|
+| CTR-01(b) · CTR-03 · CTR-04(i) | front `7fac2ad` | bundle com "tem a atividade exigida" |
+| **CTR-05** matriz FM × anexo + trava aditiva | back `6192cec` · front `65d28e5` | migration 16:32 UTC · matriz com 0 linhas (nasce vazia) |
+| CTR-04(ii) origem da base | front `0aeccba` | "Buscar na base" no bundle |
+| **CTR-02 fase 1** consumo parcial + saldo + pendências | back `5571e0f` · front `a8f0d23` | coluna `consumed_net_weight_kg` |
+| **QA-01 fatia 1** perfil `qualidade` | back `684638c` · front `2464c87` | enum do banco com `qualidade` |
+| **FM 20.2** completo + anexo em ocorrência | back `7bb2162` · front `93ec07b` | tabela + 2 FKs de anexo |
+| **Carimbo da revisão do FM** (6 relatórios) | back `c8a90cc` | 6 tabelas com `formRevision` |
+| **QA-01 fatia 2** aprovação da QA + parecer p/ BI | back `89c34f7` · front `58baaaf` | — |
+| **QA-03** calendário de entregas + gestão de datas | back `3fbbec1` · front `6d5fde8` | tabela criada · `/work-calendar` → 401 |
+| **QA-05** calendário do GC (auditoria e NC históricas) | GC front `50135cc1` | — |
+| **Ata de Comitê Halal** | back `1322bb8` · front `d4d9900` | pushado; deploy iniciado |
+
+🗄️ **Dado carregado por mim em prod (autorizado):** rotas de e-mail do FM 20.2 (`industrial-occurrence`) —
+BRF por SIF `466/18/4567` + default `qualidade@` + `lina@` + `fuad@`. O escopo do FM 20.1 não foi tocado.
+
+### ▶️ PRÓXIMO PASSO IMEDIATO — a tela do FM 7.1.9 (fase 1)
+
+Backend **pronto e commitado** (`fa3bc9cd`, GC, **não pushado**): 28 campos do REV 11 + `comercial` na escrita
++ Qualidade só leitura. **Falta o front**: um card na **fase comercial** (sugestão: `ProcessProposal.tsx`,
+onde já vive o botão de revisão de qualidade), com os blocos do papel — identificação, escopo (Golfo,
+filiais), base do cálculo, as 3 conformidades, as **9 durações digitadas**, equipe auditora e decisão.
+
+⚠️ **Armadilha já paga:** `create` e `update` do `request-review-report` fazem **whitelist campo a campo** —
+campo fora dela é aceito pelo DTO e **descartado em silêncio**. Os 28 já foram adicionados nos dois.
+
+### 🧭 FILA (ordem sugerida)
+
+1. **FM 7.1.9 fase 1 — front** (acima) → push do `fa3bc9cd` junto.
+2. **CTR-02 fase 2** — spec do saldo por item nos tipos com produtos em Json (raspa, tripas, gelatina); é o
+   GAP-3 de 14/jun. **Só spec**, o Renato pediu plano passo a passo.
+3. **QA-06 chamados** — módulo no **GC** + tela fina no SIH usando o `gc-integration` que já existe
+   (SIH→GC é a direção com encanamento). Empresa **não** abre chamado. Pós-go-live.
+4. **QA-02 painel de produção no GC** e **QA-04 biblioteca normativa** — pós-go-live.
+5. **FM 7.1.9 fase 2** — cálculo automático, **só depois de a FAMBRAS validar as regras** (30%/70%, 1/3, 2/3,
+   arredondamento, mínimo de meio dia). Registrar antes de calcular deixa a base de comparação pronta.
+
+### 🚧 BLOQUEADO NO RENATO / FAMBRAS
+
+- 🔴 **Criar usuários `qualidade` no SIH** — hoje há **0**, e a aprovação de ocorrência é dela. Só os 5
+  admins aprovam (ponte deliberada). Criar **pela UI** (hash bcrypt).
+- 🔧 **Cadastro do Pablo** (CTR-01a): vincular planta de processamento **ou** declarar a atividade na Sol Couros.
+- ❓ **Push do `sih-docs`** (2 commits locais) e destino do **`idx.js`** na raiz.
+- ❓ **FM 7.1.9 fase 2**: agendar a discussão das regras com a FAMBRAS.
+- ⚠️ **Unidades industriais da BRF podem não estar cadastradas no SIH** — só 3 plantas "BRF" existem, todas
+  frigoríficos. A rota de e-mail do 20.2 está certa, mas pode não haver o que rotear.
+
+### 📌 LIÇÕES DESTA SESSÃO (valem para a próxima)
+
+1. **Grep truncado = evidência fraca.** Errei duas vezes: disse que a ocorrência não tinha
+   `approve/reject/reopen` (tinha, no controller, além do `head -8`) e que o gateway não conhecia prefixo novo
+   (conhecia). **Sonda tem de distinguir versão**: `/production-reports/pending-shipment` dava 401 no código
+   VELHO porque casava com `:id` — o observável válido era o `POST derive-composition`, 404→401.
+2. **Avaliar tamanho sem o documento na mão dá errado.** Eu disse que o FM 7.1.9 era "só ligar"; o papel
+   tinha o dobro do que o código modelava.
+3. **Prefixo novo no API Gateway do SIH passa sem import manual** — confirmado 3×.
+4. **Push de par back+front:** o do back falhou por rede e o front subiu sozinho. Confira `ahead=0` nos dois.
 
 ---
 
