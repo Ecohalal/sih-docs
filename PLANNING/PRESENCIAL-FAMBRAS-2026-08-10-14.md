@@ -2620,7 +2620,64 @@ exercitado ponta a ponta**, e a auditoria "em execução" da tela não deixou re
 
 **Encaminhamento:** 🟡 três fatias independentes, todas pequenas: **(a)** campo de endereço no preparatório
 alimentado por `Plant.address` + `Audit.location` — *o mais urgente, é logística de campo*; **(b)** duração
-mínima puxada do FM 7.1.9; **(c)** equipe auditora puxada da alocação.
+mínima puxada do FM 7.1.9; **(c)** equipe auditora puxada da alocação. ⚠️ **Mas ver AUD-03 antes de (a):**
+o cadastro de destino está incompleto, e puxar dele hoje não resolveria o problema do auditor.
+
+---
+
+#### AUD-03 · 🚨 O endereço **virou cadastro sim** — mas sem rua e sem número
+
+**Como veio:** *"quanto ao endereço… foi preenchido pela empresa no início do processo e virou cadastro,
+confere?"*
+
+**Confere — e é justamente por isso que o furo é pior do que parecia.** A empresa preenche no
+`RegisterPage`, o dado vai para `Company.address` e `Plant.address` (Json), e **fica lá**. Só que o que
+ficou lá **não é um endereço**:
+
+📊 **Medido em produção (13/ago):**
+
+| | plantas (824) | empresas (830) |
+|---|---|---|
+| com `address` preenchido | 589 (71%) | 829 (99,9%) |
+| com **rua** (`street`) | **275** (33%) | 610 (73%) |
+| com **número** (`number`) | **1** (0,1%) | 149 (18%) |
+| com cidade | 579 | — |
+
+**A planta desta auditoria é o retrato exato:** `YOG ACAI` (SIF `INT-CD789CBF9164`) tem
+`address = {city: "Pindamonhangaba", state: "SP", postalCode: "12424-170"}` — **cidade, UF e CEP. Só.**
+É literalmente o *"Pindamonhangaba - SP"* que o auditor vê na tela. Não há de onde tirar mais.
+
+🔎 **Causa-raiz, e ela é de uma linha:** o formulário de cadastro **nunca pergunta rua, número ou bairro**.
+```ts
+// RegisterPage.tsx:112-116 — o payload inteiro do endereço
+address: {
+  city: form.cidade || undefined,
+  state: form.uf || undefined,
+  postalCode: form.cep || undefined,
+},
+```
+E o mais irônico: **os dois lookups já trazem o endereço completo e ele é jogado fora.**
+`cnpj.service.ts:113-121` devolve `logradouro`, `numero`, `complemento`, `bairro`, `cep`, `cidade`, `uf`;
+`cep.service.ts` devolve `logradouro` e `bairro` nos 3 provedores. **O `RegisterPage` mapeia 3 dos 7 campos.**
+⇒ o cadastro chega mutilado na origem, por descarte, não por falta de dado.
+
+**Quem tem endereço completo hoje veio de outro lugar:** as plantas com rua (FALCAO, BEAUVALLET,
+FRIGOESTRELA…) vieram do **ETL do SysHalal**. Das 3 plantas criadas pela UI (`SIF INT-%`), **zero** têm rua.
+⇒ **quanto mais a FAMBRAS cadastrar pela UI a partir do go-live, pior fica a base.**
+
+⚠️ **Efeito colateral já visível:** as 4 auditorias em prod têm `location.endereco` **digitado à mão** —
+alguém está redigitando o endereço na auditoria porque o cadastro não serve. É o sintoma, não a doença.
+
+**Encaminhamento:** 🔴 **P0 de cadastro, e antecede o AUD-02(a).** Ordem correta:
+1. **`RegisterPage` passa a mapear os 7 campos** que os lookups já entregam (rua, número, complemento,
+   bairro) — front, minúsculo, e **conserta o problema para frente**.
+2. **Preparatório e plano leem `Plant.address`** (AUD-02a).
+3. ❓ **Backfill dos 314 registros já cadastrados sem rua** — o CNPJ está gravado, então dá para reprocessar
+   pelo mesmo lookup. **Decisão do Renato:** vale rodar antes do go-live?
+
+💡 **Vale generalizar:** este é o padrão nº 5 (§ acima) na direção contrária — **o cadastro descarta o que a
+fonte externa já deu**. Vale varrer os outros formulários que usam `cnpj.service`/`cep.service` para ver
+quantos outros campos estão sendo descartados no mapeamento.
 
 ---
 
