@@ -7,6 +7,41 @@
 
 ---
 
+## ⛔ ANTES DE LER: esta spec está INCOMPLETA e contradiz a sala em dois pontos
+
+Registrado em 13/ago, no mesmo dia em que ela foi escrita. **Não implementar nada a partir dela sem resolver isto.**
+
+**1. Ela contradiz a D4, que eu não havia lido.** A D4 (12/ago, §5-C do presencial) decidiu que a chave do saldo é
+**`(productCode, productBatch)`** e que, para os tipos com produto em Json, **"estruturar o Json entra no caminho
+crítico"**. O §4.2 desta spec recomenda o **UUID do item** e o §5 propõe **ler** o Json sem tocar no modelo. São
+**duas** divergências com uma decisão do PO — a resolver com o Renato, não por argumento escrito por cima.
+
+**2. A base do SIH não tem dados reais** (confirmado pelo Renato em 13/ago; só alguns testes). Consequências:
+
+- ✅ **A opção A do §4.1 sai de graça.** Tabela vazia ⇒ a troca de PK não tem risco. Ignore o "condicionada ao
+  tamanho" e a query de contagem: sem dados, ela mede a ausência de urgência, não a urgência.
+- ✅ **O backfill de `id` do §4.2 não existe.** Não há legado; tudo que nascer vem pelo `EditableCardList`, que já
+  carimba UUID.
+- 🔄 **O §5 e o §8 provavelmente estão ERRADOS.** O argumento "reforma de modelo não cabe na véspera do go-live"
+  dependia de existir dado para migrar. Sem dado, estruturar o produto final custa **só código novo** — nenhuma
+  migração, nenhum backfill, nenhum dual-write de transição. E o repositório **já tem o precedente**:
+  `ProductionRawMaterial` relacionalizou a MP de **entrada** e o `deriveComposition` já a lê assim; o produto final
+  é a **metade simétrica** que ficou em Json. ⇒ a D4 é provavelmente a decisão certa, e esta spec, a errada.
+- ⚠️ **A urgência foi superestimada.** O §2.3 continua correto como mecanismo, mas **ninguém está sendo prejudicado
+  hoje** — o dano é no go-live. "Verificado no código" ≠ "acontecendo em produção".
+
+**3. Falta o que mais importa: os papéis.** Esta spec desenhou um modelo de saldo de embarque **sem ler o formulário
+de embarque** — exatamente o erro que o FM 7.1.9 cobrou no mesmo dia (*"avaliar tamanho sem o documento na mão dá
+errado"*). No disco só há **`FM 7.1.3.3 (tripas, REV 6)`**. Faltam **7.1.8.5 (raspa)**, **7.1.8.6 (gelatina)**,
+**fracionamento** e sobretudo o **FM de embarque (7.1.7.1)**, onde deve estar escrito se o embarque referencia lote
+e como a quantidade é declarada.
+
+**O que sobrevive intacto:** os achados estruturais do §2 e §3 — o card de Produção só renderizar para `fabricacao`,
+a cadeia até a produção sumir da tela de pendências, a PK que não comporta dois itens do mesmo relatório, o
+inventário dos 10 tipos e a correção do enunciado do §7-Y (§0). Nada disso depende de dado nem de papel.
+
+---
+
 ## 0. O enunciado do handoff está errado em dois pontos
 
 O §7-Y descreve esta fase como *"saldo por item nos tipos com produtos em Json (raspa, tripas, gelatina)"*.
