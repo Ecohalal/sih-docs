@@ -2539,6 +2539,100 @@ Qualidade (endpoint transversal + card em `/qualidade`). **S1 cabe antes do go-l
 
 ---
 
+### 🧭 Bloco da tarde — perfil **AUDITOR** (13/ago). Numeração `AUD-nn`.
+
+> Tela: `/certifications/auditorias/:id/executar` — auditoria `a14eaf79-…`, certificação
+> **HS-2026140049333-01193**, *AUDITORIA EM EXECUÇÃO*, Estágio 1 · C2, Pindamonhangaba-SP.
+
+---
+
+#### AUD-01 · 🔀 O auditor digita à mão os produtos que a certificação já declarou
+
+**Como veio:** *"não faz sentido, a essa altura, ter que preencher produto — isso já está declarado na
+certificação, certo?"* (aba **Plano → Escopo (0)**, *"Nenhum produto no escopo"*, botão **+ Adicionar produto**).
+
+**Certo. E a assimetria está em uma linha, visível na própria tela:**
+```tsx
+// AuditPlanEditor.tsx:67-70
+const [schedule, setSchedule] = useState<ScheduleItem[]>(DEFAULT_SCHEDULE);   // ← 18 linhas prontas
+const [scopeProducts, setAuditScopeProducts] = useState<AuditScopeProduct[]>([]); // ← vazio
+```
+É por isso que o print mostra **Cronograma (18)** e **Escopo (0)**. O backend repete o mesmo desenho:
+```ts
+// audit-plan.service.ts:90-91
+schedule: (dto.schedule.length > 0 ? dto.schedule : AuditPlanService.getDefaultSchedule(dto.modality)),
+scopeProducts: dto.scopeProducts as any,   // ← sem fallback nenhum
+```
+⇒ **o gancho de pré-preenchimento existe, uma linha acima. Ninguém o usou para o escopo.**
+
+**O dado está a UM salto de distância:** `audit.certificationId` → `CertificationScope` → `ScopeProduct[]`,
+e as colunas casam quase 1:1 com o que a tela pede:
+
+| Coluna da tela do auditor | Origem no cadastro |
+|---|---|
+| Produto | `ScopeProduct.name` |
+| Códigos | `ScopeProduct.code` (código FAMBRAS, o mesmo que sai no certificado) |
+| Embalagem | `ScopeProduct.packingSize` |
+| Marcas | `ScopeProduct.brands` (M:N `ScopeBrand`) |
+
+📊 **Medido em produção agora:** esta certificação tem **1 produto ativo** no escopo — ou seja, havia o que
+pré-preencher e a tela mostrou zero. E `audit_plans` tem **0 linhas na base inteira**: o plano que aparece na
+tela **nunca foi salvo**; o "18" do cronograma é o default do front, não dado gravado.
+
+🚨 **O problema é maior que a digitação.** Produto digitado à mão no plano é **segunda fonte de verdade**
+para nome/código que vão parar no certificado — e o mesmo vale para `AuditReport.auditedProducts`, também
+Json livre. Nome divergindo do catálogo é a mesma família do FRG-02 (escopo com marca/produto no campo errado).
+
+❓ **Decisão necessária (D-AUD01):** o escopo auditado é **sempre igual** ao escopo da certificação, ou o
+auditor pode auditar **uma amostra** dele? Isso define o conserto:
+- **igual** ⇒ a aba vira leitura do escopo da certificação, sem digitação;
+- **amostra** ⇒ pré-preenche com todos os produtos ativos e o auditor **desmarca** o que não auditou
+  (recomendo esta: preserva o FM, elimina a digitação e mantém a rastreabilidade produto-a-produto).
+Em ambos os casos, a linha deve **referenciar o `ScopeProduct.id`**, não copiar o texto.
+
+**Encaminhamento:** 🟢 pequeno se a decisão for "pré-preencher e deixar remover" — o join já existe no
+`autoFillPreparatoryForm`, é o mesmo padrão. Back + front, mesmo par de arquivos.
+
+---
+
+#### AUD-02 · 🔀 Preparatório: o auto-preenchimento existe, é parcial — e o endereço não entra em lugar nenhum
+
+**Como veio:** *"o mesmo para os dados preparatórios como endereços e tals"*.
+
+**Aqui a história é diferente do AUD-01 — o auto-preenchimento foi construído**
+(`autoFillPreparatoryForm`, `audit-plan.service.ts:426-470`), e o próprio schema anota
+*"Campos 1-8 (pré-preenchidos do sistema)"*. Ele traz 10 campos da certificação/planta/empresa. **Três furos:**
+
+| # | Furo | Detalhe |
+|---|---|---|
+| 1 | 📍 **Endereço não existe no formulário preparatório** | `PreparatoryForm` **não tem campo de endereço**. O endereço está em `Audit.location` (medido nesta auditoria: `{tipo: "presencial", endereco: "Pindamonhangaba - SP"}`) e, completo, em `Plant.address` (Json com rua/número/cidade/UF/CEP). O auditor vê "Pindamonhangaba - SP" e nada mais — **não sabe para onde ir.** Prima do **IND-13** (agendar auditoria com endereço vazio) |
+| 2 | ⏱️ **`minimumDuration` não é pré-preenchido** | o schema diz *"Calculado via FM 7.1.9"* — e o FM 7.1.9 **passou a existir hoje** (`c3c9a818`), com `finalAuditDays` e as durações por estágio. A ponte agora é possível e não foi feita |
+| 3 | 👥 **`auditTeam` não é pré-preenchido** | a equipe já está em `AuditorAllocation` e nos 3 FKs de auditor do `AuditPlan`. O auditor redigita os próprios colegas |
+
+⚠️ **E o auto-preenchimento só roda uma vez:** `enabled: isNew && !existingForm`
+(`PreparatoryFormFill.tsx:64-68`). Salvou uma vez, **nunca mais atualiza** — se o cadastro mudar depois
+(endereço, categoria, vencimento), o preparatório fica congelado no que era. Para um formulário de campo
+isso é até defensável (é registro do que valia no dia), mas **precisa ser decisão declarada, não acidente**.
+
+📊 **Medido:** `preparatory_forms` = **0 linhas** e `audit_plans` = **0 linhas** em toda a base. Nenhum dos
+dois artefatos de auditoria foi salvo uma única vez em produção — o que significa que **nada disto foi
+exercitado ponta a ponta**, e a auditoria "em execução" da tela não deixou registro.
+
+**Encaminhamento:** 🟡 três fatias independentes, todas pequenas: **(a)** campo de endereço no preparatório
+alimentado por `Plant.address` + `Audit.location` — *o mais urgente, é logística de campo*; **(b)** duração
+mínima puxada do FM 7.1.9; **(c)** equipe auditora puxada da alocação.
+
+---
+
+### 🔬 Padrão estrutural nº 5 — **"o formulário reprocessa o que o cadastro já sabe"**
+
+QA-07a, AUD-01 e AUD-02 são a mesma doença em três telas: **um formulário FM foi modelado como folha em
+branco, quando o dado já existe estruturado a um join de distância.** Junta-se aos 4 padrões do §7-Z.
+Sintomas para procurar nas telas restantes: campo `Json` de texto livre onde há tabela tipada; `useState([])`
+onde há default disponível; e o teste rápido — *"o usuário está digitando algo que o sistema já sabe?"*.
+
+---
+
 ## 7-Y. HANDOFF — fim do Dia 3 + madrugada de 13/ago. **LEIA ANTES DE COMEÇAR.**
 
 > Escrito por falta de contexto na sessão, não por fim de trabalho.
